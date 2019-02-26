@@ -1,6 +1,7 @@
 package edu.dartmouth.cs65.dartmouthnaps.models;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -15,7 +16,7 @@ public class Comment {
                                         // user ID, and the Integer value is either 1 or -1
 
     public Comment() {
-        this("", "", "", "", "", null);
+        this("", "", "", "", "", new HashMap<String, Integer>());
     }
 
     public Comment(

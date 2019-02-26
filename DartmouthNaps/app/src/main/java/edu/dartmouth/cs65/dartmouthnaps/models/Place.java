@@ -3,6 +3,7 @@ package edu.dartmouth.cs65.dartmouthnaps.models;
 import android.graphics.Color;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public class Place {
     private Map<String, Integer> ratings;
 
     public Place() {
-        this("", null, null);
+        this("", new HashMap<String, Comment>(), new HashMap<String, Integer>());
     }
 
     public Place(String name, Map<String, Comment> comments, Map<String, Integer> ratings) {
@@ -72,11 +73,11 @@ public class Place {
 
         if (avgRating == numColors - 1) return Color.parseColor(RATING_COLORS[numColors - 1]);
 
-        for (int i = 0; i < numColors; i++) {
-            color = Color.parseColor(RATING_COLORS[i]);
+        for (String colorString : RATING_COLORS) {
+            color = Color.pack(Color.parseColor(colorString));
             redComps.add((double)Color.red(color));
-            greenComps.add((double)Color.red(color));
-            blueComps.add((double)Color.red(color));
+            greenComps.add((double)Color.green(color));
+            blueComps.add((double)Color.blue(color));
         }
 
         return Color.rgb(
