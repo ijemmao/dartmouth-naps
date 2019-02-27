@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import edu.dartmouth.cs65.dartmouthnaps.models.Comment;
+
 public class CommentAdapter extends BaseAdapter {
     private static ArrayList<Comment> comments;
 
@@ -52,7 +54,7 @@ public class CommentAdapter extends BaseAdapter {
         }
 
         holder.author.setText(comments.get(position).getAuthor());
-        holder.dateTime.setText("" + comments.get(position).getDateTime());
+        holder.dateTime.setText("" + comments.get(position).getTimestamp());
         holder.location.setText(comments.get(position).getLocation());
         holder.body.setText(comments.get(position).getBody());
 

@@ -6,4 +6,6 @@
     <color name="colorHeader">#000000</color>
     <color name="colorCommentHeader">#2B2B2B</color>
     <color name="colorCommentBody">#565656</color>
+    <color name="colorPrimaryButton">#E2C631</color>
+    <color name="colorButtonText">#242424</color>
 </resources>

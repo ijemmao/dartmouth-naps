@@ -10,6 +10,8 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Date;
 
+import edu.dartmouth.cs65.dartmouthnaps.models.Comment;
+
 public class LocationActivity extends AppCompatActivity {
 
     ImageView imageView;
@@ -43,25 +45,25 @@ public class LocationActivity extends AppCompatActivity {
         Comment comment = new Comment();
 
         comment.setAuthor("XD");
-        comment.setDateTime(new Date());
+        comment.setTimestamp(new Date().toString());
         comment.setLocation("First Floor 007");
         comment.setBody("this is a terrible location to sleep during 12s");
         comments.add(comment);
 
         comment.setAuthor("XD");
-        comment.setDateTime(new Date());
+        comment.setTimestamp(new Date().toString());
         comment.setLocation("First Floor 007");
         comment.setBody("this is a terrible location to sleep during 12s");
         comments.add(comment);
 
         comment.setAuthor("XD");
-        comment.setDateTime(new Date());
+        comment.setTimestamp(new Date().toString());
         comment.setLocation("First Floor 007");
         comment.setBody("this is a terrible location to sleep during 12s");
         comments.add(comment);
 
         comment.setAuthor("XD");
-        comment.setDateTime(new Date());
+        comment.setTimestamp(new Date().toString());
         comment.setLocation("First Floor 007");
         comment.setBody("this is a terrible location to sleep during 12s");
         comments.add(comment);
