@@ -12,7 +12,7 @@ import java.util.Date;
 
 import edu.dartmouth.cs65.dartmouthnaps.models.Comment;
 
-public class LocationActivity extends AppCompatActivity {
+public class PlaceActivity extends AppCompatActivity {
 
     ImageView imageView;
     ListView listView;
@@ -20,7 +20,7 @@ public class LocationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_location);
+        setContentView(R.layout.activity_place);
 
         imageView = findViewById(R.id.location_image);
         listView = findViewById(R.id.comment_list_view);

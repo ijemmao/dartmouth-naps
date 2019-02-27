@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import edu.dartmouth.cs65.dartmouthnaps.models.Location;
+import edu.dartmouth.cs65.dartmouthnaps.models.Place;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,15 +46,15 @@ public class MainActivity extends AppCompatActivity {
 
         LinearLayout linearLayout = findViewById(R.id.color_parent);
         List<TextView> textViews = new ArrayList<>();
-        List<Location> Location = new ArrayList<>();
+        List<Place> Place = new ArrayList<>();
         for (int i = 0; i < 21; i++) {
             textViews.add((TextView)linearLayout.getChildAt(i));
-            Location.add(new Location());
-            Map<String, Integer> ratings = Location.get(i).getRatings();
+            Place.add(new Place());
+            Map<String, Integer> ratings = Place.get(i).getRatings();
             for (int j = 0; j < 21; j++) {
                 ratings.put("" + j, j <= i ? 5 : 0);
             }
-            textViews.get(i).setBackgroundColor(Location.get(i).ratingColor());
+            textViews.get(i).setBackgroundColor(Place.get(i).ratingColor());
         }
     }
 }

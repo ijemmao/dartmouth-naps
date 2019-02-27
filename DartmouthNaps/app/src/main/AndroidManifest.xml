@@ -12,6 +12,8 @@
 
          <activity android:name=".MainActivity">
          <!--<activity android:name=".LocationActivity">-->
+         <!--<activity android:name=".MainActivity">-->
+         <activity android:name=".PlaceActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -24,6 +26,7 @@
 
 
          <!--<activity android:name=".LocationActivity" />-->
+         <!--<activity android:name=".PlaceActivity" />-->
         <activity android:name=".NewCommentActivity" />
     </application>
 
