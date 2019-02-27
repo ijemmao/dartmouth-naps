@@ -8,8 +8,8 @@ import java.util.Map;
 public class Comment {
     private String author;              // String for the author user ID
     private String body;                // String for the body of the comment
-    private String place;               // String for the place ID
-    private String subPlace;            // String for the secondary place descriptor (floor, etc.)
+    private String location;            // String for the location ID
+    private String subLocation;         // String for the secondary location descriptor (floor, etc.)
     private String timestamp;           // String for the timestamp of the comment in
                                         // "YYYY-MM-DD HH:MM:SS.SSS" form
     private Map<String, Integer> votes; // Map for dictionary of votes, where the String key is the
@@ -22,14 +22,14 @@ public class Comment {
     public Comment(
             String author,
             String body,
-            String place,
-            String subPlace,
+            String location,
+            String subLocation,
             String timestamp,
             Map<String, Integer> votes) {
         this.author = author;
         this.body = body;
-        this.place = place;
-        this.subPlace = subPlace;
+        this.location = location;
+        this.subLocation = subLocation;
         this.timestamp = timestamp;
         this.votes = votes;
     }
@@ -50,20 +50,20 @@ public class Comment {
         this.body = body;
     }
 
-    public String getPlace() {
-        return place;
+    public String getLocation() {
+        return location;
     }
 
-    public void setPlace(String place) {
-        this.place = place;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
-    public String getSubPlace() {
-        return subPlace;
+    public String getSubLocation() {
+        return subLocation;
     }
 
-    public void setSubPlace(String subPlace) {
-        this.subPlace = subPlace;
+    public void setSubLocation(String subLocation) {
+        this.subLocation = subLocation;
     }
 
     public String getTimestamp() {
