@@ -12,4 +12,22 @@
     <string name="empty_fields_text">"Please enter a username and password!"</string>
     <string name="oops_title">Oops!</string>
 
+    <!-- Buttons -->
+    <string name="submit_button">Submit!</string>
+
+    <!-- Location Activity -->
+    <string name="comments">Comments</string>
+    <string name="add_comment">Add Comment</string>
+
+    <!-- Comment Fragment-->
+    <string name="comment_author">XD</string>
+    <string name="comment_date_time">Feb 12 5:20pm</string>
+    <string name="comment_location">First Floor 007</string>
+    <string name="comment_body">this is a terrible place to nap during 12s</string>
+    <string name="title_activity_new_comment">NewCommentActivity</string>
+
+    <!-- New Comment Activity -->
+    <string name="location_label">Location</string>
+    <string name="text_label">Text</string>
+    <string name="text_hint">Enter comments here</string>
 </resources>
