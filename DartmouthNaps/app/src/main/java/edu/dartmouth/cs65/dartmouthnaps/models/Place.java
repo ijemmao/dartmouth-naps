@@ -9,16 +9,16 @@ import java.util.Map;
 
 import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
 
-public class Location {
+public class Place {
     private String name;
     private Map<String, Comment> comments;
     private Map<String, Integer> ratings;
 
-    public Location() {
+    public Place() {
         this("", new HashMap<String, Comment>(), new HashMap<String, Integer>());
     }
 
-    public Location(String name, Map<String, Comment> comments, Map<String, Integer> ratings) {
+    public Place(String name, Map<String, Comment> comments, Map<String, Integer> ratings) {
         this.name = name;
         this.comments = comments;
         this.ratings = ratings;
