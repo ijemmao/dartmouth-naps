@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundColor"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat"
+        android:gravity="center_horizontal"
+        android:paddingTop="70dp"
+        android:layout_marginBottom="30dp"
+        android:text="@string/app_name"
+        android:textColor="#000000"
+        android:textSize="60dp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/login_id"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:drawableStart="@drawable/ic_person_blue_24dp"
+        android:drawableLeft="@drawable/ic_person_blue_24dp"
+        android:drawablePadding="80dp"
+        android:fontFamily="@font/montserrat"
+        android:hint="@string/hint_username"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/login_password"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="30dp"
+        android:drawableStart="@drawable/ic_lock_blue_24dp"
+        android:drawableLeft="@drawable/ic_lock_blue_24dp"
+        android:drawablePadding="80dp"
+        android:fontFamily="@font/montserrat"
+        android:hint="@string/hint_password"
+        android:inputType="textPassword"/>
+
+    <Button
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/login_button"
+        android:fontFamily="@font/montserrat"
+        android:text="@string/text_login_button"
+        android:textSize="20dp"
+        android:textAllCaps="false"
+        android:textStyle="bold"
+        android:onClick="onLoginClicked"/>
+
+    <TextView
+        android:id="@+id/signup_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:fontFamily="@font/montserrat"
+        android:gravity="center_horizontal|bottom"
+        android:paddingBottom="10dp"
+        android:text="@string/text_signup"
+        android:textColor="@color/loginTextColor" />
+
+</LinearLayout>

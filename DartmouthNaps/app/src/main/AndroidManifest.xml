@@ -16,6 +16,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="edu.dartmouth.cs65.dartmouthnaps.LoginActivity" />
+        <activity android:name="edu.dartmouth.cs65.dartmouthnaps.SignupActivity" />
+
+
     </application>
 
 </manifest>
