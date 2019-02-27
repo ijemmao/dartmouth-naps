@@ -6,5 +6,10 @@ public abstract class Globals {
 
     // Constants for MapPlace
     public static final String[] POLYGON_COLORS = {"#FF0000", "#00FF00", "#0000FF"};
-    public static final String[] MAP_PLACE_TAGS = {"Baker-Berry", "Sanborn", "Carpenter"};
+    public static final String[] MAP_PLACE_TAGS = {
+            "Baker-Berry",
+            "Sanborn",
+            "Carpenter",
+            "Carson",
+            "Silsby"};
 }

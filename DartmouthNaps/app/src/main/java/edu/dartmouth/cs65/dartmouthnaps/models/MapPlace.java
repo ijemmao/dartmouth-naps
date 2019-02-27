@@ -8,12 +8,16 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
 import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
 
 public class MapPlace {
     public static MapPlace MP_BAKER_BERRY;
     public static MapPlace MP_SANBORN;
     public static MapPlace MP_CARPENTER;
+    public static MapPlace MP_CARSON;
+    public static MapPlace MP_SILSBY;
 
     private PolygonOptions mPolygonOptions;
     private LatLng mAvgLatLng;
@@ -58,8 +62,6 @@ public class MapPlace {
     }
 
     public static void createConstants() {
-        double[][] coordinates;
-
         MP_BAKER_BERRY = new MapPlace(MAP_PLACE_TAGS[0], new double[][]{
                 {43.704881, -72.288981},
                 {43.704875, -72.289151},
@@ -104,12 +106,36 @@ public class MapPlace {
                 {43.705662, -72.289251},
                 {43.705573, -72.289250},
                 {43.705577, -72.289031}}, 1);
+        MP_CARSON = new MapPlace(MAP_PLACE_TAGS[3], new double[][]{
+                {43.705888, -72.288857},
+                {43.705752, -72.289034},
+                {43.705748, -72.289330},
+                {43.705882, -72.289333}}, 2);
+        MP_SILSBY = new MapPlace(MAP_PLACE_TAGS[4], new double[][]{
+                {43.705725, -72.290009},
+                {43.705707, -72.290007},
+                {43.705708, -72.289954},
+                {43.705499, -72.289946},
+                {43.705498, -72.289991},
+                {43.705480, -72.289989},
+                {43.705483, -72.289840},
+                {43.705353, -72.289836},
+                {43.705348, -72.290017},
+                {43.705336, -72.290016},
+                {43.705337, -72.290141},
+                {43.705350, -72.290139},
+                {43.705348, -72.290331},
+                {43.705475, -72.290334},
+                {43.705479, -72.290186},
+                {43.705716, -72.290194}}, 0);
     }
 
     public static List<MapPlace> getConstants() {
         return new ArrayList<>(Arrays.asList(
                 MP_BAKER_BERRY,
                 MP_SANBORN,
-                MP_CARPENTER));
+                MP_CARPENTER,
+                MP_CARSON,
+                MP_SILSBY));
     }
 }

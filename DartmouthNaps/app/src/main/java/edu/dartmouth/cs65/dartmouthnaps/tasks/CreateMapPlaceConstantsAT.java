@@ -27,7 +27,6 @@ public class CreateMapPlaceConstantsAT extends AsyncTask<GoogleMap, Void, Void> 
         for (MapPlace mapPlace : mapPlaces) {
             polygon = mGoogleMap.addPolygon(mapPlace.getPolygonOptions());
             polygon.setTag(mapPlace.getTag());
-//            polygon.setClickable(true);
         }
     }
 }
