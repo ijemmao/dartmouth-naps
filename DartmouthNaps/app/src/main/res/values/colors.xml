@@ -3,6 +3,9 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="backgroundColor">#2C9FD0</color>
+    <color name="loginTextColor">#a1e3ff</color>
+    <color name="loginButtonColor">#E2C631</color>
     <color name="colorHeader">#000000</color>
     <color name="colorCommentHeader">#2B2B2B</color>
     <color name="colorCommentBody">#565656</color>
