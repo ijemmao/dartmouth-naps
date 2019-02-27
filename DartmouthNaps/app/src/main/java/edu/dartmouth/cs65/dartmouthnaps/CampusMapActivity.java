@@ -1,8 +1,10 @@
 package edu.dartmouth.cs65.dartmouthnaps;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -11,6 +13,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
@@ -26,17 +32,34 @@ public class CampusMapActivity extends FragmentActivity implements OnMapReadyCal
     private GoogleMap mMap;
     private List<MapPlace> mMapPlaces;
 
+    private FirebaseAuth auth;
+    private FirebaseUser user;
+    private DatabaseReference dbReference;
+    private String uID;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_campus_map);
 
-        mMapPlaces = null;
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        dbReference = FirebaseDatabase.getInstance().getReference();
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        if(user == null) { //if noone is logged in, go to login activity
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }else { //fetch the data from firebase and load it onto local database, if right afterlogging in
+            uID = user.getUid();
+            mMapPlaces = null;
+
+            // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+        }
     }
 
 
@@ -62,7 +85,10 @@ public class CampusMapActivity extends FragmentActivity implements OnMapReadyCal
     public void onPolygonClick(Polygon polygon) {
 //        if (mMapPlaces == null) mMapPlaces = MapPlace.getConstants();
 
+
         Object tag = polygon.getTag();
+        Intent intent = new Intent(this,PlaceActivity.class);
+        startActivity(intent);
 
         Log.d(TAG, "tag: " + (tag == null ? "[null]" : tag.toString()));
     }
