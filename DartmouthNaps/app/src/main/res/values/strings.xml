@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Dartmouth Naps</string>
+    <string name="campus_map_title">Dartmouth Map</string>
 </resources>
