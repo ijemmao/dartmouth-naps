@@ -4,24 +4,22 @@ import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.List;
+import edu.dartmouth.cs65.dartmouthnaps.tasks.AddPlacesToMapAT;
 
-import edu.dartmouth.cs65.dartmouthnaps.models.MapPlace;
-import edu.dartmouth.cs65.dartmouthnaps.tasks.CreateMapPlaceConstantsAT;
+import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
 
 public class CampusMapActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleMap.OnPolygonClickListener {
@@ -30,7 +28,6 @@ public class CampusMapActivity extends FragmentActivity implements OnMapReadyCal
     private static final float ZOOM = 17;
 
     private GoogleMap mMap;
-    private List<MapPlace> mMapPlaces;
 
     private FirebaseAuth auth;
     private FirebaseUser user;
@@ -47,18 +44,17 @@ public class CampusMapActivity extends FragmentActivity implements OnMapReadyCal
         user = auth.getCurrentUser();
         dbReference = FirebaseDatabase.getInstance().getReference();
 
-        if(user == null) { //if noone is logged in, go to login activity
+        if(user == null) { //if no one is logged in, go to login activity
             Intent intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }else { //fetch the data from firebase and load it onto local database, if right afterlogging in
             uID = user.getUid();
-            mMapPlaces = null;
 
             // Obtain the SupportMapFragment and get notified when the map is ready to be used.
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
-            mapFragment.getMapAsync(this);
+            if (mapFragment != null) mapFragment.getMapAsync(this);
         }
     }
 
@@ -74,18 +70,21 @@ public class CampusMapActivity extends FragmentActivity implements OnMapReadyCal
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        boolean mapStyleSet;
+
         mMap = googleMap;
         mMap.setOnPolygonClickListener(this);
         mMap.setBuildingsEnabled(false);
+        mMap.setIndoorEnabled(false); // Indoor would be nice, but the only building in Hanover
+        // with it that I can find is the Howe library, which isn't a Dartmouth building
+        mapStyleSet = mMap.setMapStyle(new MapStyleOptions(CAMPUS_MAP_STYLE_JSON));
+        Log.d(TAG, "mapStyleSet: " + (mapStyleSet ? "true" : "false"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LAT_LNG_DARTMOUTH, ZOOM));
-        new CreateMapPlaceConstantsAT().execute(mMap);
+        new AddPlacesToMapAT().execute(mMap);
     }
 
     @Override
     public void onPolygonClick(Polygon polygon) {
-//        if (mMapPlaces == null) mMapPlaces = MapPlace.getConstants();
-
-
         Object tag = polygon.getTag();
         Intent intent = new Intent(this,PlaceActivity.class);
         startActivity(intent);

@@ -1,6 +1,24 @@
 <resources>
     <string name="app_name">Dartmouth Naps</string>
+
+    <!-- Campus Map Activity -->
     <string name="campus_map_title">Dartmouth Map</string>
+    <string name="campus_map_style_json">
+    [
+        {
+            \"featureType\": \"poi\",
+            \"stylers\": [
+                { \"visibility\": \"off\" }
+            ]
+        },{
+            \"featureType\": \"transit\",
+            \"stylers\": [
+                { \"visibility\": \"off\" }
+            ]
+        }
+    ]
+    </string>
+
     <string name="hint_username">Username</string>
     <string name="hint_password">Password</string>
     <string name="text_login_button">Log in</string>
