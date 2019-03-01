@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".NewReviewActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/location_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="200sp"
+                    android:onClick="handleImage" />
+
+                <ImageView
+                    android:id="@+id/upload_image"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/ic_file_upload_white_24dp"
+                    android:layout_marginLeft="124dip"
+                    android:layout_marginTop="84dip"
+                    android:layout_centerHorizontal="true"
+                    android:onClick="handleImage" />
+            </RelativeLayout>
+
+
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/text_hint"
+                android:textSize="28sp"
+                android:layout_margin="10dp"
+                android:minHeight="100sp"
+                android:textColor="@color/colorHeader"
+                android:fontFamily="@font/montserrat_bold"
+                android:textCursorDrawable="@null"
+                android:background="@null" />
+
+            <fragment
+                app:title="@string/noise_label"
+                android:name="edu.dartmouth.cs65.dartmouthnaps.RatingFragment"
+                android:id="@+id/noise_fragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <fragment
+                app:title="@string/comfort_label"
+                android:name="edu.dartmouth.cs65.dartmouthnaps.RatingFragment"
+                android:id="@+id/comfort_fragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <fragment
+                app:title="@string/convenience_label"
+                android:name="edu.dartmouth.cs65.dartmouthnaps.RatingFragment"
+                android:id="@+id/convenience_fragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/submit_button"
+                android:textSize="22sp"
+                android:background="@color/colorPrimaryButton"
+                android:textColor="@color/colorButtonText"
+                android:fontFamily="@font/montserrat_semi_bold"
+                android:textAllCaps="false"
+                android:layout_margin="10dp"
+                android:layout_marginTop="10dp"
+                android:onClick="submitComment"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

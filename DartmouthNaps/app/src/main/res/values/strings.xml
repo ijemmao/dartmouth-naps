@@ -12,7 +12,7 @@
     <string name="oops_title">Oops!</string>
 
     <!-- Buttons -->
-    <string name="submit_button">Submit!</string>
+    <string name="submit_button">Submit</string>
 
     <!-- Place Activity -->
     <string name="comments">Comments</string>
@@ -29,4 +29,9 @@
     <string name="location_label">Place</string>
     <string name="text_label">Text</string>
     <string name="text_hint">Enter comments here</string>
+
+    <string name="noise_label">Noise</string>
+    <string name="comfort_label">Comfort</string>
+    <string name="light_label">Light</string>
+    <string name="convenience_label">Convenience</string>
 </resources>

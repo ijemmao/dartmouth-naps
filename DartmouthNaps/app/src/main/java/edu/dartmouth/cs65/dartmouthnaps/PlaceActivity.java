@@ -36,7 +36,7 @@ public class PlaceActivity extends AppCompatActivity {
     }
 
     public void onAddComment(View view) {
-        Intent intent = new Intent(this, NewCommentActivity.class);
+        Intent intent = new Intent(this, NewReviewActivity.class);
         startActivity(intent);
     }
 

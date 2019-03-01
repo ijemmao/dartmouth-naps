@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.dartmouth.cs65.dartmouthnaps">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,10 +13,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="edu.dartmouth.cs65.dartmouthnaps.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
          <!--<activity android:name=".MainActivity">-->
-         <!--<activity android:name=".LocationActivity">-->
+         <activity android:name=".PlaceActivity">
          <!--<activity android:name=".MainActivity">-->
-         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -21,14 +33,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="edu.dartmouth.cs65.dartmouthnaps.PlaceActivity" />
-        <activity android:name="edu.dartmouth.cs65.dartmouthnaps.LoginActivity" />
-        <activity android:name="edu.dartmouth.cs65.dartmouthnaps.SignupActivity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".SignupActivity" />
 
 
-         <!--<activity android:name=".LocationActivity" />-->
          <!--<activity android:name=".PlaceActivity" />-->
-        <activity android:name=".NewCommentActivity" />
+        <activity android:name=".NewReviewActivity" />
+
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
     </application>
 
 </manifest>
