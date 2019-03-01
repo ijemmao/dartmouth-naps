@@ -14,9 +14,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.soundcloud.android.crop.Crop;
 
 import java.io.ByteArrayOutputStream;
@@ -25,13 +30,27 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
 public class NewReviewActivity extends AppCompatActivity {
+
+    private FirebaseAuth auth;
+    private FirebaseUser user;
+    private DatabaseReference dbReference;
 
     static final int CAMERA_REQUEST_CODE = 200;
 
     ImageView uploadImage;
     ImageView locationImage;
+
+    EditText reviewHeader;
+
+    RatingFragment noiseFragment;
+    RatingFragment comfortFragment;
+    RatingFragment lightFragment;
 
     String mCurrentPhotoPath;
     File photoFile;
@@ -41,16 +60,44 @@ public class NewReviewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_review);
+
         checkPermission();
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        dbReference = FirebaseDatabase.getInstance().getReference();
+
+        reviewHeader = findViewById(R.id.review_title);
 
         uploadImage = findViewById(R.id.upload_image);
         locationImage = findViewById(R.id.location_image);
+
+        noiseFragment = (RatingFragment) getSupportFragmentManager().findFragmentById(R.id.noise_fragment);
+        comfortFragment = (RatingFragment) getSupportFragmentManager().findFragmentById(R.id.comfort_fragment);
+        lightFragment = (RatingFragment) getSupportFragmentManager().findFragmentById(R.id.light_fragment);
+
     }
 
-    public void submitComment(View view) {
-        // Send comment to Firebase database
-        Toast.makeText(this, "Comment sent", Toast.LENGTH_SHORT).show();
-        finish();
+    public void submitReview(View view) {
+        // Send review to Firebase database
+        Review newReview = new Review(
+                user.getUid(),
+                noiseFragment.getRating(),
+                comfortFragment.getRating(),
+                lightFragment.getRating(),
+                reviewHeader.getText().toString(),
+                new Date().toString()
+        );
+
+        String key = dbReference.child("users").child(user.getUid()).child("reviews").push().getKey();
+        Map<String, Object> reviews = newReview.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("users/" + user.getUid() + "/reviews/" + key, reviews);
+        childUpdates.put("/reviews/" + key, reviews);
+        Toast.makeText(this, "Review sent", Toast.LENGTH_SHORT).show();
+        dbReference.updateChildren(childUpdates);
+//        finish();
     }
 
     public void handleImage(View view) {

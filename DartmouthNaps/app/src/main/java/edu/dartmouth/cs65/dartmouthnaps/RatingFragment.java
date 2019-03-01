@@ -30,6 +30,7 @@ public class RatingFragment extends Fragment implements View.OnClickListener {
 
     Button[] ratingsList;
 
+    int rating;
 
 
     public RatingFragment() {
@@ -71,6 +72,8 @@ public class RatingFragment extends Fragment implements View.OnClickListener {
 
         ratingsList = new Button[]{firstRating, secondRating, thirdRating, fourthRating, fifthRating};
 
+        rating = 0;
+
         return view;
     }
 
@@ -81,18 +84,23 @@ public class RatingFragment extends Fragment implements View.OnClickListener {
             case R.id.first_rating:
                 ratingsList[0].setBackground(getResources().getDrawable(R.drawable.red, null));
                 setColor(1, getResources().getDrawable(R.drawable.red, null));
+                rating = 1;
                 break;
             case R.id.second_rating:
                 setColor(2, getResources().getDrawable(R.drawable.red, null));
+                rating = 2;
                 break;
             case R.id.third_rating:
                 setColor(3, getResources().getDrawable(R.drawable.yellow, null));
+                rating = 3;
                 break;
             case R.id.fourth_rating:
                 setColor(4, getResources().getDrawable(R.drawable.blue, null));
+                rating = 4;
                 break;
             case R.id.fifth_rating:
                 setColor(5, getResources().getDrawable(R.drawable.blue, null));
+                rating = 5;
                 break;
         }
     }
@@ -105,5 +113,9 @@ public class RatingFragment extends Fragment implements View.OnClickListener {
         for (int i = rating; i < 5; i++) {
             ratingsList[i].setBackground(gray);
         }
+    }
+
+    public int getRating() {
+        return this.rating;
     }
 }

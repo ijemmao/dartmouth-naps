@@ -41,6 +41,7 @@
 
 
             <EditText
+                android:id="@+id/review_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/text_hint"
@@ -67,9 +68,9 @@
                 android:layout_height="wrap_content" />
 
             <fragment
-                app:title="@string/convenience_label"
+                app:title="@string/light_label"
                 android:name="edu.dartmouth.cs65.dartmouthnaps.RatingFragment"
-                android:id="@+id/convenience_fragment"
+                android:id="@+id/light_fragment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -79,13 +80,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/submit_button"
                 android:textSize="22sp"
-                android:background="@color/colorPrimaryButton"
+                android:background="@drawable/primary_button"
                 android:textColor="@color/colorButtonText"
                 android:fontFamily="@font/montserrat_semi_bold"
                 android:textAllCaps="false"
                 android:layout_margin="10dp"
-                android:layout_marginTop="10dp"
-                android:onClick="submitComment"/>
+                android:layout_marginTop="50dp"
+                android:onClick="submitReview"/>
 
         </LinearLayout>
 
