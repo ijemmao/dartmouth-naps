@@ -23,7 +23,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".NewReviewActivity"
+        <activity android:name=".LoginActivity"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,12 +32,12 @@
             </intent-filter>
         </activity>
 
-         <!--<activity android:name=".MainActivity">-->
-        <activity android:name=".LoginActivity" />
+         <activity android:name=".MainActivity" />
+        <!--<activity android:name=".LoginActivity" />-->
         <activity android:name=".SignupActivity" />
 
 
-        <!--<activity android:name=".NewReviewActivity" />-->
+        <activity android:name=".NewReviewActivity" />
 
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
     </application>
