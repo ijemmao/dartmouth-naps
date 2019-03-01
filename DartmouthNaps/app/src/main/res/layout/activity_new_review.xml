@@ -39,19 +39,19 @@
             </RelativeLayout>
 
 
-
             <EditText
                 android:id="@+id/review_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_margin="20dp"
+                android:background="@null"
+                android:fontFamily="@font/montserrat_bold"
                 android:hint="@string/text_hint"
-                android:textSize="28sp"
-                android:layout_margin="10dp"
                 android:minHeight="100sp"
                 android:textColor="@color/colorHeader"
-                android:fontFamily="@font/montserrat_bold"
                 android:textCursorDrawable="@null"
-                android:background="@null" />
+                android:textSize="28sp" />
 
             <fragment
                 app:title="@string/noise_label"
