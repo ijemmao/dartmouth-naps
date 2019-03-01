@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,10 +19,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.soundcloud.android.crop.Crop;
 
 import java.io.ByteArrayOutputStream;
@@ -40,6 +46,7 @@ public class NewReviewActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseUser user;
     private DatabaseReference dbReference;
+    private StorageReference storageReference;
 
     static final int CAMERA_REQUEST_CODE = 200;
 
@@ -55,6 +62,8 @@ public class NewReviewActivity extends AppCompatActivity {
     String mCurrentPhotoPath;
     File photoFile;
     Uri photoURI;
+    byte[] imageBytes;
+    String imageFileName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +75,7 @@ public class NewReviewActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         dbReference = FirebaseDatabase.getInstance().getReference();
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         reviewHeader = findViewById(R.id.review_title);
 
@@ -95,14 +105,26 @@ public class NewReviewActivity extends AppCompatActivity {
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("users/" + user.getUid() + "/reviews/" + key, reviews);
         childUpdates.put("/reviews/" + key, reviews);
-        Toast.makeText(this, "Review sent", Toast.LENGTH_SHORT).show();
         dbReference.updateChildren(childUpdates);
-//        finish();
+        Toast.makeText(this, "Review sent", Toast.LENGTH_SHORT).show();
+
+        UploadTask uploadTask = storageReference.child("images/" + user.getUid() + "-" +  imageFileName + ".jpg").putBytes(imageBytes);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+            }
+        });
+        finish();
     }
 
     public void handleImage(View view) {
         prepImage();
-        System.out.println(photoURI);
     }
 
     private void checkPermission() {
@@ -117,7 +139,7 @@ public class NewReviewActivity extends AppCompatActivity {
 
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
+        imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
 
@@ -166,7 +188,7 @@ public class NewReviewActivity extends AppCompatActivity {
                     FileOutputStream fos = new FileOutputStream(mCurrentPhotoPath);
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     takenImage.compress(Bitmap.CompressFormat.JPEG, 70, stream);
-                    byte[] imageBytes = stream.toByteArray();
+                    imageBytes = stream.toByteArray();
                     fos.write(imageBytes);
                     fos.flush();
                     fos.close();
