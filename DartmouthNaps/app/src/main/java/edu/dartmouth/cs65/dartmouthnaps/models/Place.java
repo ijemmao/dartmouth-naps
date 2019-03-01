@@ -11,14 +11,14 @@ import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
 
 public class Place {
     private String name;
-    private Map<String, Comment> comments;
+    private Map<String, Review> comments;
     private Map<String, Integer> ratings;
 
     public Place() {
-        this("", new HashMap<String, Comment>(), new HashMap<String, Integer>());
+        this("", new HashMap<String, Review>(), new HashMap<String, Integer>());
     }
 
-    public Place(String name, Map<String, Comment> comments, Map<String, Integer> ratings) {
+    public Place(String name, Map<String, Review> comments, Map<String, Integer> ratings) {
         this.name = name;
         this.comments = comments;
         this.ratings = ratings;
@@ -32,11 +32,11 @@ public class Place {
         this.name = name;
     }
 
-    public Map<String, Comment> getComments() {
+    public Map<String, Review> getComments() {
         return comments;
     }
 
-    public void setComments(Map<String, Comment> comments) {
+    public void setComments(Map<String, Review> comments) {
         this.comments = comments;
     }
 
