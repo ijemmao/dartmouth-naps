@@ -8,7 +8,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
-import static edu.dartmouth.cs65.dartmouthnaps.util.PlaceConstants.*;
+import static edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil.*;
 
 public class AddPlacesToMapAT extends AsyncTask<GoogleMap, Void, Void> {
     private static final String POLYGON_FILL_COLOR = "#98a5be";

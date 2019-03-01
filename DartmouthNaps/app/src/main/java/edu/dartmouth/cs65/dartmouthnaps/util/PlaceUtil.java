@@ -1,6 +1,9 @@
 package edu.dartmouth.cs65.dartmouthnaps.util;
 
-public abstract class PlaceConstants {
+public abstract class PlaceUtil {
+    private static final int X = 0;
+    private static final int Y = 1;
+
     public static final String[] PLACE_NAMES = {
             "Andres Hall",
             "Baker-Berry Library",
@@ -1215,4 +1218,117 @@ public abstract class PlaceConstants {
             {43.704492, -72.284101}
         }
     };
+
+    /* The following algorithm for determining if a point lies in a polygon is from
+     * https://www.geeksforgeeks.org/how-to-check-if-a-given-point-lies-inside-a-polygon/
+     */
+
+    /**************** isInside() ****************
+     * Determines if a point p is inside a polygon poly
+     * @param poly  double[][] representing polygon coordinates (each secondary array should have
+     *              length 2)
+     * @param p     double[] representing a point's coordinates
+     * @return      true if
+     *                  poly is valid (has length >= 3, each secondary array has length == 2) &&
+     *                  p is valid (has length 2) &&
+     *                  p lies inside poly
+     *              false otherwise
+     */
+    public static boolean isInside(double[][] poly, double[] p) {
+        double[] q; // double[] for a point definitely outside of poly
+        int n;      // int for the number of vertices of poly
+        int j;      // int for index of the next vertex of poly
+        int count;  // int for the count of intersections (odd count indicates p is inside poly)
+
+        n = poly.length;
+
+        // poly needs at least 3 vertices
+        if (n < 3) return false;
+
+        // Because poly is always a place on campus (a secondary array of PLACE_COORDINATES), we'll
+        // use {43.7, -72.28}, which is relatively close to campus but still outside all places.
+        // We use this instead of some further point like {0, 0}, for example, because we'll be
+        // scaling each coordinate by a factor of 1000000 so that the differences between coordinate
+        // components is on a scale of 1s instead of trillionths
+        q = new double[]{43.700000, -72.280000};
+        count = 0;
+
+        for (int i = 0; i < n; i++) {
+            j = (i + 1) % n;
+
+            if (intersects(poly[i], poly[j], p, q)) {
+                if (orientation(poly[i], p, poly[j]) == 0 && isOnSegment(poly[i], p, poly[j]))
+                    return true;
+                count++;
+            }
+        }
+
+        // return true if count is odd, otherwise false
+        return count % 2 == 1;
+    }
+
+    /**************** orientation() ****************
+     * Finds the orientation of the ordered triplet (p, q, r) in the xy plane
+     * @param p double[] representing a point p in the xy plane
+     * @param q double[] representing a point q in the xy plane
+     * @param r double[] representing a point r in the xy plane
+     * @return  0 if p, q, and r are co-linear
+     *          sign of z component of cross product qp x qr otherwise
+     */
+    private static int orientation(double[] p, double[] q, double r[]) {
+        final int MILLION = 1000000;
+
+        double[] qp;    // double[] representing the vector from q to p (scaled by 1000000)
+        double[] qr;    // double[] representing the vector from q to r (scaled by 1000000)
+        double z;       // double for z component of qp x qr
+
+        qp = new double[]{MILLION * (p[X] - q[X]), MILLION * (p[Y] - q[Y])};
+        qr = new double[]{MILLION * (r[X] - q[X]), MILLION * (r[Y] - q[Y])};
+        z = qp[X] * qr[Y] - qp[X] * qr[X];
+
+        if (z == 0) return 0; // This probably won't ever happen since we're dealing with doubles
+
+        return (z > 0) ? 1 : -1;
+    }
+
+    /**************** isOnSegment() ****************
+     * Determines whether point q lies on segment pr, assuming that p, q, and r are co-linear
+     * @param p double[] representing a point p in the xy plane
+     * @param q double[] representing a point q in the xy plane
+     * @param r double[] representing a point r in the xy plane
+     * @return  true if point q lies on segment pr
+     *          false otherwise
+     */
+    private static boolean isOnSegment(double[] p, double[] q, double r[]) {
+        return (q[X] <= Math.max(p[X], r[X]) &&
+                q[X] >= Math.min(p[X], r[X]) &&
+                q[Y] <= Math.max(p[Y], r[Y]) &&
+                q[Y] >= Math.max(p[Y], r[Y]));
+    }
+
+    /**************** intersects() ****************
+     * Determines whether segment p1q1 intersects with segment p2q2
+     * @param p1    double[] representing a point p1 in the xy plane
+     * @param q1    double[] representing a point q1 in the xy plane
+     * @param p2    double[] representing a point p2 in the xy plane
+     * @param q2    double[] representing a point q2 in the xy plane
+     * @return      true if segment p1q1 intersects with segment p2q2
+     *              false otherwise
+     */
+    private static boolean intersects(double[] p1, double[] q1, double[] p2, double[] q2) {
+        // There are four orientations needed
+        int o1 = orientation(p1, q1, p2);
+        int o2 = orientation(p1, q1, q2);
+        int o3 = orientation(p2, q2, p1);
+        int o4 = orientation(p2, q2, q1);
+
+        // General case
+        if (o1 != o2 && o3 != o4) return true;
+
+        // Special cases
+        return (o1 == 0 && isOnSegment(p1, p2, q1) || // p1, q1, p2 co-linear && p2 lies on p1q1
+                o2 == 0 && isOnSegment(p1, q2, q1) || // p1, q1, q2 co-linear && q2 lies on p1q1
+                o3 == 0 && isOnSegment(p2, p1, q2) || // p2, q2, p1 co-linear && p1 lies on p2q2
+                o4 == 0 && isOnSegment(p2, q1, q2));  // p2, q2, q1 co-linear && q1 lies on p2q2
+    }
 }
