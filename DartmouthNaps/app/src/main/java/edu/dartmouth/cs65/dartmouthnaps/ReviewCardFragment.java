@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
@@ -23,6 +24,8 @@ public class ReviewCardFragment extends Fragment {
     private int noise;
     private int comfort;
     private int light;
+
+    ImageView reviewImage;
 
     Button soundQuickStatus;
     Button comfortQuickStatus;
@@ -55,6 +58,7 @@ public class ReviewCardFragment extends Fragment {
                 view.getContext().getResources().getDrawable(R.drawable.blue, null)
         };
 
+        reviewImage = view.findViewById(R.id.review_image);
         soundQuickStatus = view.findViewById(R.id.sound_quick_status);
         comfortQuickStatus = view.findViewById(R.id.comfort_quick_status);
         lightQuickStatus = view.findViewById(R.id.light_quick_status);

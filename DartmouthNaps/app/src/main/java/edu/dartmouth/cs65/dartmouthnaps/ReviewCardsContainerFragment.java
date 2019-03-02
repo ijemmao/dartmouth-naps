@@ -12,6 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -40,7 +43,7 @@ public class ReviewCardsContainerFragment extends Fragment {
     private FirebaseAuth auth;
     private FirebaseUser user;
     private DatabaseReference dbReference;
-    private StorageReference storageReference;
+    private StorageReference imageReference;
 
     public ReviewCardsContainerFragment() {
         // Required empty public constructor
@@ -58,7 +61,7 @@ public class ReviewCardsContainerFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         dbReference = FirebaseDatabase.getInstance().getReference().child("reviews");
-        storageReference = FirebaseStorage.getInstance().getReference();
+        imageReference = FirebaseStorage.getInstance().getReference();
 
         dbReference.addValueEventListener(reviewsListener);
 
@@ -73,15 +76,15 @@ public class ReviewCardsContainerFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            ReviewCardFragment cardFragment = new ReviewCardFragment();
+            final ReviewCardFragment cardFragment = new ReviewCardFragment();
             Review review = reviews.get(position);
-            Bundle extras = new Bundle();
+            final Bundle extras = new Bundle();
             extras.putString("title", review.getTitle());
-
             extras.putInt("noise", review.getNoise());
             extras.putInt("comfort", review.getComfort());
             extras.putInt("light", review.getLight());
             cardFragment.setArguments(extras);
+
             return cardFragment;
         }
 
