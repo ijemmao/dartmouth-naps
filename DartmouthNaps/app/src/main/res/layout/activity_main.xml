@@ -18,7 +18,7 @@
 
     <fragment
         android:id="@+id/review_card"
-        android:name="edu.dartmouth.cs65.dartmouthnaps.ReviewCardFragment"
+        android:name="edu.dartmouth.cs65.dartmouthnaps.ReviewCardsContainerFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
