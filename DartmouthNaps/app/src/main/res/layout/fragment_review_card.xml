@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#00000000"
+    tools:context=".ReviewCardFragment">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:orientation="vertical"
+            android:background="@color/backgroundColor"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:text="Kemeny Hall"
+            android:background="@drawable/corners"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="32sp"
+            android:textColor="@color/colorHeader"
+            android:fontFamily="@font/montserrat_bold"
+            android:layout_marginTop="100dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:paddingLeft="30dp"
+            android:orientation="horizontal"
+            android:layout_gravity="center">
+
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:src="@drawable/sound"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"/>
+
+                <Button
+                    android:id="@+id/sound_quick_status"
+                    android:background="@drawable/gray"
+                    android:layout_width="70dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="5dp" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:src="@drawable/pillow"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"/>
+
+                <Button
+                    android:id="@+id/comfort_quick_status"
+                    android:background="@drawable/gray"
+                    android:layout_width="70dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="5dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:src="@drawable/light"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"/>
+
+                <Button
+                    android:id="@+id/light_quick_status"
+                    android:background="@drawable/gray"
+                    android:layout_width="70dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="5dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:src="@drawable/walk"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"/>
+
+                <Button
+                    android:id="@+id/convenience_quick_status"
+                    android:background="@drawable/gray"
+                    android:layout_width="70dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="5dp" />
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+        </LinearLayout>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="8dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp" >
+
+            <ImageView
+                android:id="@+id/review_image"
+                android:scaleType="centerCrop"
+                android:src="@drawable/image"
+                android:layout_width="wrap_content"
+                android:layout_height="140sp" />
+
+        </android.support.v7.widget.CardView>
+
+    </android.support.constraint.ConstraintLayout>
+
+</FrameLayout>

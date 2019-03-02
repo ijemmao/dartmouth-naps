@@ -96,6 +96,7 @@ public class NewReviewActivity extends AppCompatActivity {
                 comfortFragment.getRating(),
                 lightFragment.getRating(),
                 reviewHeader.getText().toString(),
+                imageFileName,
                 new Date().toString()
         );
 

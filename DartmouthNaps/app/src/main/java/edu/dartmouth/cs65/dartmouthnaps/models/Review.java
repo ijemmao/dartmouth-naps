@@ -11,8 +11,11 @@ public class Review {
     private int comfort;                // Integer for comfort rating
     private int light;                  // Integer for light rating
     private String title;               // String for the title of the review
+    private String imageName;           // String for the name of the image
     private String timestamp;           // String for the timestamp of the comment in
                                         // "YYYY-MM-DD HH:MM:SS.SSS" form
+
+    public Review() {}
 
     public Review(
             String author,
@@ -20,12 +23,14 @@ public class Review {
             int comfort,
             int light,
             String title,
+            String imageName,
             String timestamp) {
         this.author = author;
         this.noise = noise;
         this.comfort = comfort;
         this.light = light;
         this.title = title;
+        this.imageName = imageName;
         this.timestamp = timestamp;
     }
 
@@ -47,6 +52,7 @@ public class Review {
 
     public String getTitle() { return title; }
 
+    public String getImageName() { return imageName; }
 
     public String getTimestamp() {
         return timestamp;
@@ -74,6 +80,7 @@ public class Review {
         result.put("comfort", comfort);
         result.put("light", light);
         result.put("title", title);
+        result.put("imageName", imageName);
         result.put("timestamp", timestamp);
 
         return result;
