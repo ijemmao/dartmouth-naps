@@ -46,7 +46,7 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:background="@drawable/login_button"
+        android:background="@drawable/primary_button"
         android:fontFamily="@font/montserrat"
         android:text="@string/text_login_button"
         android:textSize="20dp"
