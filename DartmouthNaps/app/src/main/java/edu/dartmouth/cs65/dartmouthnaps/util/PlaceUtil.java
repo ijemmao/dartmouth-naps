@@ -1,7 +1,5 @@
 package edu.dartmouth.cs65.dartmouthnaps.util;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -10,6 +8,8 @@ public abstract class PlaceUtil {
     private static final String TAG = "DartmouthNaps: PlaceUtil";
     private static final int X = 0;
     private static final int Y = 1;
+    private static final int LAT = 0;
+    private static final int LNG = 1;
     private static final int MILLION = 1000000;
 
     public static final String[] PLACE_NAMES = {
@@ -97,6 +97,9 @@ public abstract class PlaceUtil {
             "Zimmerman Hall"};
 
     public static final int PLACE_COUNT = PLACE_NAMES.length;
+
+    public static final double[] PLACE_COORDINATE_UPPER_BOUND = new double[]{43.710000, -72.280000};
+    public static final double[] PLACE_COORDINATE_LOWER_BOUND = new double[]{43.700000, -72.300000};
 
     public static final double[][] PLACE_COORDINATES_AVG = new double[][]{
             {43.704179, -72.284346}, // Andres Hall
@@ -1313,8 +1316,26 @@ public abstract class PlaceUtil {
         }
     };
 
+    /**************** getPlaceIndex() ****************
+     * Gets the place index of a given coordinate
+     * @param latLng    double[] representing a latitude and longitude in the Hanover area
+     * @return          -1 if
+     *                      latLng is out of bounds (defined in PLACE_COORDINATE_UPPER_BOUND and
+     *                          PLACE_COORDINATE_LOWER_BOUND)
+     *                      latLng isn't in any of the 3 closest places
+     *                  index of place that latLng is in otherwise
+     */
     public static int getPlaceIndex(double[] latLng) {
-        List<Integer> placeIndices = new ArrayList<>();
+        List<Integer> placeIndices;
+
+        // If latLng is out of bounds, don't bother running the sort, since some of the calculations
+        // might get wonky due to scaling everything by 1 million
+        if (latLng[LAT] < PLACE_COORDINATE_LOWER_BOUND[LAT] ||
+            latLng[LNG] < PLACE_COORDINATE_LOWER_BOUND[LNG] ||
+            latLng[LAT] > PLACE_COORDINATE_UPPER_BOUND[LAT] ||
+            latLng[LNG] < PLACE_COORDINATE_UPPER_BOUND[LNG]) return -1;
+
+        placeIndices = new ArrayList<>();
 
         for (int i = 0; i < PLACE_COUNT; i++) {
             placeIndices.add(i);
@@ -1329,19 +1350,32 @@ public abstract class PlaceUtil {
         return -1;
     }
 
+    /**************** sortPlaceIndices() ****************
+     * Sorts a list of indices in ascending order of distance from a given coordinate
+     * @param placeIndices  List of Integers representing indices of places to sort by ascending
+     *                      distance
+     * @param latLng        double[] representing a latitude and longitude in the Hanover area
+     */
     public static void sortPlaceIndices(List<Integer> placeIndices, final double[] latLng) {
         placeIndices.sort(new Comparator<Integer>() {
             @Override
             public int compare(Integer o1, Integer o2) {
-                double distance1 = distanceBetween(PLACE_COORDINATES_AVG[o1], latLng);
-                double distance2 = distanceBetween(PLACE_COORDINATES_AVG[o2], latLng);
-                if (distance1 == distance2) return 0;
-                return distance1 < distance2 ? -1 : 1;
+                double microDistance1 = microDistanceBetween(PLACE_COORDINATES_AVG[o1], latLng);
+                double microDistance2 = microDistanceBetween(PLACE_COORDINATES_AVG[o2], latLng);
+                if (microDistance1 == microDistance2) return 0;
+                return microDistance1 < microDistance2 ? -1 : 1;
             }
         });
     }
 
-    private static double distanceBetween(double[] p, double[] q) {
+    /**************** microDistanceBetween() ****************
+     * Calculate the distance between two points in micro-units
+     * @param p double[] representing a point p in the xy plane
+     * @param q double[] representing a point q in the xy plane
+     * @return  double of the distance between the two points in micro-units (1 millionth the actual
+     *          distance)
+     */
+    private static double microDistanceBetween(double[] p, double[] q) {
         double dx = MILLION * (p[X] - q[X]);
         double dy = MILLION * (p[Y] - q[Y]);
         return Math.sqrt(dx * dx + dy * dy);
@@ -1362,7 +1396,7 @@ public abstract class PlaceUtil {
      *                  p lies inside poly
      *              false otherwise
      */
-    public static boolean isInside(double[][] poly, double[] p) {
+    private static boolean isInside(double[][] poly, double[] p) {
         double[] q; // double[] for a point definitely outside of poly
         int n;      // int for the number of vertices of poly
         int j;      // int for index of the next vertex of poly
@@ -1374,11 +1408,11 @@ public abstract class PlaceUtil {
         if (n < 3) return false;
 
         // Because poly is always a place on campus (a secondary array of PLACE_COORDINATES), we'll
-        // use {43.7, -72.28}, which is relatively close to campus but still outside all places.
+        // use {43.7, -72.3}, which is relatively close to campus but still outside all places.
         // We use this instead of some further point like {0, 0}, for example, because we'll be
         // scaling each coordinate by a factor of 1000000 so that the differences between coordinate
         // components is on a scale of 1s instead of trillionths
-        q = new double[]{43.700000, -72.280000};
+        q = PLACE_COORDINATE_LOWER_BOUND;
         count = 0;
 
         for (int i = 0; i < n; i++) {
