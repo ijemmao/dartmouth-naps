@@ -2,6 +2,7 @@ package edu.dartmouth.cs65.dartmouthnaps;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -13,10 +14,17 @@ import android.view.ViewGroup;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.ArrayList;
+
+import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
 
 /**
@@ -24,9 +32,7 @@ import com.google.firebase.storage.StorageReference;
  */
 public class ReviewCardsContainerFragment extends Fragment {
 
-    private static final int NUM_PAGES = 5;
-
-
+    private ArrayList<Review> reviews;
 
     private ViewPager mPager;
     private PagerAdapter pagerAdapter;
@@ -47,14 +53,14 @@ public class ReviewCardsContainerFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_review_cards_container, container, false);
 
-        mPager = (ViewPager) view.findViewById(R.id.pager);
-        pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
-        mPager.setAdapter(pagerAdapter);
+        reviews = new ArrayList<>();
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
-        dbReference = FirebaseDatabase.getInstance().getReference();
+        dbReference = FirebaseDatabase.getInstance().getReference().child("reviews");
         storageReference = FirebaseStorage.getInstance().getReference();
+
+        dbReference.addValueEventListener(reviewsListener);
 
         return view;
     }
@@ -67,13 +73,43 @@ public class ReviewCardsContainerFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            return new ReviewCardFragment();
+            ReviewCardFragment cardFragment = new ReviewCardFragment();
+            Review review = reviews.get(position);
+            Bundle extras = new Bundle();
+            extras.putString("title", review.getTitle());
+
+            extras.putInt("noise", review.getNoise());
+            extras.putInt("comfort", review.getComfort());
+            extras.putInt("light", review.getLight());
+            cardFragment.setArguments(extras);
+            return cardFragment;
         }
 
         @Override
         public int getCount() {
-            return NUM_PAGES;
+            return reviews.size();
         }
     }
+
+    ValueEventListener reviewsListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            System.out.println(dataSnapshot);
+
+            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                Review review = snapshot.getValue(Review.class);
+                reviews.add(review);
+            }
+
+            mPager = (ViewPager) getActivity().findViewById(R.id.pager);
+            pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
+            mPager.setAdapter(pagerAdapter);
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
 
 }
