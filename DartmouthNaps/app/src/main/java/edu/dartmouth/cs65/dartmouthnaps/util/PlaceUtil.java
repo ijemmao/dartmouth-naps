@@ -1,8 +1,16 @@
 package edu.dartmouth.cs65.dartmouthnaps.util;
 
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 public abstract class PlaceUtil {
+    private static final String TAG = "DartmouthNaps: PlaceUtil";
     private static final int X = 0;
     private static final int Y = 1;
+    private static final int MILLION = 1000000;
 
     public static final String[] PLACE_NAMES = {
             "Andres Hall",
@@ -88,91 +96,91 @@ public abstract class PlaceUtil {
             "Woodward Hall",
             "Zimmerman Hall"};
 
-    public static final double[][] PLACE_COORDINATES_AVG = new double[][]
-    {
-        {43.704179, -72.284346}, // Andres Hall
-        {43.705441, -72.288708}, // Baker-Berry Library
-        {43.703040, -72.286871}, // Bartlett Hall
-        {43.707021, -72.286322}, // Berry Hall
-        {43.707192, -72.286057}, // Bildner Hall
-        {43.707491, -72.291183}, // Bissell/Cohen Lounge
-        {43.707264, -72.291449}, // Bissell Hall
-        {43.701363, -72.286854}, // Black Family Visual Arts Center
-        {43.704701, -72.290041}, // Blunt Alumni Center
-        {43.707299, -72.290361}, // Brown Hall
-        {43.707374, -72.290784}, // Brown/Little Lounge
-        {43.706317, -72.285995}, // Burke Hall
-        {43.705629, -72.291062}, // Butterfield Hall
-        {43.707355, -72.286791}, // Byrne II Hall
-        {43.705501, -72.289234}, // Carpenter Hall
-        {43.705825, -72.289117}, // Carson Hall
-        {43.703615, -72.296168}, // Channing Cox Hall
-        {43.703048, -72.290994}, // Class of 1953 Commons
-        {43.708977, -72.284026}, // Class of 1978 Life Sciences Center
-        {43.707630, -72.291598}, // Cohen Hall
-        {43.702764, -72.289999}, // Collis Center
-        {43.704579, -72.294835}, // Cummings Hall
-        {43.703747, -72.287110}, // Dartmouth Hall
-        {43.705396, -72.291615}, // Fahey Hall
-        {43.703744, -72.286415}, // Fayerweather Hall
-        {43.704078, -72.297120}, // French Hall
-        {43.704666, -72.291257}, // Gile Hall
-        {43.707592, -72.286635}, // Goldstein Hall
-        {43.706213, -72.289192}, // Haldeman Center
-        {43.704706, -72.290698}, // Hitchcock Hall
-        {43.701635, -72.288129}, // Hopkins Center for the Arts
-        {43.702431, -72.285189}, // House Center A
-        {43.704547, -72.290988}, // House Center B
-        {43.704393, -72.296611}, // Judge Hall
-        {43.706478, -72.288928}, // Kemeny Hall
-        {43.705991, -72.286335}, // Kresge Physical Sciences Library
-        {43.707100, -72.290809}, // Little Hall
-        {43.704649, -72.292100}, // Lord Hall
-        {43.704245, -72.294899}, // MacLean Engineering Sciences Center
-        {43.703793, -72.290600}, // Massachusetts Hall
-        {43.703729, -72.295538}, // Maxwell Hall
-        {43.704506, -72.283351}, // McCulloch Hall
-        {43.705541, -72.291993}, // McLane Hall
-        {43.703574, -72.289927}, // McNutt Hall
-        {43.707311, -72.287999}, // Moore Psychology Building
-        {43.704045, -72.283588}, // Morton Hall
-        {43.702482, -72.286801}, // New Hampshire Hall
-        {43.703666, -72.291105}, // North Fairbanks
-        {43.704092, -72.286402}, // North Fayerweather Hall
-        {43.704127, -72.290644}, // North Massachusetts Hall
-        {43.704038, -72.289955}, // Parkhurst Hall
-        {43.707435, -72.285891}, // Rauner Hall
-        {43.703092, -72.287467}, // Reed Hall
-        {43.704702, -72.286638}, // Richardson Hall
-        {43.704098, -72.285774}, // Ripley Hall
-        {43.703112, -72.289941}, // Robinson Hall
-        {43.705787, -72.290201}, // Rockefeller Center
-        {43.704470, -72.287296}, // Rollins Chapel
-        {43.707934, -72.292311}, // Roth Center For Jewish Life
-        {43.705472, -72.290767}, // Russell Sage Hall
-        {43.704789, -72.289219}, // Sanborn Hall
-        {43.707620, -72.288402}, // Sherman House
-        {43.705517, -72.290088}, // Silsby Hall
-        {43.704240, -72.285237}, // Smith Hall
-        {43.703464, -72.291114}, // South Fairbanks
-        {43.703400, -72.286421}, // South Fayerweather Hall
-        {43.703436, -72.290590}, // South Massachusetts Hall
-        {43.705685, -72.286571}, // Steele Hall
-        {43.704649, -72.291729}, // Streeter Hall
-        {43.706703, -72.287135}, // Sudikoff Hall
-        {43.700712, -72.286671}, // The Lodge
-        {43.707795, -72.286382}, // Thomas Hall
-        {43.703389, -72.287105}, // Thornton Hall
-        {43.702560, -72.286018}, // Topliff Hall
-        {43.704447, -72.288200}, // Webster Hall
-        {43.704105, -72.287091}, // Wentworth Hall
-        {43.705062, -72.287328}, // Wheeler Hall
-        {43.705278, -72.286302}, // Wilder Hall
-        {43.702312, -72.287422}, // Wilson Hall
-        {43.707067, -72.287556}, // Winifred-Raven House
-        {43.704263, -72.285556}, // Woodward Hall
-        {43.704428, -72.283862}  // Zimmerman Hall
-    };
+    public static final int PLACE_COUNT = PLACE_NAMES.length;
+
+    public static final double[][] PLACE_COORDINATES_AVG = new double[][]{
+            {43.704179, -72.284346}, // Andres Hall
+            {43.705441, -72.288708}, // Baker-Berry Library
+            {43.703040, -72.286871}, // Bartlett Hall
+            {43.707021, -72.286322}, // Berry Hall
+            {43.707192, -72.286057}, // Bildner Hall
+            {43.707491, -72.291183}, // Bissell/Cohen Lounge
+            {43.707264, -72.291449}, // Bissell Hall
+            {43.701363, -72.286854}, // Black Family Visual Arts Center
+            {43.704701, -72.290041}, // Blunt Alumni Center
+            {43.707299, -72.290361}, // Brown Hall
+            {43.707374, -72.290784}, // Brown/Little Lounge
+            {43.706317, -72.285995}, // Burke Hall
+            {43.705629, -72.291062}, // Butterfield Hall
+            {43.707355, -72.286791}, // Byrne II Hall
+            {43.705501, -72.289234}, // Carpenter Hall
+            {43.705825, -72.289117}, // Carson Hall
+            {43.703615, -72.296168}, // Channing Cox Hall
+            {43.703048, -72.290994}, // Class of 1953 Commons
+            {43.708977, -72.284026}, // Class of 1978 Life Sciences Center
+            {43.707630, -72.291598}, // Cohen Hall
+            {43.702764, -72.289999}, // Collis Center
+            {43.704579, -72.294835}, // Cummings Hall
+            {43.703747, -72.287110}, // Dartmouth Hall
+            {43.705396, -72.291615}, // Fahey Hall
+            {43.703744, -72.286415}, // Fayerweather Hall
+            {43.704078, -72.297120}, // French Hall
+            {43.704666, -72.291257}, // Gile Hall
+            {43.707592, -72.286635}, // Goldstein Hall
+            {43.706213, -72.289192}, // Haldeman Center
+            {43.704706, -72.290698}, // Hitchcock Hall
+            {43.701635, -72.288129}, // Hopkins Center for the Arts
+            {43.702431, -72.285189}, // House Center A
+            {43.704547, -72.290988}, // House Center B
+            {43.704393, -72.296611}, // Judge Hall
+            {43.706478, -72.288928}, // Kemeny Hall
+            {43.705991, -72.286335}, // Kresge Physical Sciences Library
+            {43.707100, -72.290809}, // Little Hall
+            {43.704649, -72.292100}, // Lord Hall
+            {43.704245, -72.294899}, // MacLean Engineering Sciences Center
+            {43.703793, -72.290600}, // Massachusetts Hall
+            {43.703729, -72.295538}, // Maxwell Hall
+            {43.704506, -72.283351}, // McCulloch Hall
+            {43.705541, -72.291993}, // McLane Hall
+            {43.703574, -72.289927}, // McNutt Hall
+            {43.707311, -72.287999}, // Moore Psychology Building
+            {43.704045, -72.283588}, // Morton Hall
+            {43.702482, -72.286801}, // New Hampshire Hall
+            {43.703666, -72.291105}, // North Fairbanks
+            {43.704092, -72.286402}, // North Fayerweather Hall
+            {43.704127, -72.290644}, // North Massachusetts Hall
+            {43.704038, -72.289955}, // Parkhurst Hall
+            {43.707435, -72.285891}, // Rauner Hall
+            {43.703092, -72.287467}, // Reed Hall
+            {43.704702, -72.286638}, // Richardson Hall
+            {43.704098, -72.285774}, // Ripley Hall
+            {43.703112, -72.289941}, // Robinson Hall
+            {43.705787, -72.290201}, // Rockefeller Center
+            {43.704470, -72.287296}, // Rollins Chapel
+            {43.707934, -72.292311}, // Roth Center For Jewish Life
+            {43.705472, -72.290767}, // Russell Sage Hall
+            {43.704789, -72.289219}, // Sanborn Hall
+            {43.707620, -72.288402}, // Sherman House
+            {43.705517, -72.290088}, // Silsby Hall
+            {43.704240, -72.285237}, // Smith Hall
+            {43.703464, -72.291114}, // South Fairbanks
+            {43.703400, -72.286421}, // South Fayerweather Hall
+            {43.703436, -72.290590}, // South Massachusetts Hall
+            {43.705685, -72.286571}, // Steele Hall
+            {43.704649, -72.291729}, // Streeter Hall
+            {43.706703, -72.287135}, // Sudikoff Hall
+            {43.700712, -72.286671}, // The Lodge
+            {43.707795, -72.286382}, // Thomas Hall
+            {43.703389, -72.287105}, // Thornton Hall
+            {43.702560, -72.286018}, // Topliff Hall
+            {43.704447, -72.288200}, // Webster Hall
+            {43.704105, -72.287091}, // Wentworth Hall
+            {43.705062, -72.287328}, // Wheeler Hall
+            {43.705278, -72.286302}, // Wilder Hall
+            {43.702312, -72.287422}, // Wilson Hall
+            {43.707067, -72.287556}, // Winifred-Raven House
+            {43.704263, -72.285556}, // Woodward Hall
+            {43.704428, -72.283862}};  // Zimmerman Hall
 
     public static final double[][][] PLACE_COORDINATES = new double[][][]
     {
@@ -1305,6 +1313,40 @@ public abstract class PlaceUtil {
         }
     };
 
+    public static int getPlaceIndex(double[] latLng) {
+        List<Integer> placeIndices = new ArrayList<>();
+
+        for (int i = 0; i < PLACE_COUNT; i++) {
+            placeIndices.add(i);
+        }
+
+        sortPlaceIndices(placeIndices, latLng);
+
+        for (int i = 0; i < 3; i++) {
+            if (isInside(PLACE_COORDINATES[placeIndices.get(i)], latLng)) return placeIndices.get(i);
+        }
+
+        return -1;
+    }
+
+    public static void sortPlaceIndices(List<Integer> placeIndices, final double[] latLng) {
+        placeIndices.sort(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                double distance1 = distanceBetween(PLACE_COORDINATES_AVG[o1], latLng);
+                double distance2 = distanceBetween(PLACE_COORDINATES_AVG[o2], latLng);
+                if (distance1 == distance2) return 0;
+                return distance1 < distance2 ? -1 : 1;
+            }
+        });
+    }
+
+    private static double distanceBetween(double[] p, double[] q) {
+        double dx = MILLION * (p[X] - q[X]);
+        double dy = MILLION * (p[Y] - q[Y]);
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
     /* The following algorithm for determining if a point lies in a polygon is from
      * https://www.geeksforgeeks.org/how-to-check-if-a-given-point-lies-inside-a-polygon/
      */
@@ -1362,7 +1404,6 @@ public abstract class PlaceUtil {
      *          sign of z component of cross product qp x qr otherwise
      */
     private static int orientation(double[] p, double[] q, double r[]) {
-        final int MILLION = 1000000;
 
         double[] qp;    // double[] representing the vector from q to p (scaled by 1000000)
         double[] qr;    // double[] representing the vector from q to r (scaled by 1000000)
@@ -1370,7 +1411,7 @@ public abstract class PlaceUtil {
 
         qp = new double[]{MILLION * (p[X] - q[X]), MILLION * (p[Y] - q[Y])};
         qr = new double[]{MILLION * (r[X] - q[X]), MILLION * (r[Y] - q[Y])};
-        z = qp[X] * qr[Y] - qp[X] * qr[X];
+        z = qp[X] * qr[Y] - qp[Y] * qr[X];
 
         if (z == 0) return 0; // This probably won't ever happen since we're dealing with doubles
 
