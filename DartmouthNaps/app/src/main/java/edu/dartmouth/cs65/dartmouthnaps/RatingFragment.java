@@ -133,4 +133,16 @@ public class RatingFragment extends Fragment implements View.OnClickListener {
     public int getRating() {
         return this.rating;
     }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+        if (rating == 1 || rating == 2) {
+            setColor(rating, getResources().getDrawable(R.drawable.red, null));
+        } else if (rating == 3) {
+            setColor(rating, getResources().getDrawable(R.drawable.yellow, null));
+        } else {
+            setColor(rating, getResources().getDrawable(R.drawable.blue, null));
+        }
+    }
+
 }
