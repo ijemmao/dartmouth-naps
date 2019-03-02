@@ -1,6 +1,7 @@
 package edu.dartmouth.cs65.dartmouthnaps;
 
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,7 +17,7 @@ import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ReviewCardFragment extends Fragment {
+public class ReviewCardFragment extends Fragment implements View.OnClickListener {
 
     private Drawable[] drawables;
 
@@ -32,6 +33,8 @@ public class ReviewCardFragment extends Fragment {
     Button lightQuickStatus;
     Button convenienceQuickStatus;
 
+    Bundle extras;
+
     public ReviewCardFragment() {
         // Required empty public constructor
     }
@@ -42,7 +45,9 @@ public class ReviewCardFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_review_card, container, false);
 
-        Bundle extras = getArguments();
+        view.findViewById(R.id.review_card_fragment).setOnClickListener(this);
+
+        extras = getArguments();
 
         title = extras.getString("title");
         noise = extras.getInt("noise", 1);
@@ -76,4 +81,14 @@ public class ReviewCardFragment extends Fragment {
         lightQuickStatus.setBackground(drawables[light]);
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.review_card_fragment:
+                Intent intent = new Intent(getContext(), ReviewActivity.class);
+                intent.putExtras(extras);
+                startActivity(intent);
+                break;
+        }
+    }
 }
