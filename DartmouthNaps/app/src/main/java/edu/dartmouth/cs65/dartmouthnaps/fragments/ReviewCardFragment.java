@@ -1,4 +1,4 @@
-package edu.dartmouth.cs65.dartmouthnaps;
+package edu.dartmouth.cs65.dartmouthnaps.fragments;
 
 
 import android.graphics.drawable.Drawable;
@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
 

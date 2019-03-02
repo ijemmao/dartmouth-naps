@@ -1,4 +1,4 @@
-package edu.dartmouth.cs65.dartmouthnaps;
+package edu.dartmouth.cs65.dartmouthnaps.activities;
 
 import android.Manifest;
 import android.content.Intent;
@@ -39,6 +39,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.dartmouth.cs65.dartmouthnaps.R;
+import edu.dartmouth.cs65.dartmouthnaps.fragments.RatingFragment;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
 public class NewReviewActivity extends AppCompatActivity {
