@@ -5,8 +5,12 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#00000000"
+<<<<<<< HEAD
     android:id="@+id/review_card_fragment"
     tools:context=".ReviewCardFragment">
+=======
+    tools:context=".fragments.ReviewCardFragment">
+>>>>>>> d2038c523da92d94ddbf15c4456636a6314b935b
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

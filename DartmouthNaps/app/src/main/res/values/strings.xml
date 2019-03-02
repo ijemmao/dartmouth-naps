@@ -1,5 +1,24 @@
 <resources>
     <string name="app_name">Dartmouth Naps</string>
+
+    <!-- Campus Map Activity -->
+    <string name="campus_map_title">Dartmouth Map</string>
+    <string name="campus_map_style_json">
+    [
+        {
+            \"featureType\": \"poi\",
+            \"stylers\": [
+                { \"visibility\": \"off\" }
+            ]
+        },{
+            \"featureType\": \"transit\",
+            \"stylers\": [
+                { \"visibility\": \"off\" }
+            ]
+        }
+    ]
+    </string>
+
     <string name="hint_username">Username</string>
     <string name="hint_password">Password</string>
     <string name="text_login_button">Log in</string>
@@ -29,12 +48,8 @@
     <string name="location_label">Place</string>
     <string name="text_label">Text</string>
     <string name="text_hint">Enter comments here</string>
-
     <string name="noise_label">Noise</string>
     <string name="comfort_label">Comfort</string>
     <string name="light_label">Light</string>
     <string name="convenience_label">Convenience</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -1,4 +1,4 @@
-package edu.dartmouth.cs65.dartmouthnaps;
+package edu.dartmouth.cs65.dartmouthnaps.fragments;
 
 
 import android.app.Activity;
@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import edu.dartmouth.cs65.dartmouthnaps.R;
 
 
 /**

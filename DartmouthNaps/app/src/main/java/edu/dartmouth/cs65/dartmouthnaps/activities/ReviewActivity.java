@@ -1,8 +1,11 @@
-package edu.dartmouth.cs65.dartmouthnaps;
+package edu.dartmouth.cs65.dartmouthnaps.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
+
+import edu.dartmouth.cs65.dartmouthnaps.R;
+import edu.dartmouth.cs65.dartmouthnaps.fragments.RatingFragment;
 
 public class ReviewActivity extends AppCompatActivity {
 
