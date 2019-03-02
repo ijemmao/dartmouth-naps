@@ -11,6 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,8 +26,15 @@ public class ReviewCardsContainerFragment extends Fragment {
 
     private static final int NUM_PAGES = 5;
 
+
+
     private ViewPager mPager;
     private PagerAdapter pagerAdapter;
+
+    private FirebaseAuth auth;
+    private FirebaseUser user;
+    private DatabaseReference dbReference;
+    private StorageReference storageReference;
 
     public ReviewCardsContainerFragment() {
         // Required empty public constructor
@@ -37,20 +51,14 @@ public class ReviewCardsContainerFragment extends Fragment {
         pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
         mPager.setAdapter(pagerAdapter);
 
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        dbReference = FirebaseDatabase.getInstance().getReference();
+        storageReference = FirebaseStorage.getInstance().getReference();
+
         return view;
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        if (mPager.getCurrentItem() == 0) {
-//            // If the user is currently looking at the first step, allow the system to handle the
-//            // Back button. This calls finish() on this activity and pops the back stack.
-//            super.onBackPressed();
-//        } else {
-//            // Otherwise, select the previous step.
-//            mPager.setCurrentItem(mPager.getCurrentItem() - 1);
-//        }
-//    }
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         public ScreenSlidePagerAdapter(FragmentManager fm) {
