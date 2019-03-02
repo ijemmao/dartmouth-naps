@@ -9,6 +9,8 @@
         <item name="android:colorBackground">@color/backgroundColor</item>
         <item name="colorAccent">#000000</item>
         <item name="android:textColorHint">@color/loginTextColor</item>
+        <item name="android:textColor">@color/colorHeader</item>
+        <item name="android:editTextColor">@color/colorHeader</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
