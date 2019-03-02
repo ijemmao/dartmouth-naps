@@ -25,8 +25,7 @@
                     android:scaleType="centerCrop"
                     android:id="@+id/location_image"
                     android:layout_width="match_parent"
-                    android:layout_height="300sp"
-                    android:onClick="handleImage" />
+                    android:layout_height="300sp" />
 
                 <ImageView
                     android:id="@+id/upload_image"
@@ -35,12 +34,11 @@
                     android:src="@drawable/ic_file_upload_white_24dp"
                     android:layout_marginLeft="124dip"
                     android:layout_marginTop="84dip"
-                    android:layout_centerHorizontal="true"
-                    android:onClick="handleImage" />
+                    android:layout_centerHorizontal="true" />
             </RelativeLayout>
 
 
-            <EditText
+            <TextView
                 android:id="@+id/review_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -79,28 +77,12 @@
                 android:layout_height="wrap_content" />
 
             <fragment
-                app:title="@string/light_label"
+                app:title="@string/convenience_label"
                 app:disabled="true"
                 android:name="edu.dartmouth.cs65.dartmouthnaps.RatingFragment"
                 android:id="@+id/convenience_fragment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/submit_button"
-                android:textSize="22sp"
-                android:background="@drawable/primary_button"
-                android:textColor="@color/colorButtonText"
-                android:fontFamily="@font/montserrat_semi_bold"
-                android:textAllCaps="false"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="30dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:onClick="submitReview"/>
 
         </LinearLayout>
 

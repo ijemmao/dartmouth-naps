@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
@@ -27,7 +28,7 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
     private int light;
 
     ImageView reviewImage;
-
+    TextView headerTitle;
     Button soundQuickStatus;
     Button comfortQuickStatus;
     Button lightQuickStatus;
@@ -64,11 +65,13 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
         };
 
         reviewImage = view.findViewById(R.id.review_image);
+        headerTitle = view.findViewById(R.id.card_fragment_title);
         soundQuickStatus = view.findViewById(R.id.sound_quick_status);
         comfortQuickStatus = view.findViewById(R.id.comfort_quick_status);
         lightQuickStatus = view.findViewById(R.id.light_quick_status);
         convenienceQuickStatus = view.findViewById(R.id.convenience_quick_status);
 
+        headerTitle.setText(title);
         assignColors();
 
 
