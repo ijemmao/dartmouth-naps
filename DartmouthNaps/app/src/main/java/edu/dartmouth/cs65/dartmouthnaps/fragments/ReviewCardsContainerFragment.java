@@ -35,7 +35,7 @@ public class ReviewCardsContainerFragment extends Fragment {
 
     private ArrayList<Review> reviews;
 
-    private ViewPager mPager;
+    public ViewPager mPager;
     private PagerAdapter pagerAdapter;
 
     private FirebaseAuth auth;

@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.Polygon;
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainForFragmentActivity;
 import edu.dartmouth.cs65.dartmouthnaps.activities.NewReviewActivity;
+import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 import edu.dartmouth.cs65.dartmouthnaps.tasks.AddPlacesToMapAT;
 import edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil;
 
@@ -60,6 +61,8 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     private Bitmap mCurrentLocationMarkerBitmap = null;
     private Marker mCurrentLocationMarker = null;
     private Location mCurrentLocation = null;
+
+    private ReviewCardsContainerFragment reviewCardsContainerFragment;
 
     public CampusMapFragment() {
         // Required empty public constructor
@@ -116,12 +119,15 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
 
         if (mPermissionsGranted) requestLocationUpdates();
 
+        reviewCardsContainerFragment = (ReviewCardsContainerFragment) getChildFragmentManager().findFragmentById(R.id.review_cards_container_fragment);
+
         return layout;
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        mGoogleMap.setOnMarkerClickListener(this);
         mGoogleMap.setOnPolygonClickListener(this);
         mGoogleMap.setBuildingsEnabled(false);
         mGoogleMap.setIndoorEnabled(false); // Indoor would be nice, but the only building in Hanover
@@ -166,6 +172,7 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     @Override
     public boolean onMarkerClick(Marker marker) {
         Object tag = marker.getTag();
+        reviewCardsContainerFragment.mPager.setCurrentItem(1);
         return tag != null && tag.toString().equals(TAG_CURRENT_LOCATION);
     }
 

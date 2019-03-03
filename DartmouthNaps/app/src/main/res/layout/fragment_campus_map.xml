@@ -21,6 +21,7 @@
             android:gravity="end">
 
             <!-- Insert Person Icon here for drawer -->
+
             <Button
                 app:layout_constraintTop_toTopOf="parent"
                 android:background="@drawable/yellow"
@@ -36,10 +37,11 @@
                 android:fontFamily="@font/montserrat_bold"
                 android:textColor="@color/colorButtonText"
                 android:textAllCaps="false" />
+
         </LinearLayout>
         <fragment
             app:layout_constraintBottom_toBottomOf="parent"
-            android:id="@+id/noise_fragment"
+            android:id="@+id/review_cards_container_fragment"
             android:name="edu.dartmouth.cs65.dartmouthnaps.fragments.ReviewCardsContainerFragment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
