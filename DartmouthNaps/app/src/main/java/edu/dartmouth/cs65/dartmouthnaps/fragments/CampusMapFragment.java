@@ -108,7 +108,7 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
 
         Button addReview = layout.findViewById(R.id.add_review);
         addReview.setOnClickListener(this);
-        
+
         return layout;
     }
 
