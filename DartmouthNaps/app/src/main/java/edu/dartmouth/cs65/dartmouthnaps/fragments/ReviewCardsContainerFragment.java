@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -23,8 +25,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
+import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
+import edu.dartmouth.cs65.dartmouthnaps.activities.MainForFragmentActivity;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
 
@@ -33,7 +38,7 @@ import edu.dartmouth.cs65.dartmouthnaps.models.Review;
  */
 public class ReviewCardsContainerFragment extends Fragment {
 
-    private ArrayList<Review> reviews;
+    public static ArrayList<Review> reviews;
 
     public ViewPager mPager;
     private PagerAdapter pagerAdapter;
@@ -65,7 +70,6 @@ public class ReviewCardsContainerFragment extends Fragment {
 
         return view;
     }
-
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         public ScreenSlidePagerAdapter(FragmentManager fm) {
@@ -101,7 +105,31 @@ public class ReviewCardsContainerFragment extends Fragment {
                 reviews.add(review);
             }
 
+            // Sorts the reviews when a new item is added to the database
+            if (CampusMapFragment.sCurrentLocation != null) {
+                reviews = MainForFragmentActivity.sFirebaseDataSource.getReviewsNear(reviews, new edu.dartmouth.cs65.dartmouthnaps.models.LatLng(
+                        CampusMapFragment.sCurrentLocation.getLatitude(), CampusMapFragment.sCurrentLocation.getLongitude()));
+            }
+
             mPager = (ViewPager) getActivity().findViewById(R.id.pager);
+            mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int i, float v, int i1) {
+
+                }
+
+                // Focus on marker when swiping through cards
+                @Override
+                public void onPageSelected(int i) {
+                    Review review = reviews.get(i);
+                    CampusMapFragment.mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(review.getLocation().latitude, review.getLocation().longitude), 17));
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int i) {
+
+                }
+            });
             pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
             mPager.setAdapter(pagerAdapter);
         }

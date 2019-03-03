@@ -56,13 +56,13 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     private static final String PERMISSIONS_GRANTED = "permissions granted";
 
     private CMFListener mCMFListener;
-    private GoogleMap mGoogleMap;
+    public static GoogleMap mGoogleMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Looper mLooper;
     private boolean mPermissionsGranted;
     private Bitmap mCurrentLocationMarkerBitmap = null;
     private Marker mCurrentLocationMarker = null;
-    private Location sCurrentLocation = null;
+    public static Location sCurrentLocation = null;
 
     private ReviewCardsContainerFragment reviewCardsContainerFragment;
 
@@ -175,11 +175,10 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     public boolean onMarkerClick(Marker marker) {
         Object tag = marker.getTag();
         marker.getPosition();
-        List<Review> sortedReviews = MainForFragmentActivity.sFirebaseDataSource.getReviewsNear(new edu.dartmouth.cs65.dartmouthnaps.models.LatLng(sCurrentLocation.getLatitude(), sCurrentLocation.getLongitude()));
 
-        for (int i = 0; i < sortedReviews.size(); i++) {
-            if (marker.getPosition().latitude == sortedReviews.get(i).getLocation().latitude
-                    && marker.getPosition().longitude == sortedReviews.get(i).getLocation().longitude) {
+        for (int i = 0; i < ReviewCardsContainerFragment.reviews.size(); i++) {
+            if (marker.getPosition().latitude == ReviewCardsContainerFragment.reviews.get(i).getLocation().latitude
+                    && marker.getPosition().longitude == ReviewCardsContainerFragment.reviews.get(i).getLocation().longitude) {
                 reviewCardsContainerFragment.mPager.setCurrentItem(i);
                 break;
             }
