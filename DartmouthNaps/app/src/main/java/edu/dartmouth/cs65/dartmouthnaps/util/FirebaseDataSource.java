@@ -21,13 +21,18 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
+import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
 import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
+import static edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil.*;
 
 public class FirebaseDataSource {
     private static final String TAG = TAG_GLOBAL + ": FirebaseDataSource";
@@ -38,6 +43,7 @@ public class FirebaseDataSource {
     private Map<String, Review> mReviews;
     private Map<String, Marker> mReviewMarkers;
     private Bitmap mReviewMarkerBitmap = null;
+    private String mUID;
 
     public FirebaseDataSource(Context context) {
         VectorDrawableCompat reviewMarkerVDC;
@@ -48,11 +54,15 @@ public class FirebaseDataSource {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         mReviewsFDBR = dbRef.child("reviews");
 
-        if (firebaseUser != null) mUserReviewsFDBR = dbRef
-                .child("users")
-                .child(firebaseUser.getUid())
-                .child("reviews");
-        else mUserReviewsFDBR = null;
+        if (firebaseUser != null) {
+            mUID = firebaseUser.getUid();
+            mUserReviewsFDBR = dbRef
+                    .child("users")
+                    .child(mUID)
+                    .child("reviews");
+        } else {
+            mUserReviewsFDBR = null;
+        }
 
         try {
             MapsInitializer.initialize(context);
@@ -97,7 +107,6 @@ public class FirebaseDataSource {
 
     public void removeReview(Review review) {
         Marker marker;
-
         mReviews.remove(review.getTimestamp());
         marker = mReviewMarkers.get(review.getTimestamp());
 
@@ -108,13 +117,11 @@ public class FirebaseDataSource {
     }
 
     public void createReview(Review review) {
-        String key = mReviewsFDBR.push().getKey();
+        String key;
 
-        if (key != null) {
-            mReviewsFDBR.child(key).setValue(review);
-            mUserReviewsFDBR.child(key).setValue("");
-        } else if (DEBUG_GLOBAL && DEBUG)
-            Log.d(TAG, "mReviewsFDBR.push().getKey() returned null in createReview()");
+        key = mUID + "-" + review.getTimestamp().substring(0, 19);
+        mReviewsFDBR.child(key).setValue(review);
+        mUserReviewsFDBR.child(key).setValue("");
     }
 
     private class ReviewsChildEventListener implements ChildEventListener {
@@ -149,5 +156,29 @@ public class FirebaseDataSource {
         public void onCancelled(@NonNull DatabaseError databaseError) {
             if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onCancelled() called");
         }
+    }
+
+    public List<Review> getReviewsNear(final LatLng location) {
+        List<Review> reviews = new ArrayList<>(mReviews.values());
+
+        reviews.sort(new Comparator<Review>() {
+            @Override
+            public int compare(Review o1, Review o2) {
+                double microDistance1 = microDistanceBetween(
+                        latLngToDoubleArr(o1.getLocation()),
+                        latLngToDoubleArr(location));
+                double microDistance2 = microDistanceBetween(
+                        latLngToDoubleArr(o2.getLocation()),
+                        latLngToDoubleArr(location));
+                if (microDistance1 == microDistance2) return 0;
+                return microDistance1 < microDistance2 ? -1 : 1;
+            }
+        });
+
+        return reviews;
+    }
+
+    private static double[] latLngToDoubleArr(LatLng location) {
+        return new double[]{location.latitude, location.longitude};
     }
 }
