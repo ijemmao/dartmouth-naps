@@ -4,6 +4,9 @@ public abstract class Globals {
     public static final String TAG_GLOBAL = "DartmouthNaps";
     public static final boolean DEBUG_GLOBAL = true;
 
+    public static final String KEY_LATITUDE = "latitude";
+    public static final String KEY_LONGITUDE = "longitude";
+
     public static final String CAMPUS_MAP_STYLE_JSON =
             "   [" +
             "       {" +

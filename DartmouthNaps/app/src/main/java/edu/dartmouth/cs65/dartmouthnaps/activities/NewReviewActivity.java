@@ -45,6 +45,9 @@ import edu.dartmouth.cs65.dartmouthnaps.fragments.RatingFragment;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
+import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
+import static edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil.*;
+
 public class NewReviewActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
@@ -68,12 +71,19 @@ public class NewReviewActivity extends AppCompatActivity {
     Uri photoURI;
     byte[] imageBytes;
     String imageFileName;
+    LatLng location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Intent intent;
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_review);
 
+        intent = getIntent();
+        location = new LatLng(
+                intent.getDoubleExtra(KEY_LATITUDE, PLACE_COORDINATES_AVG[1][LAT]),
+                intent.getDoubleExtra(KEY_LONGITUDE, PLACE_COORDINATES_AVG[1][LNG]));
         checkPermission();
 
         auth = FirebaseAuth.getInstance();
@@ -102,7 +112,7 @@ public class NewReviewActivity extends AppCompatActivity {
                 reviewHeader.getText().toString(),
                 imageFileName,
                 Review.getTimestampFromCalendar(Calendar.getInstance()),
-                new LatLng());
+                location);
 
         MainForFragmentActivity.sFirebaseDataSource.createReview(newReview);
 //        String key = dbReference.child("users").child(user.getUid()).child("reviews").push().getKey();

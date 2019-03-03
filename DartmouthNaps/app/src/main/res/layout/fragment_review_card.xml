@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#00000000"
+    android:id="@+id/review_card_fragment"
     tools:context=".fragments.ReviewCardFragment">
 
     <android.support.constraint.ConstraintLayout
@@ -19,7 +20,7 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
         <TextView
-            android:text="Kemeny Hall"
+            android:id="@+id/card_fragment_title"
             android:background="@drawable/corners"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -1,16 +1,23 @@
 package edu.dartmouth.cs65.dartmouthnaps.util;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
+
+import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
 
 public abstract class PlaceUtil {
-    private static final String TAG = "DartmouthNaps: PlaceUtil";
+    private static final String TAG = TAG_GLOBAL + ": PlaceUtil";
+    private static final boolean DEBUG = false;
     private static final int X = 0;
     private static final int Y = 1;
-    private static final int LAT = 0;
-    private static final int LNG = 1;
     private static final int MILLION = 1000000;
+
+    public static final int LAT = 0;
+    public static final int LNG = 1;
 
     public static final String[] PLACE_NAMES = {
             "Andres Hall",
@@ -1330,12 +1337,26 @@ public abstract class PlaceUtil {
     public static int getPlaceIndex(double[] latLng) {
         List<Integer> placeIndices;
 
+        if (DEBUG_GLOBAL && DEBUG) {
+            String logStr = "comparing latLng w/ bounds:\n";
+            logStr += String.format(Locale.getDefault(),
+                    "UBound:\t(%+.6f, %+.6f)\n",
+                    PLACE_COORDINATES_UPPER_BOUND[LAT], PLACE_COORDINATES_UPPER_BOUND[LNG]);
+            logStr += String.format(Locale.getDefault(),
+                    "latLng:\t(%+.6f, %+.6f)\n",
+                    latLng[LAT], latLng[LNG]);
+            logStr += String.format(Locale.getDefault(),
+                    "LBound:\t(%+.6f, %+.6f)\n",
+                    PLACE_COORDINATES_LOWER_BOUND[LAT], PLACE_COORDINATES_LOWER_BOUND[LNG]);
+            Log.d(TAG, logStr);
+        }
+
         // If latLng is out of bounds, don't bother running the sort, since some of the calculations
         // might get wonky due to scaling everything by 1 million
         if (latLng[LAT] < PLACE_COORDINATES_LOWER_BOUND[LAT] ||
             latLng[LNG] < PLACE_COORDINATES_LOWER_BOUND[LNG] ||
             latLng[LAT] > PLACE_COORDINATES_UPPER_BOUND[LAT] ||
-            latLng[LNG] < PLACE_COORDINATES_UPPER_BOUND[LNG]) return -1;
+            latLng[LNG] > PLACE_COORDINATES_UPPER_BOUND[LNG]) return -1;
 
         placeIndices = new ArrayList<>();
 
@@ -1346,6 +1367,7 @@ public abstract class PlaceUtil {
         sortPlaceIndices(placeIndices, latLng);
 
         for (int i = 0; i < 3; i++) {
+            if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "checking if inside " + PLACE_NAMES[placeIndices.get(i)]);
             if (isInside(PLACE_COORDINATES[placeIndices.get(i)], latLng)) return placeIndices.get(i);
         }
 

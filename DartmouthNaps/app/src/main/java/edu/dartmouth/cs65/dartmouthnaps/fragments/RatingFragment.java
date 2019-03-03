@@ -30,6 +30,8 @@ public class RatingFragment extends Fragment implements View.OnClickListener {
     Button fourthRating;
     Button fifthRating;
 
+    boolean disabled;
+
     Button[] ratingsList;
 
     int rating;
@@ -45,7 +47,9 @@ public class RatingFragment extends Fragment implements View.OnClickListener {
 
         TypedArray a = activity.obtainStyledAttributes(attrs, R.styleable.RatingFragment);
 
+        // Unique title and disabled switch
         headerTitle = a.getString(R.styleable.RatingFragment_title);
+        disabled = a.getBoolean(R.styleable.RatingFragment_disabled, false );
 
         a.recycle();
     }
@@ -71,6 +75,17 @@ public class RatingFragment extends Fragment implements View.OnClickListener {
         thirdRating.setOnClickListener(this);
         fourthRating.setOnClickListener(this);
         fifthRating.setOnClickListener(this);
+
+        // Disabled when presenting the data
+        if (disabled) {
+            firstRating.setEnabled(false);
+            secondRating.setEnabled(false);
+            thirdRating.setEnabled(false);
+            fourthRating.setEnabled(false);
+            fifthRating.setEnabled(false);
+        }
+
+
 
         ratingsList = new Button[]{firstRating, secondRating, thirdRating, fourthRating, fifthRating};
 
@@ -120,4 +135,16 @@ public class RatingFragment extends Fragment implements View.OnClickListener {
     public int getRating() {
         return this.rating;
     }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+        if (rating == 1 || rating == 2) {
+            setColor(rating, getResources().getDrawable(R.drawable.red, null));
+        } else if (rating == 3) {
+            setColor(rating, getResources().getDrawable(R.drawable.yellow, null));
+        } else {
+            setColor(rating, getResources().getDrawable(R.drawable.blue, null));
+        }
+    }
+
 }

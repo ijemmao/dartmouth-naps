@@ -1,6 +1,7 @@
 package edu.dartmouth.cs65.dartmouthnaps.fragments;
 
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,15 +10,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
+import edu.dartmouth.cs65.dartmouthnaps.activities.ReviewActivity;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ReviewCardFragment extends Fragment {
+public class ReviewCardFragment extends Fragment implements View.OnClickListener {
 
     private Drawable[] drawables;
 
@@ -27,11 +30,13 @@ public class ReviewCardFragment extends Fragment {
     private int light;
 
     ImageView reviewImage;
-
+    TextView headerTitle;
     Button soundQuickStatus;
     Button comfortQuickStatus;
     Button lightQuickStatus;
     Button convenienceQuickStatus;
+
+    Bundle extras;
 
     public ReviewCardFragment() {
         // Required empty public constructor
@@ -43,7 +48,9 @@ public class ReviewCardFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_review_card, container, false);
 
-        Bundle extras = getArguments();
+        view.findViewById(R.id.review_card_fragment).setOnClickListener(this);
+
+        extras = getArguments();
 
         title = extras.getString("title");
         noise = extras.getInt("noise", 1);
@@ -60,11 +67,13 @@ public class ReviewCardFragment extends Fragment {
         };
 
         reviewImage = view.findViewById(R.id.review_image);
+        headerTitle = view.findViewById(R.id.card_fragment_title);
         soundQuickStatus = view.findViewById(R.id.sound_quick_status);
         comfortQuickStatus = view.findViewById(R.id.comfort_quick_status);
         lightQuickStatus = view.findViewById(R.id.light_quick_status);
         convenienceQuickStatus = view.findViewById(R.id.convenience_quick_status);
 
+        headerTitle.setText(title);
         assignColors();
 
 
@@ -77,4 +86,14 @@ public class ReviewCardFragment extends Fragment {
         lightQuickStatus.setBackground(drawables[light]);
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.review_card_fragment:
+                Intent intent = new Intent(getContext(), ReviewActivity.class);
+                intent.putExtras(extras);
+                startActivity(intent);
+                break;
+        }
+    }
 }

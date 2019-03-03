@@ -8,6 +8,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -81,5 +82,13 @@ public class MainForFragmentActivity extends AppCompatActivity implements Campus
     @Override
     public void callInitializeFusedLocationProviderClient() {
         mCampusMapFragment.initializeFusedLocationProviderClient(this, getMainLooper());
+    }
+
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.add_review:
+                mCampusMapFragment.onClick(v);
+                break;
+        }
     }
 }

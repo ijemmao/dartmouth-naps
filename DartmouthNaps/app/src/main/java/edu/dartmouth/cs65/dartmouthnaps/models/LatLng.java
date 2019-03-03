@@ -12,8 +12,8 @@ public class LatLng {
     public LatLng() {
         // So that the review is placed in the Dartmouth area, a LatLng is set to Baker-Berry
         // Library by default
-        latitude = PLACE_COORDINATES_AVG[1][0];
-        longitude = PLACE_COORDINATES_AVG[1][1];
+        latitude = PLACE_COORDINATES_AVG[1][LAT];
+        longitude = PLACE_COORDINATES_AVG[1][LNG];
     }
 
     public LatLng(double latitude, double longitude) {
