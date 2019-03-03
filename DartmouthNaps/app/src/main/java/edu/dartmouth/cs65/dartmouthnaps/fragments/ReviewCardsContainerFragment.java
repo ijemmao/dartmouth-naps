@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -118,11 +119,11 @@ public class ReviewCardsContainerFragment extends Fragment {
 
                 }
 
-                // Focus on marker when swiping through cards
+                // Focus on marker when swiping through cards with smooth animation
                 @Override
                 public void onPageSelected(int i) {
                     Review review = reviews.get(i);
-                    CampusMapFragment.mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(review.getLocation().latitude, review.getLocation().longitude), 17));
+                    CampusMapFragment.mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(review.getLocation().latitude, review.getLocation().longitude)));
                 }
 
                 @Override
