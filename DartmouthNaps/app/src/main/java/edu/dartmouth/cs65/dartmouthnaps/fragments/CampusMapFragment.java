@@ -32,9 +32,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 
+import java.util.List;
+
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainForFragmentActivity;
 import edu.dartmouth.cs65.dartmouthnaps.activities.NewReviewActivity;
+import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 import edu.dartmouth.cs65.dartmouthnaps.tasks.AddPlacesToMapAT;
 import edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil;
 
@@ -53,13 +56,15 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     private static final String PERMISSIONS_GRANTED = "permissions granted";
 
     private CMFListener mCMFListener;
-    private GoogleMap mGoogleMap;
+    public static GoogleMap mGoogleMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Looper mLooper;
     private boolean mPermissionsGranted;
     private Bitmap mCurrentLocationMarkerBitmap = null;
     private Marker mCurrentLocationMarker = null;
-    private Location mCurrentLocation = null;
+    public static Location sCurrentLocation = null;
+
+    private ReviewCardsContainerFragment reviewCardsContainerFragment;
 
     public CampusMapFragment() {
         // Required empty public constructor
@@ -116,12 +121,15 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
 
         if (mPermissionsGranted) requestLocationUpdates();
 
+        reviewCardsContainerFragment = (ReviewCardsContainerFragment) getChildFragmentManager().findFragmentById(R.id.review_cards_container_fragment);
+
         return layout;
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        mGoogleMap.setOnMarkerClickListener(this);
         mGoogleMap.setOnPolygonClickListener(this);
         mGoogleMap.setBuildingsEnabled(false);
         mGoogleMap.setIndoorEnabled(false); // Indoor would be nice, but the only building in Hanover
@@ -166,6 +174,16 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     @Override
     public boolean onMarkerClick(Marker marker) {
         Object tag = marker.getTag();
+        marker.getPosition();
+
+        for (int i = 0; i < ReviewCardsContainerFragment.reviews.size(); i++) {
+            if (marker.getPosition().latitude == ReviewCardsContainerFragment.reviews.get(i).getLocation().latitude
+                    && marker.getPosition().longitude == ReviewCardsContainerFragment.reviews.get(i).getLocation().longitude) {
+                reviewCardsContainerFragment.mPager.setCurrentItem(i);
+                break;
+            }
+        }
+
         return tag != null && tag.toString().equals(TAG_CURRENT_LOCATION);
     }
 
@@ -174,9 +192,9 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
             case R.id.add_review:
                 Intent intent = new Intent(getContext(), NewReviewActivity.class);
 
-                if (mCurrentLocation != null) {
-                    intent.putExtra(KEY_LATITUDE, mCurrentLocation.getLatitude());
-                    intent.putExtra(KEY_LONGITUDE, mCurrentLocation.getLongitude());
+                if (sCurrentLocation != null) {
+                    intent.putExtra(KEY_LATITUDE, sCurrentLocation.getLatitude());
+                    intent.putExtra(KEY_LONGITUDE, sCurrentLocation.getLongitude());
                 }
 
                 startActivity(intent);
@@ -231,7 +249,7 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     private class CurrentLocationCallback extends LocationCallback {
         @Override
         public void onLocationResult(LocationResult result) {
-            mCurrentLocation = result.getLastLocation();
+            sCurrentLocation = result.getLastLocation();
 
 
             if (mGoogleMap != null && mCurrentLocationMarkerBitmap != null) {
@@ -239,21 +257,21 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
 
                 mCurrentLocationMarker = mGoogleMap.addMarker(new MarkerOptions()
                         .icon(BitmapDescriptorFactory.fromBitmap(mCurrentLocationMarkerBitmap))
-                        .position(locationToLatLng(mCurrentLocation)));
+                        .position(locationToLatLng(sCurrentLocation)));
                 mCurrentLocationMarker.setTag(TAG_CURRENT_LOCATION);
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                        locationToLatLng(mCurrentLocation), ZOOM));
+                        locationToLatLng(sCurrentLocation), ZOOM));
             }
 
             if (DEBUG_GLOBAL && DEBUG) {
                 int placeIndex = PlaceUtil.getPlaceIndex(new double[]
-                        {mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()});
+                        {sCurrentLocation.getLatitude(), sCurrentLocation.getLongitude()});
                 String additional = placeIndex == -1 ?
                         " is outside all places" :
                         " is inside " + PlaceUtil.PLACE_NAMES[placeIndex];
                 Log.d(TAG, "(" +
-                        mCurrentLocation.getLatitude() + ", " +
-                        mCurrentLocation.getLongitude() + ")" + additional);
+                        sCurrentLocation.getLatitude() + ", " +
+                        sCurrentLocation.getLongitude() + ")" + additional);
             }
         }
     }

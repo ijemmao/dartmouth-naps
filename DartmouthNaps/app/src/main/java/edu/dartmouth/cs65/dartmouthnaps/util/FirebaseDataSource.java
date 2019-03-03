@@ -158,8 +158,7 @@ public class FirebaseDataSource {
         }
     }
 
-    public List<Review> getReviewsNear(final LatLng location) {
-        List<Review> reviews = new ArrayList<>(mReviews.values());
+    public ArrayList<Review> getReviewsNear(ArrayList<Review> reviews, final LatLng location) {
 
         reviews.sort(new Comparator<Review>() {
             @Override
@@ -176,6 +175,10 @@ public class FirebaseDataSource {
         });
 
         return reviews;
+    }
+
+    public void centerOnLatLng(LatLng latlng) {
+
     }
 
     private static double[] latLngToDoubleArr(LatLng location) {
