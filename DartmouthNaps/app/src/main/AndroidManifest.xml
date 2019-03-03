@@ -27,6 +27,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.ReviewActivity" />
         <activity android:name=".activities.NewReviewActivity" />
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
 

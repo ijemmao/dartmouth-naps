@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".NewReviewActivity">
+    tools:context=".activities.ReviewActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -55,7 +55,7 @@
             <fragment
                 app:title="@string/noise_label"
                 app:disabled="true"
-                android:name="edu.dartmouth.cs65.dartmouthnaps.RatingFragment"
+                android:name="edu.dartmouth.cs65.dartmouthnaps.fragments.RatingFragment"
                 android:id="@+id/noise_fragment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -63,7 +63,7 @@
             <fragment
                 app:title="@string/comfort_label"
                 app:disabled="true"
-                android:name="edu.dartmouth.cs65.dartmouthnaps.RatingFragment"
+                android:name="edu.dartmouth.cs65.dartmouthnaps.fragments.RatingFragment"
                 android:id="@+id/comfort_fragment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -71,7 +71,7 @@
             <fragment
                 app:title="@string/light_label"
                 app:disabled="true"
-                android:name="edu.dartmouth.cs65.dartmouthnaps.RatingFragment"
+                android:name="edu.dartmouth.cs65.dartmouthnaps.fragments.RatingFragment"
                 android:id="@+id/light_fragment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -79,7 +79,7 @@
             <fragment
                 app:title="@string/convenience_label"
                 app:disabled="true"
-                android:name="edu.dartmouth.cs65.dartmouthnaps.RatingFragment"
+                android:name="edu.dartmouth.cs65.dartmouthnaps.fragments.RatingFragment"
                 android:id="@+id/convenience_fragment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
