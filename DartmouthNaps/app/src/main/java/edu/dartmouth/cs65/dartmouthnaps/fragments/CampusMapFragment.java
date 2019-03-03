@@ -1,10 +1,18 @@
 package edu.dartmouth.cs65.dartmouthnaps.fragments;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,19 +25,27 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 
+import java.util.Locale;
+import java.util.Vector;
+
 import edu.dartmouth.cs65.dartmouthnaps.R;
+import edu.dartmouth.cs65.dartmouthnaps.activities.MainForFragmentActivity;
 import edu.dartmouth.cs65.dartmouthnaps.tasks.AddPlacesToMapAT;
 import edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil;
 
 import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.CAMPUS_MAP_STYLE_JSON;
 
-public class CampusMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnPolygonClickListener {
+public class CampusMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnPolygonClickListener, GoogleMap.OnMarkerClickListener {
     private static final String TAG = "DartmouthNaps: CampusMapFragment";
     private static final LatLng LAT_LNG_DARTMOUTH = new LatLng(43.7044406,-72.2886935);
     private static final float ZOOM = 17;
@@ -49,6 +65,8 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Looper mLooper;
     private boolean mPermissionsGranted;
+    private Bitmap mReviewMarkerBitmap = null;
+    private Marker mCurrentLocationMarker = null;
 
     public CampusMapFragment() {
         // Required empty public constructor
@@ -82,10 +100,30 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Context context = getContext();
+        VectorDrawableCompat reviewMarkerVDC;
+        int reviewMarkerWidth;
+        int reviewMarkerHeight;
+
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
             mPermissionsGranted = getArguments().getBoolean(PERMISSIONS_GRANTED, false);
             Log.d(TAG, "mPermissionsGranted: " + mPermissionsGranted);
+        }
+
+        try {
+            MapsInitializer.initialize(context);
+            reviewMarkerVDC = VectorDrawableCompat.create(getResources(), R.drawable.ic_marker_bed, context.getTheme());
+            reviewMarkerWidth = reviewMarkerVDC.getIntrinsicWidth();
+            reviewMarkerHeight = reviewMarkerVDC.getIntrinsicHeight();
+            reviewMarkerVDC.setBounds(0, 0, reviewMarkerWidth, reviewMarkerHeight);
+            mReviewMarkerBitmap = Bitmap.createBitmap(reviewMarkerWidth, reviewMarkerHeight, Bitmap.Config.ARGB_8888);
+            reviewMarkerVDC.draw(new Canvas(mReviewMarkerBitmap));
+//            mReviewMarkerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_marker_bed);
+        } catch (Exception e) {
+            Log.d(TAG, "Caught exception trying to create bitmap");
+            e.printStackTrace();
         }
     }
 
@@ -101,7 +139,9 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         (mapFragment = new SupportMapFragment()).getMapAsync(this);
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.support_map_fragment_frame_layout, mapFragment).commit();
+
         if (mPermissionsGranted) requestLocationUpdates();
+
         return layout;
     }
 
@@ -118,6 +158,7 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         Log.d(TAG, "mapStyleSet: " + (mapStyleSet ? "true" : "false"));
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LAT_LNG_DARTMOUTH, ZOOM));
         new AddPlacesToMapAT().execute(mGoogleMap);
+        MainForFragmentActivity.sFirebaseDataSource.addReviewsChildEventListener(mGoogleMap);
     }
 
     @Override
@@ -134,35 +175,26 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
 //        }
 //    }
 
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
-//
-//    /**
-//     * This interface must be implemented by activities that contain this
-//     * fragment to allow an interaction in this fragment to be communicated
-//     * to the activity and potentially other fragments contained in that
-//     * activity.
-//     * <p>
-//     * See the Android Training lesson <a href=
-//     * "http://developer.android.com/training/basics/fragments/communicating.html"
-//     * >Communicating with Other Fragments</a> for more information.
-//     */
-    public void setCMFListener(Activity activity) {
-        mCMFListener = (CMFListener)activity;
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof CMFListener) {
+            mCMFListener = (CMFListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCMFListener = null;
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        return false;
     }
 
     public interface CMFListener {
@@ -201,6 +233,15 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
                 @Override
                 public void onLocationResult(LocationResult result) {
                     Location location = result.getLastLocation();
+
+                    if (mGoogleMap != null && mReviewMarkerBitmap != null) {
+                        if (mCurrentLocationMarker != null) mCurrentLocationMarker.remove();
+
+                        mCurrentLocationMarker = mGoogleMap.addMarker(new MarkerOptions()
+                                .icon(BitmapDescriptorFactory.fromBitmap(mReviewMarkerBitmap))
+                                .position(locationToLatLng(location)));
+                    }
+
                     int placeIndex = PlaceUtil.getPlaceIndex(new double[]
                             {location.getLatitude(), location.getLongitude()});
                     String additional = placeIndex == -1 ? " is outside all places" : " is inside " + PlaceUtil.PLACE_NAMES[placeIndex];
@@ -211,5 +252,19 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
             Log.e(TAG, "SecurityException caught in requestLocationUpdates; mPermissionsGranted: " + mPermissionsGranted);
             e.printStackTrace();
         }
+    }
+
+    private static void logCirclePoints() {
+        String str = "";
+        for (int i = 0; i <= 8; i++) {
+            str += String.format(Locale.getDefault(), "%.3f,%.3f ",
+                    15 + 3 * Math.cos(Math.PI * i / 16),
+                    13.5 - 3 * Math.sin(Math.PI * i / 16));
+        }
+        Log.d(TAG, "M" + str);
+    }
+
+    private static LatLng locationToLatLng(Location location) {
+        return new LatLng(location.getLatitude(), location.getLongitude());
     }
 }

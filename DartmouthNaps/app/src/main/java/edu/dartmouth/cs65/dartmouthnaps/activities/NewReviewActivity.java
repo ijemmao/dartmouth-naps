@@ -35,12 +35,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.fragments.RatingFragment;
+import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
 public class NewReviewActivity extends AppCompatActivity {
@@ -99,16 +101,17 @@ public class NewReviewActivity extends AppCompatActivity {
                 lightFragment.getRating(),
                 reviewHeader.getText().toString(),
                 imageFileName,
-                new Date().toString()
-        );
+                Review.getTimestampFromCalendar(Calendar.getInstance()),
+                new LatLng());
 
-        String key = dbReference.child("users").child(user.getUid()).child("reviews").push().getKey();
-        Map<String, Object> reviews = newReview.toMap();
-
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("users/" + user.getUid() + "/reviews/" + key, reviews);
-        childUpdates.put("/reviews/" + key, reviews);
-        dbReference.updateChildren(childUpdates);
+        MainForFragmentActivity.sFirebaseDataSource.createReview(newReview);
+//        String key = dbReference.child("users").child(user.getUid()).child("reviews").push().getKey();
+//        Map<String, Object> reviews = newReview.toMap();
+//
+//        Map<String, Object> childUpdates = new HashMap<>();
+//        childUpdates.put("users/" + user.getUid() + "/reviews/" + key, reviews);
+//        childUpdates.put("/reviews/" + key, reviews);
+//        dbReference.updateChildren(childUpdates);
         Toast.makeText(this, "Review sent", Toast.LENGTH_SHORT).show();
 
         UploadTask uploadTask = storageReference.child("images/" + user.getUid() + "-" +  imageFileName + ".jpg").putBytes(imageBytes);

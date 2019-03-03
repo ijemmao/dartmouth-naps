@@ -16,9 +16,13 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.fragments.CampusMapFragment;
+import edu.dartmouth.cs65.dartmouthnaps.util.FirebaseDataSource;
 
 public class MainForFragmentActivity extends AppCompatActivity implements CampusMapFragment.CMFListener {
     private static final int REQ_ACCESS_FINE_LOCATION = 0;
+
+    public static FirebaseDataSource sFirebaseDataSource;
+
     private FirebaseAuth auth;
     private FirebaseUser user;
     private DatabaseReference dbReference;
@@ -39,13 +43,13 @@ public class MainForFragmentActivity extends AppCompatActivity implements Campus
             Intent intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-        }else { //fetch the data from firebase and load it onto local database, if right after logging in
+        } else { //fetch the data from firebase and load it onto local database, if right after logging in
             uID = user.getUid();
         }
 
+        sFirebaseDataSource = new FirebaseDataSource(getApplicationContext());
         permissionsGranted = checkPermissions();
         mCampusMapFragment = CampusMapFragment.newInstance(permissionsGranted);
-        mCampusMapFragment.setCMFListener(this);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.campus_map_fragment_frame_layout, mCampusMapFragment)
@@ -53,18 +57,7 @@ public class MainForFragmentActivity extends AppCompatActivity implements Campus
 
         if (!permissionsGranted) requestPermissions();
 
-//        LinearLayout linearLayout = findViewById(R.id.color_parent);
-//        List<TextView> textViews = new ArrayList<>();
-//        List<Place> Place = new ArrayList<>();
-//        for (int i = 0; i < 21; i++) {
-//            textViews.add((TextView)linearLayout.getChildAt(i));
-//            Place.add(new Place());
-//            Map<String, Integer> ratings = Place.get(i).getRatings();
-//            for (int j = 0; j < 21; j++) {
-//                ratings.put("" + j, j <= i ? 5 : 0);
-//            }
-//            textViews.get(i).setBackgroundColor(Place.get(i).ratingColor());
-//        }
+
     }
 
     private void requestPermissions() {

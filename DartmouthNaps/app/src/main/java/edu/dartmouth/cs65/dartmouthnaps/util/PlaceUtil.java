@@ -98,8 +98,10 @@ public abstract class PlaceUtil {
 
     public static final int PLACE_COUNT = PLACE_NAMES.length;
 
-    public static final double[] PLACE_COORDINATE_UPPER_BOUND = new double[]{43.710000, -72.280000};
-    public static final double[] PLACE_COORDINATE_LOWER_BOUND = new double[]{43.700000, -72.300000};
+    public static final double[] PLACE_COORDINATES_UPPER_BOUND = new double[]
+            {43.710000, -72.280000};
+    public static final double[] PLACE_COORDINATES_LOWER_BOUND = new double[]
+            {43.700000, -72.300000};
 
     public static final double[][] PLACE_COORDINATES_AVG = new double[][]{
             {43.704179, -72.284346}, // Andres Hall
@@ -1320,8 +1322,8 @@ public abstract class PlaceUtil {
      * Gets the place index of a given coordinate
      * @param latLng    double[] representing a latitude and longitude in the Hanover area
      * @return          -1 if
-     *                      latLng is out of bounds (defined in PLACE_COORDINATE_UPPER_BOUND and
-     *                          PLACE_COORDINATE_LOWER_BOUND)
+     *                      latLng is out of bounds (defined in PLACE_COORDINATES_UPPER_BOUND and
+     *                          PLACE_COORDINATES_LOWER_BOUND)
      *                      latLng isn't in any of the 3 closest places
      *                  index of place that latLng is in otherwise
      */
@@ -1330,10 +1332,10 @@ public abstract class PlaceUtil {
 
         // If latLng is out of bounds, don't bother running the sort, since some of the calculations
         // might get wonky due to scaling everything by 1 million
-        if (latLng[LAT] < PLACE_COORDINATE_LOWER_BOUND[LAT] ||
-            latLng[LNG] < PLACE_COORDINATE_LOWER_BOUND[LNG] ||
-            latLng[LAT] > PLACE_COORDINATE_UPPER_BOUND[LAT] ||
-            latLng[LNG] < PLACE_COORDINATE_UPPER_BOUND[LNG]) return -1;
+        if (latLng[LAT] < PLACE_COORDINATES_LOWER_BOUND[LAT] ||
+            latLng[LNG] < PLACE_COORDINATES_LOWER_BOUND[LNG] ||
+            latLng[LAT] > PLACE_COORDINATES_UPPER_BOUND[LAT] ||
+            latLng[LNG] < PLACE_COORDINATES_UPPER_BOUND[LNG]) return -1;
 
         placeIndices = new ArrayList<>();
 
@@ -1412,7 +1414,7 @@ public abstract class PlaceUtil {
         // We use this instead of some further point like {0, 0}, for example, because we'll be
         // scaling each coordinate by a factor of 1000000 so that the differences between coordinate
         // components is on a scale of 1s instead of trillionths
-        q = PLACE_COORDINATE_LOWER_BOUND;
+        q = PLACE_COORDINATES_LOWER_BOUND;
         count = 0;
 
         for (int i = 0; i < n; i++) {

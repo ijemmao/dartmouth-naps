@@ -1,4 +1,4 @@
-package edu.dartmouth.cs65.dartmouthnaps;
+package edu.dartmouth.cs65.dartmouthnaps.listeners;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +9,7 @@ import android.util.Log;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainForFragmentActivity;
 
 public class AuthOnCompleteListener implements OnCompleteListener {
