@@ -1399,7 +1399,7 @@ public abstract class PlaceUtil {
      * @return  double of the distance between the two points in micro-units (1 millionth the actual
      *          distance)
      */
-    private static double microDistanceBetween(double[] p, double[] q) {
+    public static double microDistanceBetween(double[] p, double[] q) {
         double dx = MILLION * (p[X] - q[X]);
         double dy = MILLION * (p[Y] - q[Y]);
         return Math.sqrt(dx * dx + dy * dy);

@@ -221,35 +221,10 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         locationRequest.setSmallestDisplacement(5);
 
         try {
-            mFusedLocationProviderClient.requestLocationUpdates(locationRequest, new LocationCallback() {
-                @Override
-                public void onLocationResult(LocationResult result) {
-                    mCurrentLocation = result.getLastLocation();
-
-
-                    if (mGoogleMap != null && mCurrentLocationMarkerBitmap != null) {
-                        if (mCurrentLocationMarker != null) mCurrentLocationMarker.remove();
-
-                        mCurrentLocationMarker = mGoogleMap.addMarker(new MarkerOptions()
-                                .icon(BitmapDescriptorFactory.fromBitmap(mCurrentLocationMarkerBitmap))
-                                .position(locationToLatLng(mCurrentLocation)));
-                        mCurrentLocationMarker.setTag(TAG_CURRENT_LOCATION);
-                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                locationToLatLng(mCurrentLocation), ZOOM));
-                    }
-
-                    if (DEBUG_GLOBAL && DEBUG) {
-                        int placeIndex = PlaceUtil.getPlaceIndex(new double[]
-                                {mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()});
-                        String additional = placeIndex == -1 ?
-                                " is outside all places" :
-                                " is inside " + PlaceUtil.PLACE_NAMES[placeIndex];
-                        Log.d(TAG, "(" +
-                                mCurrentLocation.getLatitude() + ", " +
-                                mCurrentLocation.getLongitude() + ")" + additional);
-                    }
-                }
-            }, mLooper);
+            mFusedLocationProviderClient.requestLocationUpdates(
+                    locationRequest,
+                    new CurrentLocationCallback(),
+                    mLooper);
         } catch (SecurityException e) {
             Log.e(TAG, "SecurityException caught in requestLocationUpdates; mPermissionsGranted: " + mPermissionsGranted);
             e.printStackTrace();
@@ -258,5 +233,35 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
 
     private static LatLng locationToLatLng(Location location) {
         return new LatLng(location.getLatitude(), location.getLongitude());
+    }
+
+    private class CurrentLocationCallback extends LocationCallback {
+        @Override
+        public void onLocationResult(LocationResult result) {
+            mCurrentLocation = result.getLastLocation();
+
+
+            if (mGoogleMap != null && mCurrentLocationMarkerBitmap != null) {
+                if (mCurrentLocationMarker != null) mCurrentLocationMarker.remove();
+
+                mCurrentLocationMarker = mGoogleMap.addMarker(new MarkerOptions()
+                        .icon(BitmapDescriptorFactory.fromBitmap(mCurrentLocationMarkerBitmap))
+                        .position(locationToLatLng(mCurrentLocation)));
+                mCurrentLocationMarker.setTag(TAG_CURRENT_LOCATION);
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                        locationToLatLng(mCurrentLocation), ZOOM));
+            }
+
+            if (DEBUG_GLOBAL && DEBUG) {
+                int placeIndex = PlaceUtil.getPlaceIndex(new double[]
+                        {mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()});
+                String additional = placeIndex == -1 ?
+                        " is outside all places" :
+                        " is inside " + PlaceUtil.PLACE_NAMES[placeIndex];
+                Log.d(TAG, "(" +
+                        mCurrentLocation.getLatitude() + ", " +
+                        mCurrentLocation.getLongitude() + ")" + additional);
+            }
+        }
     }
 }
