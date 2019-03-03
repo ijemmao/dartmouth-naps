@@ -1,8 +1,11 @@
 package edu.dartmouth.cs65.dartmouthnaps.util;
 
 public abstract class Globals {
-    // Constants for Place
-    public static final String[] RATING_COLORS = {"#FF0000", "#FFFF00", "#00FF00"};
+    public static final String TAG_GLOBAL = "DartmouthNaps";
+    public static final boolean DEBUG_GLOBAL = true;
+
+    public static final String KEY_LATITUDE = "latitude";
+    public static final String KEY_LONGITUDE = "longitude";
 
     public static final String CAMPUS_MAP_STYLE_JSON =
             "   [" +
@@ -218,8 +221,4 @@ public abstract class Globals {
             "           ]" +
             "       }" +
             "   ]";
-
-    {
-
-    }
 }
