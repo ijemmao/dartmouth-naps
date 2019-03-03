@@ -4,15 +4,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+import edu.dartmouth.cs65.dartmouthnaps.R;
+
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import edu.dartmouth.cs65.dartmouthnaps.AuthOnCompleteListener;
-import edu.dartmouth.cs65.dartmouthnaps.R;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -31,6 +35,8 @@ public class LoginActivity extends AppCompatActivity {
         loginPassword = (EditText)findViewById(R.id.login_password);
         auth = FirebaseAuth.getInstance();
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
     }
 
@@ -49,11 +55,5 @@ public class LoginActivity extends AppCompatActivity {
 
         }
     }
-
-    public void onStartSignupClicked(View view) {
-        Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
-        startActivity(intent);
-    }
-
 
 }

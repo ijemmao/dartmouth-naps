@@ -1,18 +1,23 @@
 package edu.dartmouth.cs65.dartmouthnaps.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import edu.dartmouth.cs65.dartmouthnaps.R;
+
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import edu.dartmouth.cs65.dartmouthnaps.AuthOnCompleteListener;
-import edu.dartmouth.cs65.dartmouthnaps.R;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -26,10 +31,33 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signup_activity);
 
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_white_x_24dp);
+
+
+
         //gets the edit texts and sets the auth
         signupID = (EditText)findViewById(R.id.signup_id);
         signupPassword = (EditText)findViewById(R.id.signup_password);
         auth = FirebaseAuth.getInstance();
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.signup_activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.login_menu_button) {
+
+            Intent intent = new Intent(this, edu.dartmouth.cs65.dartmouthnaps.activities.LoginActivity.class); //starts the login page
+
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     //if the final sign up button is clicked, sign up
