@@ -1,6 +1,7 @@
 package edu.dartmouth.cs65.dartmouthnaps.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -24,12 +26,13 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Polygon;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
+import edu.dartmouth.cs65.dartmouthnaps.activities.NewReviewActivity;
 import edu.dartmouth.cs65.dartmouthnaps.tasks.AddPlacesToMapAT;
 import edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil;
 
 import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.CAMPUS_MAP_STYLE_JSON;
 
-public class CampusMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnPolygonClickListener {
+public class CampusMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnPolygonClickListener, View.OnClickListener {
     private static final String TAG = "DartmouthNaps: CampusMapFragment";
     private static final LatLng LAT_LNG_DARTMOUTH = new LatLng(43.7044406,-72.2886935);
     private static final float ZOOM = 17;
@@ -102,6 +105,10 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.support_map_fragment_frame_layout, mapFragment).commit();
         if (mPermissionsGranted) requestLocationUpdates();
+
+        Button addReview = layout.findViewById(R.id.add_review);
+        addReview.setOnClickListener(this);
+        
         return layout;
     }
 
@@ -163,6 +170,18 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
 //     */
     public void setCMFListener(Activity activity) {
         mCMFListener = (CMFListener)activity;
+    }
+
+    @Override
+    public void onClick(View v) {
+        System.out.println("this is something really interesting: " + v.getId());
+        System.out.println("ookokokokok: " + R.id.add_review);
+        switch (v.getId()) {
+            case R.id.add_review:
+                Intent intent = new Intent(getContext(), NewReviewActivity.class);
+                startActivity(intent);
+                break;
+        }
     }
 
     public interface CMFListener {

@@ -15,6 +15,25 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Insert Person Icon here for drawer -->
+
+            <Button
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/add_review"
+                android:layout_marginTop="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_review"
+                android:onClick="onAddReview" />
+
+        </LinearLayout>
+
+
+
         <fragment
             app:layout_constraintBottom_toBottomOf="parent"
             android:id="@+id/noise_fragment"

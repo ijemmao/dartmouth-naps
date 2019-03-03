@@ -33,9 +33,8 @@
     <!-- Buttons -->
     <string name="submit_button">Submit</string>
 
-    <!-- Place Activity -->
-    <string name="comments">Comments</string>
-    <string name="add_comment">Add Comment</string>
+    <!-- Map Activity -->
+    <string name="add_review">Add Review</string>
 
     <!-- Review Fragment-->
     <string name="comment_author">XD</string>
