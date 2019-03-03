@@ -32,6 +32,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 
+import java.util.List;
+
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainForFragmentActivity;
 import edu.dartmouth.cs65.dartmouthnaps.activities.NewReviewActivity;
@@ -60,7 +62,7 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     private boolean mPermissionsGranted;
     private Bitmap mCurrentLocationMarkerBitmap = null;
     private Marker mCurrentLocationMarker = null;
-    private Location mCurrentLocation = null;
+    private Location sCurrentLocation = null;
 
     private ReviewCardsContainerFragment reviewCardsContainerFragment;
 
@@ -172,7 +174,17 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     @Override
     public boolean onMarkerClick(Marker marker) {
         Object tag = marker.getTag();
-        reviewCardsContainerFragment.mPager.setCurrentItem(1);
+        marker.getPosition();
+        List<Review> sortedReviews = MainForFragmentActivity.sFirebaseDataSource.getReviewsNear(new edu.dartmouth.cs65.dartmouthnaps.models.LatLng(sCurrentLocation.getLatitude(), sCurrentLocation.getLongitude()));
+
+        for (int i = 0; i < sortedReviews.size(); i++) {
+            if (marker.getPosition().latitude == sortedReviews.get(i).getLocation().latitude
+                    && marker.getPosition().longitude == sortedReviews.get(i).getLocation().longitude) {
+                reviewCardsContainerFragment.mPager.setCurrentItem(i);
+                break;
+            }
+        }
+
         return tag != null && tag.toString().equals(TAG_CURRENT_LOCATION);
     }
 
@@ -181,9 +193,9 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
             case R.id.add_review:
                 Intent intent = new Intent(getContext(), NewReviewActivity.class);
 
-                if (mCurrentLocation != null) {
-                    intent.putExtra(KEY_LATITUDE, mCurrentLocation.getLatitude());
-                    intent.putExtra(KEY_LONGITUDE, mCurrentLocation.getLongitude());
+                if (sCurrentLocation != null) {
+                    intent.putExtra(KEY_LATITUDE, sCurrentLocation.getLatitude());
+                    intent.putExtra(KEY_LONGITUDE, sCurrentLocation.getLongitude());
                 }
 
                 startActivity(intent);
@@ -238,7 +250,7 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     private class CurrentLocationCallback extends LocationCallback {
         @Override
         public void onLocationResult(LocationResult result) {
-            mCurrentLocation = result.getLastLocation();
+            sCurrentLocation = result.getLastLocation();
 
 
             if (mGoogleMap != null && mCurrentLocationMarkerBitmap != null) {
@@ -246,21 +258,21 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
 
                 mCurrentLocationMarker = mGoogleMap.addMarker(new MarkerOptions()
                         .icon(BitmapDescriptorFactory.fromBitmap(mCurrentLocationMarkerBitmap))
-                        .position(locationToLatLng(mCurrentLocation)));
+                        .position(locationToLatLng(sCurrentLocation)));
                 mCurrentLocationMarker.setTag(TAG_CURRENT_LOCATION);
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                        locationToLatLng(mCurrentLocation), ZOOM));
+                        locationToLatLng(sCurrentLocation), ZOOM));
             }
 
             if (DEBUG_GLOBAL && DEBUG) {
                 int placeIndex = PlaceUtil.getPlaceIndex(new double[]
-                        {mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()});
+                        {sCurrentLocation.getLatitude(), sCurrentLocation.getLongitude()});
                 String additional = placeIndex == -1 ?
                         " is outside all places" :
                         " is inside " + PlaceUtil.PLACE_NAMES[placeIndex];
                 Log.d(TAG, "(" +
-                        mCurrentLocation.getLatitude() + ", " +
-                        mCurrentLocation.getLongitude() + ")" + additional);
+                        sCurrentLocation.getLatitude() + ", " +
+                        sCurrentLocation.getLongitude() + ")" + additional);
             }
         }
     }

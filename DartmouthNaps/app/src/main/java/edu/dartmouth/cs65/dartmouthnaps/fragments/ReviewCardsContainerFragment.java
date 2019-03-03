@@ -95,8 +95,7 @@ public class ReviewCardsContainerFragment extends Fragment {
     ValueEventListener reviewsListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            System.out.println(dataSnapshot);
-
+            reviews = new ArrayList<>();
             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                 Review review = snapshot.getValue(Review.class);
                 reviews.add(review);
