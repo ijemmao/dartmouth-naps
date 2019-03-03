@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activities.ReviewActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:scaleType="centerCrop"
+                    android:id="@+id/location_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="300sp" />
+
+                <ImageView
+                    android:id="@+id/upload_image"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/ic_file_upload_white_24dp"
+                    android:layout_marginLeft="124dip"
+                    android:layout_marginTop="84dip"
+                    android:layout_centerHorizontal="true" />
+            </RelativeLayout>
+
+
+            <TextView
+                android:id="@+id/review_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_margin="20dp"
+                android:background="@null"
+                android:fontFamily="@font/montserrat_bold"
+                android:hint="@string/text_hint"
+                android:minHeight="100sp"
+                android:textColor="@color/colorHeader"
+                android:textCursorDrawable="@null"
+                android:textSize="28sp" />
+
+            <fragment
+                app:title="@string/noise_label"
+                app:disabled="true"
+                android:name="edu.dartmouth.cs65.dartmouthnaps.fragments.RatingFragment"
+                android:id="@+id/noise_fragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <fragment
+                app:title="@string/comfort_label"
+                app:disabled="true"
+                android:name="edu.dartmouth.cs65.dartmouthnaps.fragments.RatingFragment"
+                android:id="@+id/comfort_fragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <fragment
+                app:title="@string/light_label"
+                app:disabled="true"
+                android:name="edu.dartmouth.cs65.dartmouthnaps.fragments.RatingFragment"
+                android:id="@+id/light_fragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <fragment
+                app:title="@string/convenience_label"
+                app:disabled="true"
+                android:name="edu.dartmouth.cs65.dartmouthnaps.fragments.RatingFragment"
+                android:id="@+id/convenience_fragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
