@@ -35,6 +35,7 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
     private Drawable[] drawables;
 
     private String title;
+    private String timestamp;
     private String image;
     private int noise;
     private int comfort;
@@ -43,6 +44,7 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
 
     ImageView reviewImage;
     TextView headerTitle;
+    TextView timestampLabel;
     Button soundQuickStatus;
     Button comfortQuickStatus;
     Button lightQuickStatus;
@@ -65,6 +67,7 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
         extras = getArguments();
 
         title = extras.getString("title");
+        timestamp = extras.getString("timestamp");
         image = extras.getString("image");
         noise = extras.getInt("noise", 1);
         comfort = extras.getInt("comfort", 1);
@@ -93,12 +96,14 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
             e.printStackTrace();
         }
         headerTitle = view.findViewById(R.id.card_fragment_title);
+        timestampLabel = view.findViewById(R.id.card_fragment_timestamp);
         soundQuickStatus = view.findViewById(R.id.sound_quick_status);
         comfortQuickStatus = view.findViewById(R.id.comfort_quick_status);
         lightQuickStatus = view.findViewById(R.id.light_quick_status);
         convenienceQuickStatus = view.findViewById(R.id.convenience_quick_status);
 
         headerTitle.setText(title);
+        timestampLabel.setText(timestamp);
         assignColors();
 
         return view;
