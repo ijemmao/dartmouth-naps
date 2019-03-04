@@ -236,6 +236,7 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
                     locationRequest,
                     new CurrentLocationCallback(),
                     mLooper);
+
         } catch (SecurityException e) {
             Log.e(TAG, "SecurityException caught in requestLocationUpdates; mPermissionsGranted: " + mPermissionsGranted);
             e.printStackTrace();
@@ -251,6 +252,11 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         public void onLocationResult(LocationResult result) {
             sCurrentLocation = result.getLastLocation();
 
+            Location currentLocation = new Location("");
+            currentLocation.setLatitude(sCurrentLocation.getLatitude());
+            currentLocation.setLongitude(sCurrentLocation.getLongitude());
+
+            reviewCardsContainerFragment.calculateConveniences(currentLocation);
 
             if (mGoogleMap != null && mCurrentLocationMarkerBitmap != null) {
                 if (mCurrentLocationMarker != null) mCurrentLocationMarker.remove();
