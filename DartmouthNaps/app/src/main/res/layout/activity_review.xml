@@ -23,18 +23,11 @@
 
                 <ImageView
                     android:scaleType="centerCrop"
-                    android:id="@+id/location_image"
+                    android:id="@+id/review_image"
                     android:layout_width="match_parent"
-                    android:layout_height="300sp" />
+                    android:layout_height="300sp"
+                    android:layout_marginTop="10dp" />
 
-                <ImageView
-                    android:id="@+id/upload_image"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/ic_file_upload_white_24dp"
-                    android:layout_marginLeft="124dip"
-                    android:layout_marginTop="84dip"
-                    android:layout_centerHorizontal="true" />
             </RelativeLayout>
 
 
@@ -43,14 +36,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:layout_margin="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
                 android:background="@null"
                 android:fontFamily="@font/montserrat_bold"
-                android:hint="@string/text_hint"
-                android:minHeight="100sp"
+                android:minHeight="10sp"
                 android:textColor="@color/colorHeader"
                 android:textCursorDrawable="@null"
-                android:textSize="28sp" />
+                android:textSize="42sp" />
 
             <fragment
                 app:title="@string/noise_label"

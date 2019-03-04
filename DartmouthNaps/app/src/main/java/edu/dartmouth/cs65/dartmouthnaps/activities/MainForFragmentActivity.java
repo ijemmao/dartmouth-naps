@@ -91,18 +91,6 @@ public class MainForFragmentActivity extends AppCompatActivity implements Campus
     }
 
     @Override
-    public void requestLooper() {
-        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "requestLooper() called");
-        mCampusMapFragment.sendLooper(getApplicationContext().getMainLooper());
-    }
-
-    @Override
-    public void requestContext() {
-        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "requestContext() called");
-        mCampusMapFragment.sendContext(getApplicationContext());
-    }
-
-    @Override
     public void startAndBindLS(ServiceConnection serviceConnection) {
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "startAndBindLS() called");
         getApplicationContext().startService(getLSIntent());
@@ -119,13 +107,6 @@ public class MainForFragmentActivity extends AppCompatActivity implements Campus
     public void unbindLS(ServiceConnection serviceConnection) {
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "unbindLS() called");
         getApplicationContext().unbindService(serviceConnection);
-    }
-
-    @Override
-    public void unbindAndStopLS(ServiceConnection serviceConnection) {
-        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "unbindAndStopLS() called");
-        unbindLS(serviceConnection);
-        getApplicationContext().stopService(getLSIntent());
     }
 
     @Override

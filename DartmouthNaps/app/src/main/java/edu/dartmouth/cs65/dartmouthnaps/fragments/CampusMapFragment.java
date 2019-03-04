@@ -1,13 +1,11 @@
 package edu.dartmouth.cs65.dartmouthnaps.fragments;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -23,10 +21,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
@@ -38,13 +32,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 
-import java.util.List;
-
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainForFragmentActivity;
 import edu.dartmouth.cs65.dartmouthnaps.activities.NewReviewActivity;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
-import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 import edu.dartmouth.cs65.dartmouthnaps.services.LocationService;
 import edu.dartmouth.cs65.dartmouthnaps.tasks.AddPlacesToMapAT;
 import edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil;
@@ -278,6 +269,8 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     private void handleLocation(LatLng location) {
         sCurrentLocation = location;
 
+        reviewCardsContainerFragment.calculateConveniences(sCurrentLocation.toLocation());
+
         if (mGoogleMap != null && mCurrentLocationMarkerBitmap != null) {
             if (mCurrentLocationMarker != null) mCurrentLocationMarker.remove();
 
@@ -301,22 +294,12 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         }
     }
 
-    private static LatLng locationToLatLng(Location location) {
-        return new LatLng(location.getLatitude(), location.getLongitude());
-    }
-
     public interface CMFListener {
-        void requestLooper();
-
-        void requestContext();
-
         void startAndBindLS(ServiceConnection serviceConnection);
 
         void bindLS(ServiceConnection serviceConnection);
 
         void unbindLS(ServiceConnection serviceConnection);
-
-        void unbindAndStopLS(ServiceConnection serviceConnection);
     }
 
     private class CMFHandler extends Handler {
@@ -350,9 +333,6 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-
-//            mCMFListener.requestLooper();
-//            mCMFListener.requestContext();
         }
 
         @Override

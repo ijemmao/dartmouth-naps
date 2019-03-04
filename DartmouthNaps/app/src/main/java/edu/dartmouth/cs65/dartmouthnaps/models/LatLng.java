@@ -50,6 +50,13 @@ public class LatLng {
         return new double[]{latitude, longitude};
     }
 
+    public Location toLocation() {
+        Location location = new Location("");
+        location.setLatitude(this.latitude);
+        location.setLongitude(this.longitude);
+        return location;
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if (!(obj instanceof LatLng)) return false;
