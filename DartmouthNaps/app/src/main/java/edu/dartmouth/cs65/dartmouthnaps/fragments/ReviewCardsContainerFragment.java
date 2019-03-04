@@ -1,6 +1,7 @@
 package edu.dartmouth.cs65.dartmouthnaps.fragments;
 
 
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,8 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,12 +30,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
-import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainForFragmentActivity;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
+
+import java.util.concurrent.*;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,7 +50,9 @@ public class ReviewCardsContainerFragment extends Fragment {
     private FirebaseAuth auth;
     private FirebaseUser user;
     private DatabaseReference dbReference;
-    private StorageReference imageReference;
+    private StorageReference storageReference;
+
+    ExecutorService executorService;
 
     public ReviewCardsContainerFragment() {
         // Required empty public constructor
@@ -65,9 +70,11 @@ public class ReviewCardsContainerFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         dbReference = FirebaseDatabase.getInstance().getReference().child("reviews");
-        imageReference = FirebaseStorage.getInstance().getReference();
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         dbReference.addValueEventListener(reviewsListener);
+
+        executorService = Executors.newSingleThreadExecutor();
 
         return view;
     }
@@ -83,6 +90,7 @@ public class ReviewCardsContainerFragment extends Fragment {
             Review review = reviews.get(position);
             final Bundle extras = new Bundle();
             extras.putString("title", review.getTitle());
+            extras.putByteArray("image", review.getImage());
             extras.putInt("noise", review.getNoise());
             extras.putInt("comfort", review.getComfort());
             extras.putInt("light", review.getLight());
@@ -94,6 +102,7 @@ public class ReviewCardsContainerFragment extends Fragment {
 
         @Override
         public int getCount() {
+            System.out.println("this is the length of erview REVIEWS: " + reviews.size());
             return reviews.size();
         }
     }
@@ -126,15 +135,54 @@ public class ReviewCardsContainerFragment extends Fragment {
         pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
     }
 
+    public Future runFuture(final Review review) {
+        Future<byte[]> future = executorService.submit(new Callable<byte[]>() {
+            @Override
+            public byte[] call() throws Exception {
+                StorageReference imageRef = storageReference.child("images/" + review.getAuthor() + "-" + review.getImageName() + ".jpg");
+                final long ONE_MEGABYTE = 1024 * 1024;
+                Task<byte[]> result = imageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        // Data for "images/island.jpg" is returns, use this as needed
+                        System.out.println("THIS IS A PRINT STATEMENT: " + review.getAuthor() + "-" + review.getImageName() + ".jpg");
+                            review.setImage(bytes);
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+
+                while (!result.isComplete()) {}
+
+                return result.getResult();
+            }
+        });
+        return future;
+    }
+
     ValueEventListener reviewsListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
             reviews = new ArrayList<>();
             Location currentLocation = CampusMapFragment.sCurrentLocation;
 
             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                Review review = snapshot.getValue(Review.class);
+
+                final Review review = snapshot.getValue(Review.class);
+
+                try {
+                    byte[] thisisit = (byte[]) runFuture(review).get();
+                    review.setImage(thisisit);
+                } catch (Exception e) {
+
+                }
                 reviews.add(review);
+
             }
 
             // Sorts the reviews when a new item is added to the database

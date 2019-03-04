@@ -13,6 +13,7 @@ public class Review {
     private int convenience;            // Integer for convenience rating
     private String title;               // String for the title of the review
     private String imageName;           // String for the name of the image
+    private byte[] image;               // Image representation in byte array
     private String timestamp;           // String for the timestamp of the comment in
                                         // "YYYY-MM-DD HH:MM:SS.SSS" form
     private LatLng location;            // LatLng representing the coordinates of the review
@@ -92,6 +93,10 @@ public class Review {
     public void setImageName(String imageName) {
         this.imageName = imageName;
     }
+
+    public byte[] getImage() { return image; }
+
+    public void setImage(byte[] image) { this.image = image; }
 
     public String getTimestamp() {
         return timestamp;
