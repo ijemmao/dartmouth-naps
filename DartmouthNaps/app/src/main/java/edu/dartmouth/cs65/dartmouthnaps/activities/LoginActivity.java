@@ -17,6 +17,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import edu.dartmouth.cs65.dartmouthnaps.listeners.AuthOnCompleteListener;
 
+import edu.dartmouth.cs65.dartmouthnaps.listeners.AuthOnCompleteListener;
+import edu.dartmouth.cs65.dartmouthnaps.R;
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText loginID; //the email input

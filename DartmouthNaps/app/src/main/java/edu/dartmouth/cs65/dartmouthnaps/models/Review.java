@@ -1,6 +1,8 @@
 package edu.dartmouth.cs65.dartmouthnaps.models;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -96,6 +98,27 @@ public class Review {
 
     public byte[] getImage() { return image; }
 
+
+    public void setConvenience(int convenience) { this.convenience = convenience; }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
+    public byte[] getImage() { return image; }
+
     public void setImage(byte[] image) { this.image = image; }
 
     public String getTimestamp() {
@@ -104,6 +127,21 @@ public class Review {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getFormattedTimestamp() {
+        String formattedDate;
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss.SSS");
+            Date newDate = format.parse(timestamp);
+
+            format = new SimpleDateFormat("MMM dd,yyyy hh:mm a");
+            formattedDate = format.format(newDate);
+        } catch (Exception e) {
+            return timestamp;
+        }
+
+        return formattedDate;
     }
 
     public LatLng getLocation() {

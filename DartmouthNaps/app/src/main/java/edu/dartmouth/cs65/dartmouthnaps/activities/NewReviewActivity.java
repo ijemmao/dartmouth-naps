@@ -137,6 +137,46 @@ public class NewReviewActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        // Notifies user if there are empty fields
+        // Review cannot be sent with empty fields
+        if (user.getUid() == null
+                        || noiseFragment.getRating() == 0
+                        || comfortFragment.getRating() == 0
+                        || lightFragment.getRating() == 0
+                        || reviewHeader.getText().toString().equals("")
+                        || imageFileName == null) {
+            Toast.makeText(this, "Must complete all fields", Toast.LENGTH_SHORT).show();
+        } else {
+            Review newReview = new Review(
+                    user.getUid(),
+                    noiseFragment.getRating(),
+                    comfortFragment.getRating(),
+                    lightFragment.getRating(),
+                    reviewHeader.getText().toString(),
+                    imageFileName,
+                    Review.getTimestampFromCalendar(Calendar.getInstance()),
+                    location);
+
+            // Send review to Firebase database
+            MainForFragmentActivity.sFirebaseDataSource.createReview(newReview);
+
+            UploadTask uploadTask = storageReference.child("images/" + user.getUid() + "-" +  imageFileName + ".jpg").putBytes(imageBytes);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle unsuccessful uploads
+                    Toast.makeText(getApplicationContext(), "Error with creating Review", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                    Toast.makeText(getApplicationContext(), "Review successfully sent", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            });
+        }
     }
 
     public void handleImage(View view) {
@@ -187,7 +227,10 @@ public class NewReviewActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != RESULT_OK) return;
+        if (resultCode != RESULT_OK) {
+            imageFileName = null;
+            return;
+        }
 
         switch (requestCode) {
             case CAMERA_REQUEST_CODE: {

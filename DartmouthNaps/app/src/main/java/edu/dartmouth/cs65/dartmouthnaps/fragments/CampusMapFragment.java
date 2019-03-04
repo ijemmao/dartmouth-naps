@@ -145,6 +145,7 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LAT_LNG_DARTMOUTH, ZOOM));
         new AddPlacesToMapAT().execute(mGoogleMap);
         MainActivity.sFirebaseDataSource.addReviewsChildEventListener(mGoogleMap);
+        MainForFragmentActivity.sFirebaseDataSource.addReviewsChildEventListener(mGoogleMap);
     }
 
     @Override
@@ -198,7 +199,6 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         switch (v.getId()) {
             case R.id.add_review:
                 Log.d("tag2", "opening review");
-
                 Intent intent = new Intent(getContext(), NewReviewActivity.class);
 
                 if (sCurrentLocation != null) {
@@ -211,6 +211,8 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
             case R.id.open_drawer:
                 Log.d("tag2", "opening drawer");
                 MainActivity.drawer.openDrawer(Gravity.LEFT);
+
+                startActivity(intent);
                 break;
         }
     }
@@ -298,6 +300,5 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     public void hideButtons() {
         imageButton.setVisibility(View.GONE);
     }
-
 
 }

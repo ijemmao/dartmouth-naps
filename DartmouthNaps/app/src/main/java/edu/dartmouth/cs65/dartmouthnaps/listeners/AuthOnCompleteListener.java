@@ -28,6 +28,7 @@ public class AuthOnCompleteListener implements OnCompleteListener {
     public void onComplete(@NonNull Task task){
         if(task.isSuccessful()) {
             Intent intent = new Intent(context, MainActivity.class); //open main activity with a message to get new database
+            Intent intent = new Intent(context, MainForFragmentActivity.class); //open main activity with a message to get new database
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); //clear the previous activities
             context.startActivity(intent);
         }
