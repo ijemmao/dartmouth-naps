@@ -7,6 +7,16 @@ public abstract class Globals {
     public static final String KEY_LATITUDE = "latitude";
     public static final String KEY_LONGITUDE = "longitude";
 
+    // Constants for messages to LSHandler
+    private static final int OFFSET_LS_HANDLER = 0x10;
+    public static final int MSG_WHAT_SEND_MESSENGER = 1 | OFFSET_LS_HANDLER;
+    public static final int MSG_WHAT_SEND_LOOPER    = 2 | OFFSET_LS_HANDLER;
+    public static final int MSG_WHAT_SEND_CONTEXT   = 3 | OFFSET_LS_HANDLER;
+
+    // Constants for messages to CMFHandler
+    private static final int OFFSET_CMF_HANDLER = 0x20;
+    public static final int MSG_WHAT_SEND_LOCATION  = 1 | OFFSET_CMF_HANDLER;
+
     public static final String CAMPUS_MAP_STYLE_JSON =
             "   [" +
             "       {" +

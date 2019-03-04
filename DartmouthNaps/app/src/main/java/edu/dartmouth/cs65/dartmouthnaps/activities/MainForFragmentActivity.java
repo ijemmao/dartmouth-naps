@@ -2,12 +2,14 @@ package edu.dartmouth.cs65.dartmouthnaps.activities;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,9 +19,14 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.fragments.CampusMapFragment;
+import edu.dartmouth.cs65.dartmouthnaps.services.LocationService;
 import edu.dartmouth.cs65.dartmouthnaps.util.FirebaseDataSource;
 
+import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
+
 public class MainForFragmentActivity extends AppCompatActivity implements CampusMapFragment.CMFListener {
+    private static final String TAG = TAG_GLOBAL + ": MainForFragmentActivity";
+    private static final boolean DEBUG = true;
     private static final int REQ_ACCESS_FINE_LOCATION = 0;
 
     public static FirebaseDataSource sFirebaseDataSource;
@@ -72,6 +79,10 @@ public class MainForFragmentActivity extends AppCompatActivity implements Campus
         return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
+    private Intent getLSIntent() {
+        return new Intent(getApplicationContext(), LocationService.class);
+    }
+
     @Override
     public void onRequestPermissionsResult (int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         mCampusMapFragment.onRequestPermissionsResult(requestCode == REQ_ACCESS_FINE_LOCATION &&
@@ -80,8 +91,41 @@ public class MainForFragmentActivity extends AppCompatActivity implements Campus
     }
 
     @Override
-    public void callInitializeFusedLocationProviderClient() {
-        mCampusMapFragment.initializeFusedLocationProviderClient(this, getMainLooper());
+    public void requestLooper() {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "requestLooper() called");
+        mCampusMapFragment.sendLooper(getMainLooper());
+    }
+
+    @Override
+    public void requestContext() {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "requestContext() called");
+        mCampusMapFragment.sendContext(getApplicationContext());
+    }
+
+    @Override
+    public void startAndBindLS(ServiceConnection serviceConnection) {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "startAndBindLS() called");
+        startService(getLSIntent());
+        bindLS(serviceConnection);
+    }
+
+    @Override
+    public void bindLS(ServiceConnection serviceConnection) {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "bindLS() called");
+        bindService(getLSIntent(), serviceConnection, 0);
+    }
+
+    @Override
+    public void unbindLS(ServiceConnection serviceConnection) {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "unbindLS() called");
+        unbindService(serviceConnection);
+    }
+
+    @Override
+    public void unbindAndStopLS(ServiceConnection serviceConnection) {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "unbindAndStopLS() called");
+        unbindLS(serviceConnection);
+        stopService(getLSIntent());
     }
 
     public void onClick(View v) {
