@@ -3,6 +3,7 @@ package edu.dartmouth.cs65.dartmouthnaps.fragments;
 
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -53,6 +54,7 @@ public class ReviewCardsContainerFragment extends Fragment {
     private StorageReference storageReference;
 
     ExecutorService executorService;
+    private static DataSnapshot dataSnapshot;
 
     public ReviewCardsContainerFragment() {
         // Required empty public constructor
@@ -102,7 +104,6 @@ public class ReviewCardsContainerFragment extends Fragment {
 
         @Override
         public int getCount() {
-            System.out.println("this is the length of erview REVIEWS: " + reviews.size());
             return reviews.size();
         }
     }
@@ -135,42 +136,10 @@ public class ReviewCardsContainerFragment extends Fragment {
         pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
     }
 
-    public Future runFuture(final Review review) {
-        Future<byte[]> future = executorService.submit(new Callable<byte[]>() {
-            @Override
-            public byte[] call() throws Exception {
-                StorageReference imageRef = storageReference.child("images/" + review.getAuthor() + "-" + review.getImageName() + ".jpg");
-                final long ONE_MEGABYTE = 1024 * 1024;
-                Task<byte[]> result = imageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                    @Override
-                    public void onSuccess(byte[] bytes) {
-                        // Data for "images/island.jpg" is returns, use this as needed
-                        System.out.println("THIS IS A PRINT STATEMENT: " + review.getAuthor() + "-" + review.getImageName() + ".jpg");
-                            review.setImage(bytes);
+    public class ImageLoadTask extends AsyncTask<Void, Void, Void> {
 
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors
-                    }
-                });
-
-                while (!result.isComplete()) {}
-
-                return result.getResult();
-            }
-        });
-        return future;
-    }
-
-    ValueEventListener reviewsListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-            reviews = new ArrayList<>();
-            Location currentLocation = CampusMapFragment.sCurrentLocation;
-
+        @Override protected Void doInBackground(Void... params) {
+            
             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                 final Review review = snapshot.getValue(Review.class);
@@ -182,8 +151,15 @@ public class ReviewCardsContainerFragment extends Fragment {
 
                 }
                 reviews.add(review);
-
             }
+
+            return null;
+        }
+
+        @Override protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+
+            Location currentLocation = CampusMapFragment.sCurrentLocation;
 
             // Sorts the reviews when a new item is added to the database
             if (currentLocation != null) {
@@ -213,11 +189,55 @@ public class ReviewCardsContainerFragment extends Fragment {
             });
             mPager.setAdapter(pagerAdapter);
         }
+    }
+
+    // Future (similar to Promise) which is an async object that will be completed later
+    public Future runFuture(final Review review) {
+        Future<byte[]> future = executorService.submit(new Callable<byte[]>() {
+            @Override
+            public byte[] call() throws Exception {
+                StorageReference imageRef = storageReference.child("images/" + review.getAuthor() + "-" + review.getImageName() + ".jpg");
+                final long ONE_MEGABYTE = 1024 * 1024;
+                Task<byte[]> result = imageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                            review.setImage(bytes);
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+
+                while (!result.isComplete()) {}
+
+                return result.getResult();
+            }
+        });
+        return future;
+    }
+
+
+    ValueEventListener reviewsListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            reviews = new ArrayList<>();
+
+            ReviewCardsContainerFragment.dataSnapshot = dataSnapshot;
+            System.out.println("WE ARE RIGHT HERE");
+            new ImageLoadTask().execute();
+
+
+        }
 
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
 
         }
     };
+
 
 }
