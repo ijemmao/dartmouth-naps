@@ -105,27 +105,27 @@ public class MainForFragmentActivity extends AppCompatActivity implements Campus
     @Override
     public void startAndBindLS(ServiceConnection serviceConnection) {
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "startAndBindLS() called");
-        startService(getLSIntent());
+        getApplicationContext().startService(getLSIntent());
         bindLS(serviceConnection);
     }
 
     @Override
     public void bindLS(ServiceConnection serviceConnection) {
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "bindLS() called");
-        bindService(getLSIntent(), serviceConnection, 0);
+        getApplicationContext().bindService(getLSIntent(), serviceConnection, 0);
     }
 
     @Override
     public void unbindLS(ServiceConnection serviceConnection) {
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "unbindLS() called");
-        unbindService(serviceConnection);
+        getApplicationContext().unbindService(serviceConnection);
     }
 
     @Override
     public void unbindAndStopLS(ServiceConnection serviceConnection) {
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "unbindAndStopLS() called");
         unbindLS(serviceConnection);
-        stopService(getLSIntent());
+        getApplicationContext().stopService(getLSIntent());
     }
 
     public void onClick(View v) {

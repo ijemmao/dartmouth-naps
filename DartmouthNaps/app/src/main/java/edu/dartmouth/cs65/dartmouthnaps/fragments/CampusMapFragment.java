@@ -60,6 +60,8 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     private static final float ZOOM = 17;
     private static final String PERMISSIONS_GRANTED = "permissions granted";
 
+    private static LSConnection mLSConnection;
+
     public static LatLng sCurrentLocation = null;
     public static GoogleMap mGoogleMap;
 
@@ -70,7 +72,7 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     private ReviewCardsContainerFragment reviewCardsContainerFragment;
     private Messenger mRecvMessenger;
     private Messenger mLSSendMessenger;
-    private LSConnection mLSConnection;
+    private boolean mBindLSCalled;
 
     public CampusMapFragment() {
         // Required empty public constructor
@@ -122,7 +124,10 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         }
 
         mRecvMessenger = new Messenger(new CMFHandler());
-        mLSConnection = new LSConnection();
+
+        if (mLSConnection == null) mLSConnection = new LSConnection();
+
+        mBindLSCalled = false;
     }
 
     @Override
@@ -142,7 +147,12 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
 
         if (mPermissionsGranted) {
             if (!LocationService.sIsRunning) mCMFListener.startAndBindLS(mLSConnection);
-            else mCMFListener.bindLS(mLSConnection);
+            else if (!LocationService.sIsBound) {
+                if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "calling bindLS() from onCreateView()");
+                mLSConnection = new LSConnection();
+                mCMFListener.bindLS(mLSConnection);
+                mBindLSCalled = true;
+            }
         }
 
         reviewCardsContainerFragment = (ReviewCardsContainerFragment) getChildFragmentManager().findFragmentById(R.id.review_cards_container_fragment);
@@ -155,14 +165,20 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         super.onResume();
 
         // Bind if it should be done
-        if (!LocationService.sIsBound && LocationService.sIsRunning)
+        if (!LocationService.sIsBound && LocationService.sIsRunning && !mBindLSCalled) {
+            if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "calling bindLS() from onResume()");
+            mLSConnection = new LSConnection();
             mCMFListener.bindLS(mLSConnection);
+        }
     }
 
     @Override
     public void onPause() {
         // Unbind if it should be done
-        if (LocationService.sIsBound) mCMFListener.unbindLS(mLSConnection);
+        if (LocationService.sIsBound) {
+            mCMFListener.unbindLS(mLSConnection);
+            mLSSendMessenger = null;
+        }
 
         super.onPause();
     }
@@ -230,7 +246,11 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
 
         if (mPermissionsGranted) {
             if (!LocationService.sIsRunning) mCMFListener.startAndBindLS(mLSConnection);
-            else mCMFListener.bindLS(mLSConnection);
+            else if (!LocationService.sIsBound && !mBindLSCalled) {
+                if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "calling bindLS() from onRequestPermissionsResult()");
+                mLSConnection = new LSConnection();
+                mCMFListener.bindLS(mLSConnection);
+            }
         }
     }
 
@@ -304,7 +324,9 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_WHAT_SEND_LOCATION:
-                    handleLocation((LatLng) msg.obj);
+                    if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "MSG_WHAT_SEND_LOCATION received");
+
+                    handleLocation((LatLng)msg.obj);
                     break;
             }
         }
@@ -314,6 +336,8 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Message msg;
+
+            mBindLSCalled = false;
 
             // Initialize mLSSendMessenger to communicate with the Service
             mLSSendMessenger = new Messenger(service);

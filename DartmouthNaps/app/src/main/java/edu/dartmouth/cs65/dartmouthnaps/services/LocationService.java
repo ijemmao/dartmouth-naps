@@ -36,7 +36,7 @@ public class LocationService extends Service {
 
     private static final int UNIT_TO_MILLI = 1000;
     private static final int MIN_TO_SEC = 60;
-    private static final int THRESHOLD = 20;
+    private static final int THRESHOLD = 30;
     private static final int THRESHOLD_IN_MILLIS = THRESHOLD * MIN_TO_SEC * UNIT_TO_MILLI;
 
     private static boolean sNotificationRunning = false;
@@ -76,6 +76,8 @@ public class LocationService extends Service {
 
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onStartCommand() called");
 
+        sIsRunning = true;
+
         if (!sNotificationRunning) {
             // Upon creation, we want to start the Notification with the PendingIntent to bring the app
             // to the forefront again
@@ -114,13 +116,19 @@ public class LocationService extends Service {
     }
 
     @Override
+    public void onRebind (Intent intent) {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onRebind() called");
+        sIsBound = true;
+    }
+
+    @Override
     public boolean onUnbind(Intent intent) {
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onUnbind() called");
         mSendMessenger = null;
         sIsBound = false;
         requestLocationUpdates(null, false);
 
-        return false;
+        return true;
     }
 
     @Override
@@ -141,8 +149,8 @@ public class LocationService extends Service {
 
         locationRequest = new LocationRequest()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setFastestInterval(fast ? 5 * UNIT_TO_MILLI : MIN_TO_SEC * UNIT_TO_MILLI)
-                .setInterval(fast ? 10 * UNIT_TO_MILLI : 2 * MIN_TO_SEC * UNIT_TO_MILLI)
+                .setFastestInterval(fast ? 5 * UNIT_TO_MILLI : 5 * UNIT_TO_MILLI)
+                .setInterval(fast ? 10 * UNIT_TO_MILLI : 10 * UNIT_TO_MILLI)
                 .setSmallestDisplacement(fast ? 5 : 0);
 
         try {
@@ -174,12 +182,15 @@ public class LocationService extends Service {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_WHAT_SEND_MESSENGER:
+                    if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "MSG_WHAT_SEND_MESSENGER received");
                     mSendMessenger = msg.replyTo;
                     break;
                 case MSG_WHAT_SEND_LOOPER:
+                    if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "MSG_WHAT_SEND_LOOPER received");
                     mLooper = (Looper)msg.obj;
                     break;
                 case MSG_WHAT_SEND_CONTEXT:
+                    if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "MSG_WHAT_SEND_CONTEXT received");
                     requestLocationUpdates((Context)msg.obj, true);
                     break;
             }
@@ -204,6 +215,8 @@ public class LocationService extends Service {
                         location.latitude + ", " +
                         location.longitude + ")" + additional);
             }
+
+            Log.d(TAG, "onLocationResult(): sIsBound == " + sIsBound);
 
             if (sIsBound) {
                 sendMessage(MSG_WHAT_SEND_LOCATION, location);
