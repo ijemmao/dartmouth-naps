@@ -110,12 +110,8 @@ public class ReviewCardsContainerFragment extends Fragment {
 
                 imageFileName = image.getAbsolutePath();
 
-                System.out.println("WHAT IS THE PATH NOW?: " + imageFileName);
-
                 Bitmap bmp = BitmapFactory.decodeByteArray(review.getImage(), 0, review.getImage().length);
-//                FileOutputStream stream = getActivity().openFileOutput(imageFileName, getActivity().MODE_PRIVATE);
                 FileOutputStream stream = new FileOutputStream(new File(imageFileName));
-//                ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 
                 //Cleanup
@@ -130,7 +126,7 @@ public class ReviewCardsContainerFragment extends Fragment {
                 extras.putInt("convenience", review.getConvenience());
                 cardFragment.setArguments(extras);
             } catch (Exception e) {
-                System.out.println("this is going to be a reAL SITUATION IF WE DON'T FIX THIS: " + e);
+                e.printStackTrace();
             }
 
             return cardFragment;

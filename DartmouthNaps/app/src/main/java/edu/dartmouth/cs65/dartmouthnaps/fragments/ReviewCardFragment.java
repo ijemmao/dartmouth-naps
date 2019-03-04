@@ -83,16 +83,14 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
         reviewImage = view.findViewById(R.id.review_image);
 
         try {
-            System.out.println("THIS IS THE IMAGE RIGHT HERE: " + image);
             FileInputStream is = new FileInputStream (new File(image));
 
             Bitmap bmp = BitmapFactory.decodeStream(is);
             is.close();
 
-//        reviewImage.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
             reviewImage.setImageBitmap(bmp);
         } catch (Exception e) {
-            System.out.println("THERE MUST BE AN ERROR HERE: " + e);
+            e.printStackTrace();
         }
         headerTitle = view.findViewById(R.id.card_fragment_title);
         soundQuickStatus = view.findViewById(R.id.sound_quick_status);
