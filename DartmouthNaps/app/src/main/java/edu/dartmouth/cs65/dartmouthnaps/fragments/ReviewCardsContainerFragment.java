@@ -1,6 +1,7 @@
 package edu.dartmouth.cs65.dartmouthnaps.fragments;
 
 
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -32,7 +33,6 @@ import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainForFragmentActivity;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -86,6 +86,7 @@ public class ReviewCardsContainerFragment extends Fragment {
             extras.putInt("noise", review.getNoise());
             extras.putInt("comfort", review.getComfort());
             extras.putInt("light", review.getLight());
+            extras.putInt("convenience", review.getConvenience());
             cardFragment.setArguments(extras);
 
             return cardFragment;
@@ -97,22 +98,53 @@ public class ReviewCardsContainerFragment extends Fragment {
         }
     }
 
+    // Calculates the convenience of each review card
+    private int calculateConvenience(float distance) {
+        if (distance <= 80) {
+            // Five bars
+            return 5;
+        } else if (distance <= 160) {
+            // Four bars
+            return 4;
+        } else if (distance <= 320) {
+            // Three bars
+            return 3;
+        } else if (distance <= 440) {
+            // Two bars
+            return 2;
+        }
+        // One bar
+        return 1;
+    }
+
+    public void calculateConveniences(Location currentLocation) {
+        for (int i = 0; i < reviews.size(); i++) {
+            Review review = reviews.get(i);
+            review.setConvenience(calculateConvenience(currentLocation.distanceTo(review.getLocation().toLocation())));
+        }
+        mPager = getActivity().findViewById(R.id.pager);
+        pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
+    }
+
     ValueEventListener reviewsListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             reviews = new ArrayList<>();
+            Location currentLocation = CampusMapFragment.sCurrentLocation;
+
             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                 Review review = snapshot.getValue(Review.class);
                 reviews.add(review);
             }
 
             // Sorts the reviews when a new item is added to the database
-            if (CampusMapFragment.sCurrentLocation != null) {
+            if (currentLocation != null) {
                 reviews = MainForFragmentActivity.sFirebaseDataSource.getReviewsNear(reviews, new edu.dartmouth.cs65.dartmouthnaps.models.LatLng(
-                        CampusMapFragment.sCurrentLocation.getLatitude(), CampusMapFragment.sCurrentLocation.getLongitude()));
+                        currentLocation.getLatitude(), currentLocation.getLongitude()));
             }
 
-            mPager = (ViewPager) getActivity().findViewById(R.id.pager);
+            mPager = getActivity().findViewById(R.id.pager);
+            pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
             mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
                 public void onPageScrolled(int i, float v, int i1) {
@@ -131,7 +163,6 @@ public class ReviewCardsContainerFragment extends Fragment {
 
                 }
             });
-            pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
             mPager.setAdapter(pagerAdapter);
         }
 

@@ -10,6 +10,7 @@ public class Review {
     private int noise;                  // Integer for noise rating
     private int comfort;                // Integer for comfort rating
     private int light;                  // Integer for light rating
+    private int convenience;            // Integer for convenience rating
     private String title;               // String for the title of the review
     private String imageName;           // String for the name of the image
     private String timestamp;           // String for the timestamp of the comment in
@@ -33,6 +34,7 @@ public class Review {
         this.noise = noise;
         this.comfort = comfort;
         this.light = light;
+        this.convenience = 0;
         this.title = title;
         this.imageName = imageName;
         this.timestamp = timestamp;
@@ -70,6 +72,10 @@ public class Review {
     public void setLight(int light) {
         this.light = light;
     }
+
+    public int getConvenience() { return convenience; }
+
+    public void setConvenience(int convenience) { this.convenience = convenience; }
 
     public String getTitle() {
         return title;

@@ -28,6 +28,7 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
     private int noise;
     private int comfort;
     private int light;
+    private int convenience;
 
     ImageView reviewImage;
     TextView headerTitle;
@@ -56,6 +57,9 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
         noise = extras.getInt("noise", 1);
         comfort = extras.getInt("comfort", 1);
         light = extras.getInt("light", 1);
+        convenience = extras.getInt("convenience", 0);
+
+        System.out.println("this is the convenience: " + convenience);
 
         drawables = new Drawable[]{
                 view.getContext().getResources().getDrawable(R.drawable.red, null),
@@ -80,10 +84,12 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
         return view;
     }
 
+    // Applying the correct color to the quick status labels
     private void assignColors() {
         soundQuickStatus.setBackground(drawables[noise]);
         comfortQuickStatus.setBackground(drawables[comfort]);
         lightQuickStatus.setBackground(drawables[light]);
+        convenienceQuickStatus.setBackground(drawables[convenience]);
     }
 
     @Override
