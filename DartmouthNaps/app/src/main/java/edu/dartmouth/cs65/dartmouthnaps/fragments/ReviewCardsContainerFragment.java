@@ -102,6 +102,7 @@ public class ReviewCardsContainerFragment extends Fragment {
             Review review = reviews.get(position);
             final Bundle extras = new Bundle();
 
+            // Writing images of reviews to phone to avoid passing over byte arrays
             try {
                 String imageFileName = "bitmap";
 
@@ -166,6 +167,7 @@ public class ReviewCardsContainerFragment extends Fragment {
         pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
     }
 
+    // AsyncTask to load all the images together from Firebase
     public class ImageLoadTask extends AsyncTask<Void, Void, Void> {
 
         @Override protected Void doInBackground(Void... params) {
@@ -175,8 +177,8 @@ public class ReviewCardsContainerFragment extends Fragment {
                 final Review review = snapshot.getValue(Review.class);
 
                 try {
-                    byte[] thisisit = (byte[]) runFuture(review).get();
-                    review.setImage(thisisit);
+                    byte[] reviewImage = (byte[]) runFuture(review).get();
+                    review.setImage(reviewImage);
                 } catch (Exception e) {
 
                 }
@@ -186,6 +188,7 @@ public class ReviewCardsContainerFragment extends Fragment {
             return null;
         }
 
+        // Once all images are loaded, the screen will be updated with all the reviews
         @Override protected void onPostExecute(Void result) {
             super.onPostExecute(result);
 
@@ -251,6 +254,8 @@ public class ReviewCardsContainerFragment extends Fragment {
     }
 
 
+    // ValueEventListener that listens for changes from Firebase
+    // Once an event is heard, the listener will call the AsyncTask
     ValueEventListener reviewsListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

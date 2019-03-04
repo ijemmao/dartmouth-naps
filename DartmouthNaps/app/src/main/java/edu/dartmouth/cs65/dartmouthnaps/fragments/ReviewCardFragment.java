@@ -117,7 +117,6 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
         switch (v.getId()) {
             case R.id.review_card_fragment:
                 Intent intent = new Intent(getContext(), ReviewActivity.class);
-                extras.remove("image");
                 intent.putExtras(extras);
                 startActivity(intent);
                 break;
