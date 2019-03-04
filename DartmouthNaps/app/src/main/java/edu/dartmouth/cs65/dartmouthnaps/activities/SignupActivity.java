@@ -18,6 +18,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import edu.dartmouth.cs65.dartmouthnaps.AuthOnCompleteListener;
+import edu.dartmouth.cs65.dartmouthnaps.activities.LoginActivity;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -35,12 +36,12 @@ public class SignupActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_white_x_24dp);
 
-
-
         //gets the edit texts and sets the auth
         signupID = (EditText)findViewById(R.id.signup_id);
         signupPassword = (EditText)findViewById(R.id.signup_password);
         auth = FirebaseAuth.getInstance();
+
+
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -53,18 +54,20 @@ public class SignupActivity extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.login_menu_button) {
 
-            Intent intent = new Intent(this, edu.dartmouth.cs65.dartmouthnaps.activities.LoginActivity.class); //starts the login page
+            Intent intent = new Intent(this, LoginActivity.class); //starts the login page
 
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
 
+
     //if the final sign up button is clicked, sign up
     public void onSignupClicked(View view){
         String textEmail = signupID.getText().toString();
         String textPassword = signupPassword.getText().toString();
         if(!(textEmail.isEmpty()) && !(textPassword.isEmpty())) {
+            Log.d("tag2","signing up with: " + textEmail + ", " + textPassword);
             task = auth.createUserWithEmailAndPassword(textEmail, textPassword);
             AuthOnCompleteListener listener = new AuthOnCompleteListener(this, "signup"); //listen for completion
             task.addOnCompleteListener(listener);

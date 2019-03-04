@@ -15,7 +15,6 @@ import edu.dartmouth.cs65.dartmouthnaps.R;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-
 import edu.dartmouth.cs65.dartmouthnaps.AuthOnCompleteListener;
 
 public class LoginActivity extends AppCompatActivity {
@@ -34,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
         loginID = (EditText)findViewById(R.id.login_id);
         loginPassword = (EditText)findViewById(R.id.login_password);
         auth = FirebaseAuth.getInstance();
+
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);

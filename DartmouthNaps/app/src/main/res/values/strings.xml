@@ -34,6 +34,7 @@
     <string name="nav_text_reviews">Reviews</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="text_welcome_back">"Welcome Back, Sleepy Head!"</string>
+    <string name="text_my_reviews">My Active Reviews</string>
 
 
     <!-- Buttons -->
