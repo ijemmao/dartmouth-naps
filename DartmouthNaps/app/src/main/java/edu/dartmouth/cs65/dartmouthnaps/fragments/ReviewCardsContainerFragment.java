@@ -1,10 +1,12 @@
 package edu.dartmouth.cs65.dartmouthnaps.fragments;
 
 
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -30,6 +32,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
@@ -60,6 +65,11 @@ public class ReviewCardsContainerFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -91,13 +101,37 @@ public class ReviewCardsContainerFragment extends Fragment {
             final ReviewCardFragment cardFragment = new ReviewCardFragment();
             Review review = reviews.get(position);
             final Bundle extras = new Bundle();
-            extras.putString("title", review.getTitle());
-            extras.putByteArray("image", review.getImage());
-            extras.putInt("noise", review.getNoise());
-            extras.putInt("comfort", review.getComfort());
-            extras.putInt("light", review.getLight());
-            extras.putInt("convenience", review.getConvenience());
-            cardFragment.setArguments(extras);
+
+            try {
+                String imageFileName = "bitmap";
+
+                File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+
+                imageFileName = image.getAbsolutePath();
+
+                System.out.println("WHAT IS THE PATH NOW?: " + imageFileName);
+
+                Bitmap bmp = BitmapFactory.decodeByteArray(review.getImage(), 0, review.getImage().length);
+//                FileOutputStream stream = getActivity().openFileOutput(imageFileName, getActivity().MODE_PRIVATE);
+                FileOutputStream stream = new FileOutputStream(new File(imageFileName));
+//                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+
+                //Cleanup
+                stream.close();
+                bmp.recycle();
+
+                extras.putString("title", review.getTitle());
+                extras.putString("image", imageFileName);
+                extras.putInt("noise", review.getNoise());
+                extras.putInt("comfort", review.getComfort());
+                extras.putInt("light", review.getLight());
+                extras.putInt("convenience", review.getConvenience());
+                cardFragment.setArguments(extras);
+            } catch (Exception e) {
+                System.out.println("this is going to be a reAL SITUATION IF WE DON'T FIX THIS: " + e);
+            }
 
             return cardFragment;
         }
@@ -139,7 +173,7 @@ public class ReviewCardsContainerFragment extends Fragment {
     public class ImageLoadTask extends AsyncTask<Void, Void, Void> {
 
         @Override protected Void doInBackground(Void... params) {
-            
+
             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                 final Review review = snapshot.getValue(Review.class);
@@ -196,6 +230,7 @@ public class ReviewCardsContainerFragment extends Fragment {
         Future<byte[]> future = executorService.submit(new Callable<byte[]>() {
             @Override
             public byte[] call() throws Exception {
+
                 StorageReference imageRef = storageReference.child("images/" + review.getAuthor() + "-" + review.getImageName() + ".jpg");
                 final long ONE_MEGABYTE = 1024 * 1024;
                 Task<byte[]> result = imageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
@@ -227,7 +262,6 @@ public class ReviewCardsContainerFragment extends Fragment {
             reviews = new ArrayList<>();
 
             ReviewCardsContainerFragment.dataSnapshot = dataSnapshot;
-            System.out.println("WE ARE RIGHT HERE");
             new ImageLoadTask().execute();
 
 

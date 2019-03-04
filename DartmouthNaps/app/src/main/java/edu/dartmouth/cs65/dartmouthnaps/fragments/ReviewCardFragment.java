@@ -2,6 +2,7 @@ package edu.dartmouth.cs65.dartmouthnaps.fragments;
 
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -19,6 +20,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.FileInputStream;
+
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.activities.ReviewActivity;
 
@@ -31,7 +35,7 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
     private Drawable[] drawables;
 
     private String title;
-    private byte[] image;
+    private String image;
     private int noise;
     private int comfort;
     private int light;
@@ -61,7 +65,7 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
         extras = getArguments();
 
         title = extras.getString("title");
-        image = extras.getByteArray("image");
+        image = extras.getString("image");
         noise = extras.getInt("noise", 1);
         comfort = extras.getInt("comfort", 1);
         light = extras.getInt("light", 1);
@@ -77,7 +81,19 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
         };
 
         reviewImage = view.findViewById(R.id.review_image);
-        reviewImage.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
+
+        try {
+            System.out.println("THIS IS THE IMAGE RIGHT HERE: " + image);
+            FileInputStream is = new FileInputStream (new File(image));
+
+            Bitmap bmp = BitmapFactory.decodeStream(is);
+            is.close();
+
+//        reviewImage.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
+            reviewImage.setImageBitmap(bmp);
+        } catch (Exception e) {
+            System.out.println("THERE MUST BE AN ERROR HERE: " + e);
+        }
         headerTitle = view.findViewById(R.id.card_fragment_title);
         soundQuickStatus = view.findViewById(R.id.sound_quick_status);
         comfortQuickStatus = view.findViewById(R.id.comfort_quick_status);
@@ -103,6 +119,7 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
         switch (v.getId()) {
             case R.id.review_card_fragment:
                 Intent intent = new Intent(getContext(), ReviewActivity.class);
+                extras.remove("image");
                 intent.putExtras(extras);
                 startActivity(intent);
                 break;
