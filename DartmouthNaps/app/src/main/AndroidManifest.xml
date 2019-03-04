@@ -30,7 +30,10 @@
         <activity android:name=".activities.ReviewActivity" />
         <activity android:name=".activities.NewReviewActivity" />
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
-
+        <service
+            android:name=".services.LocationService"
+            android:enabled="true"
+            android:exported="false" />
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="edu.dartmouth.cs65.dartmouthnaps.fileprovider"

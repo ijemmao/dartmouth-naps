@@ -1,6 +1,9 @@
 package edu.dartmouth.cs65.dartmouthnaps.services;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +13,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -19,6 +23,8 @@ import com.google.android.gms.location.LocationResult;
 
 import java.util.Calendar;
 
+import edu.dartmouth.cs65.dartmouthnaps.R;
+import edu.dartmouth.cs65.dartmouthnaps.activities.MainForFragmentActivity;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil;
 
@@ -63,7 +69,38 @@ public class LocationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        NotificationChannel notificationChannel;
+        Intent notifIntent;
+        PendingIntent contentIntent;
+        Notification notification;
+
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onStartCommand() called");
+
+        if (!sNotificationRunning) {
+            // Upon creation, we want to start the Notification with the PendingIntent to bring the app
+            // to the forefront again
+            notificationChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    TAG,
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            notifIntent = new Intent(this, MainForFragmentActivity.class);
+            contentIntent = PendingIntent.getActivity(
+                    this,
+                    0,
+                    notifIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentTitle(LOCATION_SERVICE_NOTIFICATION_TITLE)
+                    .setContentText(LOCATION_SERVICE_NOTIFICATION_TEXT)
+                    .setSmallIcon(R.drawable.ic_launcher_background)
+                    .setContentIntent(contentIntent)
+                    .build();
+            notification.flags = notification.flags | Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;
+            mNotificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+            mNotificationManager.createNotificationChannel(notificationChannel);
+            mNotificationManager.notify(0, notification);
+            sNotificationRunning = true;
+        }
 
         return START_STICKY;
     }
@@ -106,7 +143,7 @@ public class LocationService extends Service {
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setFastestInterval(fast ? 5 * UNIT_TO_MILLI : MIN_TO_SEC * UNIT_TO_MILLI)
                 .setInterval(fast ? 10 * UNIT_TO_MILLI : 2 * MIN_TO_SEC * UNIT_TO_MILLI)
-                .setSmallestDisplacement(5);
+                .setSmallestDisplacement(fast ? 5 : 0);
 
         try {
             mFLCP.requestLocationUpdates(

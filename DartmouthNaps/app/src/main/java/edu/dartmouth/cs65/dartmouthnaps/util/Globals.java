@@ -4,6 +4,12 @@ public abstract class Globals {
     public static final String TAG_GLOBAL = "DartmouthNaps";
     public static final boolean DEBUG_GLOBAL = true;
 
+    public static final String CHANNEL_ID = "DartmouthNaps Notification Channel";
+    public static final String LOCATION_SERVICE_NOTIFICATION_TITLE =
+            "Just so you know, we're monitoring your location";
+    public static final String LOCATION_SERVICE_NOTIFICATION_TEXT =
+            "Tap to return to the app!";
+
     public static final String KEY_LATITUDE = "latitude";
     public static final String KEY_LONGITUDE = "longitude";
 
