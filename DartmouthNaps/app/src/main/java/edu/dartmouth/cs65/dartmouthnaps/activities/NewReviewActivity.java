@@ -35,13 +35,18 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.fragments.RatingFragment;
+import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
+
+import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
+import static edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil.*;
 
 public class NewReviewActivity extends AppCompatActivity {
 
@@ -66,12 +71,19 @@ public class NewReviewActivity extends AppCompatActivity {
     Uri photoURI;
     byte[] imageBytes;
     String imageFileName;
+    LatLng location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Intent intent;
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_review);
 
+        intent = getIntent();
+        location = new LatLng(
+                intent.getDoubleExtra(KEY_LATITUDE, PLACE_COORDINATES_AVG[1][LAT]),
+                intent.getDoubleExtra(KEY_LONGITUDE, PLACE_COORDINATES_AVG[1][LNG]));
         checkPermission();
 
         auth = FirebaseAuth.getInstance();
@@ -99,16 +111,17 @@ public class NewReviewActivity extends AppCompatActivity {
                 lightFragment.getRating(),
                 reviewHeader.getText().toString(),
                 imageFileName,
-                new Date().toString()
-        );
+                Review.getTimestampFromCalendar(Calendar.getInstance()),
+                location);
 
-        String key = dbReference.child("users").child(user.getUid()).child("reviews").push().getKey();
-        Map<String, Object> reviews = newReview.toMap();
-
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("users/" + user.getUid() + "/reviews/" + key, reviews);
-        childUpdates.put("/reviews/" + key, reviews);
-        dbReference.updateChildren(childUpdates);
+        MainForFragmentActivity.sFirebaseDataSource.createReview(newReview);
+//        String key = dbReference.child("users").child(user.getUid()).child("reviews").push().getKey();
+//        Map<String, Object> reviews = newReview.toMap();
+//
+//        Map<String, Object> childUpdates = new HashMap<>();
+//        childUpdates.put("users/" + user.getUid() + "/reviews/" + key, reviews);
+//        childUpdates.put("/reviews/" + key, reviews);
+//        dbReference.updateChildren(childUpdates);
         Toast.makeText(this, "Review sent", Toast.LENGTH_SHORT).show();
 
         UploadTask uploadTask = storageReference.child("images/" + user.getUid() + "-" +  imageFileName + ".jpg").putBytes(imageBytes);
@@ -121,9 +134,9 @@ public class NewReviewActivity extends AppCompatActivity {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                finish();
             }
         });
-        finish();
     }
 
     public void handleImage(View view) {

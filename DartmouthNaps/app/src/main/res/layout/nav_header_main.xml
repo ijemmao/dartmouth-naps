@@ -22,12 +22,14 @@
         android:src="@drawable/ic_person_outline_blue_100dp"/>
 
     <TextView
+        android:id="@+id/header_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="EMAIL HERE"
         android:layout_gravity="center_horizontal"
         android:gravity="center_horizontal"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:fontFamily="@font/montserrat"/>
 
 
 </LinearLayout>

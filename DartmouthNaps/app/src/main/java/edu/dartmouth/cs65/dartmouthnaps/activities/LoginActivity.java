@@ -15,7 +15,7 @@ import edu.dartmouth.cs65.dartmouthnaps.R;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import edu.dartmouth.cs65.dartmouthnaps.AuthOnCompleteListener;
+import edu.dartmouth.cs65.dartmouthnaps.listeners.AuthOnCompleteListener;
 
 public class LoginActivity extends AppCompatActivity {
 

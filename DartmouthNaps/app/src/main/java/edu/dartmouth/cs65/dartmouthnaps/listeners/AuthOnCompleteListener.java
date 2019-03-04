@@ -1,4 +1,4 @@
-package edu.dartmouth.cs65.dartmouthnaps;
+package edu.dartmouth.cs65.dartmouthnaps.listeners;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +9,7 @@ import android.util.Log;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainForFragmentActivity;
 
@@ -24,7 +25,7 @@ public class AuthOnCompleteListener implements OnCompleteListener {
     }
 
     //if task is successfully completed
-    public void onComplete(Task task){
+    public void onComplete(@NonNull Task task){
         if(task.isSuccessful()) {
             Intent intent = new Intent(context, MainActivity.class); //open main activity with a message to get new database
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); //clear the previous activities
@@ -41,6 +42,7 @@ public class AuthOnCompleteListener implements OnCompleteListener {
             builder.setTitle(R.string.oops_title).setPositiveButton(android.R.string.ok, null);
             AlertDialog dialog = builder.create();
             dialog.show();
+            Log.d(TAG, task.toString());
         }
     }
 }

@@ -10,12 +10,17 @@ public class Review {
     private int noise;                  // Integer for noise rating
     private int comfort;                // Integer for comfort rating
     private int light;                  // Integer for light rating
+    private int convenience;            // Integer for convenience rating
     private String title;               // String for the title of the review
     private String imageName;           // String for the name of the image
+    private byte[] image;               // Image representation in byte array
     private String timestamp;           // String for the timestamp of the comment in
                                         // "YYYY-MM-DD HH:MM:SS.SSS" form
+    private LatLng location;            // LatLng representing the coordinates of the review
 
-    public Review() {}
+    public Review() {
+        this.location = new LatLng();
+    }
 
     public Review(
             String author,
@@ -24,14 +29,17 @@ public class Review {
             int light,
             String title,
             String imageName,
-            String timestamp) {
+            String timestamp,
+            LatLng location) {
         this.author = author;
         this.noise = noise;
         this.comfort = comfort;
         this.light = light;
+        this.convenience = 0;
         this.title = title;
         this.imageName = imageName;
         this.timestamp = timestamp;
+        this.location = location;
     }
 
     public String getAuthor() {
@@ -46,13 +54,49 @@ public class Review {
         return noise;
     }
 
-    public int getComfort() { return comfort; }
+    public void setNoise(int noise) {
+        this.noise = noise;
+    }
 
-    public int getLight() { return light; }
+    public int getComfort() {
+        return comfort;
+    }
 
-    public String getTitle() { return title; }
+    public void setComfort(int comfort) {
+        this.comfort = comfort;
+    }
 
-    public String getImageName() { return imageName; }
+    public int getLight() {
+        return light;
+    }
+
+    public void setLight(int light) {
+        this.light = light;
+    }
+
+    public int getConvenience() { return convenience; }
+
+    public void setConvenience(int convenience) { this.convenience = convenience; }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
+    public byte[] getImage() { return image; }
+
+    public void setImage(byte[] image) { this.image = image; }
 
     public String getTimestamp() {
         return timestamp;
@@ -60,6 +104,14 @@ public class Review {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public LatLng getLocation() {
+        return location;
+    }
+
+    public void setLocation(LatLng location) {
+        this.location = location;
     }
 
     public static String getTimestampFromCalendar(Calendar timestampCal) {
@@ -82,6 +134,7 @@ public class Review {
         result.put("title", title);
         result.put("imageName", imageName);
         result.put("timestamp", timestamp);
+        result.put("location", location);
 
         return result;
     }

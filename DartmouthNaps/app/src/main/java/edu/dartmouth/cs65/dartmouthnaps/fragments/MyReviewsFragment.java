@@ -2,7 +2,10 @@ package edu.dartmouth.cs65.dartmouthnaps.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,17 +14,33 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
+import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
 public class MyReviewsFragment extends Fragment {
 
     private ListView listView; //The list view
-    public MyReviewsAdapter adapter; //The adapter for the list view, using a custom adapter defined below
+    private MyReviewsAdapter adapter; //The adapter for the list view, using a custom adapter defined below
+    private FirebaseAuth auth;
+    private FirebaseUser user;
+    private String uID;
+    private DatabaseReference dbReference;
+    private StorageReference storageReference;
+    private ChildEventListener listener;
 
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -30,16 +49,42 @@ public class MyReviewsFragment extends Fragment {
         listView = (ListView) view.findViewById(R.id.my_reviews_list_view);
         List<Review> reviews = new ArrayList<Review>();
 
-        Review newReview = new Review("Bryan",3,4,3,"Kemeny 007","img","January 1, 2019");
-        Review newReview2 = new Review("Bryan",3,4,3,"Top of the Hop","img","February 29, 2019");
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        dbReference = FirebaseDatabase.getInstance().getReference().child("reviews");
+        storageReference = FirebaseStorage.getInstance().getReference();
 
-        reviews.add(newReview);
-        reviews.add(newReview2);
-        //replace this hard coded reviews with getting from firebase and adding to adapter
+        uID = user.getUid();
+        listener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.d("tag2", dataSnapshot.toString());
+            }
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                //unused
+            }
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                //check if something was removed, and delete it from database and refresh adapter
+//                ExerciseEntry entry = dataSnapshot.getValue(ExerciseEntry.class);
+//                exerciseEntryDataSource.deleteEntry(entry);
+//                adapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                //unused
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                //unused
+            }
+        };
 
+        dbReference = dbReference.child("users").child(uID).child("reviews");
+        dbReference.addChildEventListener(listener); //sets the listener in the correct leve
         adapter = new MyReviewsAdapter(getActivity(), android.R.layout.simple_list_item_1, reviews);
         listView.setAdapter(adapter);
-
 
         return view;
     }
