@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
+import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainForFragmentActivity;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
@@ -126,6 +127,7 @@ public class ReviewCardsContainerFragment extends Fragment {
 
                 extras.putString("title", review.getTitle());
                 extras.putString("image", imageFileName);
+
                 extras.putString("timestamp", review.getFormattedTimestamp());
                 extras.putInt("noise", review.getNoise());
                 extras.putInt("comfort", review.getComfort());
@@ -212,6 +214,7 @@ public class ReviewCardsContainerFragment extends Fragment {
 
             // Sorts the reviews when a new item is added to the database
             if (currentLocation != null) {
+                reviews = MainActivity.sFirebaseDataSource.getReviewsNear(reviews, new edu.dartmouth.cs65.dartmouthnaps.models.LatLng(
                 reviews = MainForFragmentActivity.sFirebaseDataSource.getReviewsNear(reviews, new edu.dartmouth.cs65.dartmouthnaps.models.LatLng(
                         currentLocation.getLatitude(), currentLocation.getLongitude()));
             }

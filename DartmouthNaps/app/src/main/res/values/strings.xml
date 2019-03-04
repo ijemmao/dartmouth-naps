@@ -29,6 +29,16 @@
     <string name="invalid_signup_text">"Unable to sign up."</string>
     <string name="empty_fields_text">"Please enter a username and password!"</string>
     <string name="oops_title">Oops!</string>
+    <string name="text_my_reviews">My Active Reviews</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="nav_text_reviews">Reviews</string>
+    <string name="text_open">OPEN</string>
+    <string name="text_close">CLOSE</string>
+    <string name="text_welcome_back">"Welcome Back, Sleepy Head!"</string>
+    <string name="nav_text_map">Map</string>
+    <string name="text_sign_up_to_review">Sign Up to Review</string>
+
+
 
     <!-- Buttons -->
     <string name="submit_button">Submit</string>

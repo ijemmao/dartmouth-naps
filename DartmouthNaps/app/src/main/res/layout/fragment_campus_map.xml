@@ -17,6 +17,27 @@
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/open_drawer"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="start"
+                android:background="@drawable/ic_person_outline_blue_100dp"
+                android:paddingRight="50dp"
+                android:onClick="onClick"/>
+
+            <Button
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_gravity="right"
+                android:layout_weight="0.5"
+                android:background="@drawable/yellow"
+                android:id="@+id/add_review"
+                android:layout_height="wrap_content"
+                android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:gravity="end">
 
