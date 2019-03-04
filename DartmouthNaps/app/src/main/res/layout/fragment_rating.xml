@@ -31,35 +31,35 @@
                 android:id="@+id/first_rating"
                 android:background="@drawable/gray"
                 android:layout_width="70dp"
-                android:layout_height="20dp"
+                android:layout_height="25dp"
                 android:layout_marginRight="5dp" />
 
             <Button
                 android:id="@+id/second_rating"
                 android:background="@drawable/gray"
                 android:layout_width="70dp"
-                android:layout_height="20dp"
+                android:layout_height="25dp"
                 android:layout_marginRight="5dp" />
 
             <Button
                 android:id="@+id/third_rating"
                 android:background="@drawable/gray"
                 android:layout_width="70dp"
-                android:layout_height="20dp"
+                android:layout_height="25dp"
                 android:layout_marginRight="5dp" />
 
             <Button
                 android:id="@+id/fourth_rating"
                 android:background="@drawable/gray"
                 android:layout_width="70dp"
-                android:layout_height="20dp"
+                android:layout_height="25dp"
                 android:layout_marginRight="5dp" />
 
             <Button
                 android:id="@+id/fifth_rating"
                 android:background="@drawable/gray"
                 android:layout_width="70dp"
-                android:layout_height="20dp" />
+                android:layout_height="25dp" />
 
         </LinearLayout>
 
