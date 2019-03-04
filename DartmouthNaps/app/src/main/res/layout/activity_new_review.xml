@@ -26,6 +26,7 @@
                     android:id="@+id/location_image"
                     android:layout_width="match_parent"
                     android:layout_height="300sp"
+                    android:layout_marginTop="10dp"
                     android:onClick="handleImage" />
 
                 <ImageView
@@ -45,14 +46,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:layout_margin="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"
                 android:background="@null"
                 android:fontFamily="@font/montserrat_bold"
                 android:hint="@string/text_hint"
                 android:minHeight="100sp"
                 android:textColor="@color/colorHeader"
                 android:textCursorDrawable="@null"
-                android:textSize="28sp" />
+                android:textSize="32sp" />
 
             <fragment
                 app:title="@string/noise_label"
