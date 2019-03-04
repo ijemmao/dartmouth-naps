@@ -7,12 +7,14 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -20,6 +22,8 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.Calendar;
 
@@ -36,10 +40,11 @@ public class LocationService extends Service {
 
     private static final int UNIT_TO_MILLI = 1000;
     private static final int MIN_TO_SEC = 60;
-    private static final int THRESHOLD = 30;
+    private static final int THRESHOLD = 10;
     private static final int THRESHOLD_IN_MILLIS = THRESHOLD * MIN_TO_SEC * UNIT_TO_MILLI;
 
     private static boolean sNotificationRunning = false;
+    private static Thread sLocationThread;
 
     public static boolean sIsBound = false;
     public static boolean sIsRunning = false;
@@ -65,6 +70,7 @@ public class LocationService extends Service {
         mRecvMessenger = new Messenger(new LSHandler());
         mSendMessenger = null;
         mPrevPlaceIndex = -1;
+        sLocationThread = null;
     }
 
     @Override
@@ -112,6 +118,11 @@ public class LocationService extends Service {
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onBind() called");
         sIsBound = true;
 
+        if (sLocationThread != null) {
+            sLocationThread.interrupt();
+            sLocationThread = null;
+        }
+
         return mRecvMessenger.getBinder();
     }
 
@@ -119,6 +130,11 @@ public class LocationService extends Service {
     public void onRebind (Intent intent) {
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onRebind() called");
         sIsBound = true;
+
+        if (sLocationThread != null) {
+            sLocationThread.interrupt();
+            sLocationThread = null;
+        }
     }
 
     @Override
@@ -126,7 +142,7 @@ public class LocationService extends Service {
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onUnbind() called");
         mSendMessenger = null;
         sIsBound = false;
-        requestLocationUpdates(null, false);
+        checkLocationPeriodically();
 
         return true;
     }
@@ -134,30 +150,38 @@ public class LocationService extends Service {
     @Override
     public void onDestroy() {
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onDestroy() called");
+        super.onDestroy();
+        // Upon being destroyed, get rid of all notifications and set sIsRunning to false
+        mNotificationManager.cancelAll();
+        mFLCP.removeLocationUpdates(mLSLC);
+
+        if (sLocationThread != null) {
+            sLocationThread.interrupt();
+            sLocationThread = null;
+        }
+
+        sIsRunning = false;
     }
 
-    private void requestLocationUpdates(Context context, boolean fast) {
+    private void requestLocationUpdates(boolean fast) {
         LocationRequest locationRequest;
 
         if (mFLCP != null) {
             mFLCP.removeLocationUpdates(mLSLC);
         }
 
-        if (context != null) {
-            mFLCP = new FusedLocationProviderClient(context);
-        }
-
+        mFLCP = new FusedLocationProviderClient(getApplicationContext());
         locationRequest = new LocationRequest()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setFastestInterval(fast ? 5 * UNIT_TO_MILLI : 5 * UNIT_TO_MILLI)
-                .setInterval(fast ? 10 * UNIT_TO_MILLI : 10 * UNIT_TO_MILLI)
+                .setFastestInterval(fast ? 5 * UNIT_TO_MILLI : UNIT_TO_MILLI)
+                .setInterval(fast ? 10 * UNIT_TO_MILLI : 2 * UNIT_TO_MILLI)
                 .setSmallestDisplacement(fast ? 5 : 0);
 
         try {
             mFLCP.requestLocationUpdates(
                     locationRequest,
                     mLSLC,
-                    mLooper);
+                    getMainLooper());
         } catch (SecurityException e) {
             Log.e(TAG, "SecurityException caught in requestLocationUpdates");
             e.printStackTrace();
@@ -177,6 +201,61 @@ public class LocationService extends Service {
         }
     }
 
+    private void checkLocationPeriodically() {
+        sLocationThread = performOnBackgroundThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mFLCP.getLastLocation()
+                            .addOnSuccessListener(new OnSuccessListener<Location>() {
+                                @Override
+                                public void onSuccess(Location location) {
+                                    // GPS location can be null if GPS is switched off
+                                    if (location != null) {
+                                        LatLng latLng = new LatLng(location);
+                                        long currTime;
+                                        int currPlaceIndex;
+
+                                        currPlaceIndex = PlaceUtil.getPlaceIndex(latLng.toDoubleArr());
+                                        currTime = Calendar.getInstance().getTimeInMillis();
+
+                                        if (DEBUG_GLOBAL && DEBUG) {
+                                            String additional = currPlaceIndex == -1 ?
+                                                    " is outside all places" :
+                                                    " is inside " + PlaceUtil.PLACE_NAMES[currPlaceIndex];
+                                            Log.d(TAG, "checkLocationPeriodically(): (" +
+                                                    latLng.latitude + ", " +
+                                                    latLng.longitude + ")" + additional);
+                                        }
+
+                                        if (mPrevPlaceIndex != currPlaceIndex) {
+                                            mPrevPlaceIndex = currPlaceIndex;
+                                            mPrevTime = currTime;
+                                        } else if (mPrevPlaceIndex != -1 &&
+                                                currTime - mPrevTime >= THRESHOLD_IN_MILLIS) {
+                                            if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "stayed in " +
+                                                    PlaceUtil.PLACE_NAMES[mPrevPlaceIndex] + " for " + THRESHOLD + " min");
+
+                                            mPrevTime = currTime;
+                                        }
+                                    }
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "getLastLocation().addOnFailureListener() called");
+                                    e.printStackTrace();
+                                }
+                            });
+                } catch (SecurityException e) {
+                    if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "Error trying to get last GPS location");
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
     private class LSHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -184,6 +263,7 @@ public class LocationService extends Service {
                 case MSG_WHAT_SEND_MESSENGER:
                     if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "MSG_WHAT_SEND_MESSENGER received");
                     mSendMessenger = msg.replyTo;
+                    requestLocationUpdates(true);
                     break;
                 case MSG_WHAT_SEND_LOOPER:
                     if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "MSG_WHAT_SEND_LOOPER received");
@@ -191,7 +271,7 @@ public class LocationService extends Service {
                     break;
                 case MSG_WHAT_SEND_CONTEXT:
                     if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "MSG_WHAT_SEND_CONTEXT received");
-                    requestLocationUpdates((Context)msg.obj, true);
+                    requestLocationUpdates(true);
                     break;
             }
         }
@@ -211,7 +291,7 @@ public class LocationService extends Service {
                 String additional = currPlaceIndex == -1 ?
                         " is outside all places" :
                         " is inside " + PlaceUtil.PLACE_NAMES[currPlaceIndex];
-                Log.d(TAG, "(" +
+                Log.d(TAG, "onLocationResult(): (" +
                         location.latitude + ", " +
                         location.longitude + ")" + additional);
             }
@@ -235,5 +315,32 @@ public class LocationService extends Service {
                 }
             }
         }
+    }
+
+    private static Thread performOnBackgroundThread(final Runnable runnable) {
+        final Thread t = new Thread() {
+            volatile boolean pleaseStopNow = false;
+
+            @Override
+            public void run() {
+                while (!pleaseStopNow) {
+                    runnable.run();
+
+                    try {
+                        Thread.sleep(5 * UNIT_TO_MILLI);
+                    } catch (InterruptedException e) {
+                        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "Error trying to sleep");
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void interrupt() {
+                pleaseStopNow = true;
+            }
+        };
+        t.start();
+        return t;
     }
 }

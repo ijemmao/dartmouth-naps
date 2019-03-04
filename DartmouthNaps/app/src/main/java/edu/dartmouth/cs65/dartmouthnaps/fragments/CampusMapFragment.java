@@ -351,8 +351,8 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
                 e.printStackTrace();
             }
 
-            mCMFListener.requestLooper();
-            mCMFListener.requestContext();
+//            mCMFListener.requestLooper();
+//            mCMFListener.requestContext();
         }
 
         @Override
