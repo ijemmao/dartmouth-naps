@@ -32,7 +32,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -49,6 +48,8 @@ import java.util.concurrent.*;
 public class ReviewCardsContainerFragment extends Fragment {
 
     public static ArrayList<Review> reviews;
+    private static ArrayList<Review> tempReviews;
+
 
     public ViewPager mPager;
     private PagerAdapter pagerAdapter;
@@ -96,6 +97,10 @@ public class ReviewCardsContainerFragment extends Fragment {
             super(fm);
         }
 
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
         @Override
         public Fragment getItem(int position) {
             final ReviewCardFragment cardFragment = new ReviewCardFragment();
@@ -127,6 +132,7 @@ public class ReviewCardsContainerFragment extends Fragment {
                 extras.putInt("convenience", review.getConvenience());
                 cardFragment.setArguments(extras);
             } catch (Exception e) {
+                System.out.println("REVIEW: " + review.getImage().length);
                 e.printStackTrace();
             }
 
@@ -165,6 +171,7 @@ public class ReviewCardsContainerFragment extends Fragment {
         }
         mPager = getActivity().findViewById(R.id.pager);
         pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
+        pagerAdapter.notifyDataSetChanged();
     }
 
     // AsyncTask to load all the images together from Firebase
@@ -172,17 +179,20 @@ public class ReviewCardsContainerFragment extends Fragment {
 
         @Override protected Void doInBackground(Void... params) {
 
+            tempReviews = new ArrayList<>();
+
             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                 final Review review = snapshot.getValue(Review.class);
 
                 try {
-                    byte[] reviewImage = (byte[]) runFuture(review).get();
+                    Future reviewFuture = runFuture(review);
+                    byte[] reviewImage = (byte[]) reviewFuture.get();
                     review.setImage(reviewImage);
                 } catch (Exception e) {
 
                 }
-                reviews.add(review);
+                tempReviews.add(review);
             }
 
             return null;
@@ -192,6 +202,11 @@ public class ReviewCardsContainerFragment extends Fragment {
         @Override protected void onPostExecute(Void result) {
             super.onPostExecute(result);
 
+            reviews = tempReviews;
+            if (pagerAdapter != null) {
+                pagerAdapter.notifyDataSetChanged();
+            }
+
             Location currentLocation = CampusMapFragment.sCurrentLocation;
 
             // Sorts the reviews when a new item is added to the database
@@ -200,27 +215,32 @@ public class ReviewCardsContainerFragment extends Fragment {
                         currentLocation.getLatitude(), currentLocation.getLongitude()));
             }
 
-            mPager = getActivity().findViewById(R.id.pager);
-            pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
-            mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int i, float v, int i1) {
+            try {
+                mPager = getActivity().findViewById(R.id.pager);
+                pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
+                mPager.setAdapter(pagerAdapter);
+                pagerAdapter.notifyDataSetChanged();
+                mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                    @Override
+                    public void onPageScrolled(int i, float v, int i1) {
 
-                }
+                    }
 
-                // Focus on marker when swiping through cards with smooth animation
-                @Override
-                public void onPageSelected(int i) {
-                    Review review = reviews.get(i);
-                    CampusMapFragment.mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(review.getLocation().latitude, review.getLocation().longitude)));
-                }
+                    // Focus on marker when swiping through cards with smooth animation
+                    @Override
+                    public void onPageSelected(int i) {
+                        Review review = reviews.get(i);
+                        CampusMapFragment.mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(review.getLocation().latitude, review.getLocation().longitude)));
+                    }
 
-                @Override
-                public void onPageScrollStateChanged(int i) {
+                    @Override
+                    public void onPageScrollStateChanged(int i) {
 
-                }
-            });
-            mPager.setAdapter(pagerAdapter);
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -260,11 +280,8 @@ public class ReviewCardsContainerFragment extends Fragment {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-            reviews = new ArrayList<>();
-
             ReviewCardsContainerFragment.dataSnapshot = dataSnapshot;
             new ImageLoadTask().execute();
-
 
         }
 
