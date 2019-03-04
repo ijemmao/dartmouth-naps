@@ -126,6 +126,7 @@ public class ReviewCardsContainerFragment extends Fragment {
 
                 extras.putString("title", review.getTitle());
                 extras.putString("image", imageFileName);
+                extras.putString("timestamp", review.getFormattedTimestamp());
                 extras.putInt("noise", review.getNoise());
                 extras.putInt("comfort", review.getComfort());
                 extras.putInt("light", review.getLight());
