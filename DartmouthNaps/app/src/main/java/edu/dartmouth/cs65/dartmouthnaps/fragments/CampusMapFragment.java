@@ -81,6 +81,8 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
 
     @Override
     public void onAttach(Context context) {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onAttach() called");
+
         super.onAttach(context);
         if (context instanceof CMFListener) {
             mCMFListener = (CMFListener) context;
@@ -92,6 +94,8 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onCreate() called");
+
         Context context = getContext();
         VectorDrawableCompat reviewMarkerVDC;
         int reviewMarkerWidth;
@@ -129,6 +133,8 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         View layout;
         SupportMapFragment mapFragment;
 
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onCreateView() called");
+
         if (mCMFListener == null) {
             if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "mCMFListener currently null");
         }
@@ -155,36 +161,44 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onStart() called");
+
+        super.onStart();
 
         // Bind if it should be done
         if (!LocationService.sIsBound && LocationService.sIsRunning && !mBindLSCalled) {
-            if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "calling bindLS() from onResume()");
+            if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "calling bindLS() from onStart()");
             mLSConnection = new LSConnection();
             mCMFListener.bindLS(mLSConnection);
         }
     }
 
     @Override
-    public void onPause() {
+    public void onStop() {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onStop() called");
+
         // Unbind if it should be done
         if (LocationService.sIsBound) {
             mCMFListener.unbindLS(mLSConnection);
             mLSSendMessenger = null;
         }
 
-        super.onPause();
+        super.onStop();
     }
 
     @Override
     public void onDetach() {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onDetach() called");
+
         super.onDetach();
         mCMFListener = null;
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onMapReady() called");
+
         mGoogleMap = googleMap;
         mGoogleMap.setOnMarkerClickListener(this);
         mGoogleMap.setOnPolygonClickListener(this);

@@ -5,12 +5,11 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -28,11 +27,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.Calendar;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
-import edu.dartmouth.cs65.dartmouthnaps.activities.MainForFragmentActivity;
+import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil;
 
 import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
+import static edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil.*;
 
 public class LocationService extends Service {
     private static final String TAG = TAG_GLOBAL + ": LocationService";
@@ -43,8 +43,9 @@ public class LocationService extends Service {
     private static final int THRESHOLD = 1;
     private static final int THRESHOLD_IN_MILLIS = THRESHOLD * MIN_TO_SEC * UNIT_TO_MILLI;
 
-    private static boolean sNotificationRunning = false;
     private static Thread sLocationThread;
+    private static boolean sNotificationRunning = false;
+    private static boolean sReviewPrompted = false;
 
     public static boolean sIsBound = false;
     public static boolean sIsRunning = false;
@@ -55,6 +56,7 @@ public class LocationService extends Service {
     private LSLocationCallback mLSLC;
     private Messenger mRecvMessenger;
     private Messenger mSendMessenger;
+    private LatLng mCurrentLocation;
     private int mPrevPlaceIndex;
     private long mPrevTime;
 
@@ -75,37 +77,26 @@ public class LocationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         NotificationChannel notificationChannel;
-        Intent notifIntent;
-        PendingIntent contentIntent;
-        Notification notification;
 
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onStartCommand() called");
 
         sIsRunning = true;
 
         if (!sNotificationRunning) {
+            mNotificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
             // Upon creation, we want to start the Notification with the PendingIntent to bring the app
             // to the forefront again
             notificationChannel = new NotificationChannel(
-                    CHANNEL_ID,
-                    TAG,
-                    NotificationManager.IMPORTANCE_DEFAULT);
-            notifIntent = new Intent(this, MainForFragmentActivity.class);
-            contentIntent = PendingIntent.getActivity(
-                    this,
-                    0,
-                    notifIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
-            notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setContentTitle(LOCATION_SERVICE_NOTIFICATION_TITLE)
-                    .setContentText(LOCATION_SERVICE_NOTIFICATION_TEXT)
-                    .setSmallIcon(R.drawable.ic_notification)
-                    .setContentIntent(contentIntent)
-                    .build();
-            notification.flags = notification.flags | Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;
-            mNotificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+                    NOTIFICATION_CHANNEL_IDS[0],
+                    NOTIFICATION_CHANNEL_NAMES[0],
+                    NotificationManager.IMPORTANCE_LOW);
             mNotificationManager.createNotificationChannel(notificationChannel);
-            mNotificationManager.notify(0, notification);
+            notificationChannel = new NotificationChannel(
+                    NOTIFICATION_CHANNEL_IDS[1],
+                    NOTIFICATION_CHANNEL_NAMES[1],
+                    NotificationManager.IMPORTANCE_HIGH);
+            mNotificationManager.createNotificationChannel(notificationChannel);
+            postNotification(NOTIFICATION_LOCATION_MONITOR);
             sNotificationRunning = true;
         }
 
@@ -147,6 +138,12 @@ public class LocationService extends Service {
     }
 
     @Override
+    public void onTaskRemoved (Intent rootIntent) {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onTaskRemoved() called");
+        stopSelf();
+    }
+
+    @Override
     public void onDestroy() {
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onDestroy() called");
         super.onDestroy();
@@ -160,6 +157,55 @@ public class LocationService extends Service {
         }
 
         sIsRunning = false;
+    }
+
+    private void postNotification(int id) {
+        Intent intent;
+        String title;
+        String text;
+        Notification notification;
+        int flags;
+
+        if (DEBUG_GLOBAL && DEBUG && mNotificationManager == null) {
+            Log.d(TAG, "Warning: posting notification " +
+                    " while mNotificationManager is null");
+        }
+
+        intent = new Intent(this, MainActivity.class);
+        title = NOTIFICATION_TITLES[id - 1];
+        text = NOTIFICATION_TEXTS[id - 1];
+
+        if (id == NOTIFICATION_REVIEW_PROMPT) {
+            intent.putExtra(KEY_REVIEW_PROMPTED, true);
+            intent.putExtra(KEY_LATITUDE, mCurrentLocation.latitude);
+            intent.putExtra(KEY_LATITUDE, mCurrentLocation.longitude);
+            title = title.substring(0, 44) + PLACE_NAMES[mPrevPlaceIndex] + title.substring(44);
+        }
+
+        notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_IDS[id - 1])
+                .setContentTitle(title)
+                .setContentText(text)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentIntent(PendingIntent.getActivity(
+                        this,
+                        id,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT))
+                .build();
+
+        switch (id) {
+            case NOTIFICATION_LOCATION_MONITOR:
+                notification.flags |=
+                        Notification.FLAG_NO_CLEAR |
+                        Notification.FLAG_ONGOING_EVENT;
+                startForeground(id, notification);
+                break;
+            case NOTIFICATION_REVIEW_PROMPT:
+                notification.flags |=
+                        Notification.FLAG_AUTO_CANCEL;
+                mNotificationManager.notify(id, notification);
+                break;
+        }
     }
 
     private void requestLocationUpdates(boolean fast) {
@@ -211,31 +257,35 @@ public class LocationService extends Service {
                                 public void onSuccess(Location location) {
                                     // GPS location can be null if GPS is switched off
                                     if (location != null) {
-                                        LatLng latLng = new LatLng(location);
+                                        mCurrentLocation = new LatLng(location);
                                         long currTime;
                                         int currPlaceIndex;
 
-                                        currPlaceIndex = PlaceUtil.getPlaceIndex(latLng.toDoubleArr());
+                                        currPlaceIndex = PlaceUtil.getPlaceIndex(mCurrentLocation.toDoubleArr());
                                         currTime = Calendar.getInstance().getTimeInMillis();
 
                                         if (DEBUG_GLOBAL && DEBUG) {
                                             String additional = currPlaceIndex == -1 ?
                                                     " is outside all places" :
-                                                    " is inside " + PlaceUtil.PLACE_NAMES[currPlaceIndex];
+                                                    " is inside " + PLACE_NAMES[currPlaceIndex];
                                             Log.d(TAG, "checkLocationPeriodically(): (" +
-                                                    latLng.latitude + ", " +
-                                                    latLng.longitude + ")" + additional);
+                                                    mCurrentLocation.latitude + ", " +
+                                                    mCurrentLocation.longitude + ")" + additional);
                                         }
 
                                         if (mPrevPlaceIndex != currPlaceIndex) {
                                             mPrevPlaceIndex = currPlaceIndex;
                                             mPrevTime = currTime;
+                                            sReviewPrompted = false;
                                         } else if (mPrevPlaceIndex != -1 &&
-                                                currTime - mPrevTime >= THRESHOLD_IN_MILLIS) {
+                                                currTime - mPrevTime >= THRESHOLD_IN_MILLIS &&
+                                                !sReviewPrompted) {
                                             if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "stayed in " +
-                                                    PlaceUtil.PLACE_NAMES[mPrevPlaceIndex] + " for " + THRESHOLD + " min");
+                                                    PLACE_NAMES[mPrevPlaceIndex] + " for " + THRESHOLD + " min");
 
+                                            postNotification(NOTIFICATION_REVIEW_PROMPT);
                                             mPrevTime = currTime;
+                                            sReviewPrompted = true;
                                         }
                                     }
                                 }
@@ -271,26 +321,25 @@ public class LocationService extends Service {
     private class LSLocationCallback extends LocationCallback {
         @Override
         public void onLocationResult(LocationResult result) {
-            LatLng location;
             long currTime;
             int currPlaceIndex;
 
-            location = new LatLng(result.getLastLocation());
-            currPlaceIndex = PlaceUtil.getPlaceIndex(location.toDoubleArr());
+            mCurrentLocation = new LatLng(result.getLastLocation());
+            currPlaceIndex = getPlaceIndex(mCurrentLocation.toDoubleArr());
 
             if (DEBUG_GLOBAL && DEBUG) {
                 String additional = currPlaceIndex == -1 ?
                         " is outside all places" :
-                        " is inside " + PlaceUtil.PLACE_NAMES[currPlaceIndex];
+                        " is inside " + PLACE_NAMES[currPlaceIndex];
                 Log.d(TAG, "onLocationResult(): (" +
-                        location.latitude + ", " +
-                        location.longitude + ")" + additional);
+                        mCurrentLocation.latitude + ", " +
+                        mCurrentLocation.longitude + ")" + additional);
             }
 
             Log.d(TAG, "onLocationResult(): sIsBound == " + sIsBound);
 
             if (sIsBound) {
-                sendMessage(MSG_WHAT_SEND_LOCATION, location);
+                sendMessage(MSG_WHAT_SEND_LOCATION, mCurrentLocation);
             } else {
                 currTime = Calendar.getInstance().getTimeInMillis();
 
@@ -300,7 +349,7 @@ public class LocationService extends Service {
                 } else if (mPrevPlaceIndex != -1 &&
                         currTime - mPrevTime >= THRESHOLD_IN_MILLIS) {
                     if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "stayed in " +
-                            PlaceUtil.PLACE_NAMES[mPrevPlaceIndex] + " for " + THRESHOLD + " min");
+                            PLACE_NAMES[mPrevPlaceIndex] + " for " + THRESHOLD + " min");
 
                     mPrevTime = currTime;
                 }

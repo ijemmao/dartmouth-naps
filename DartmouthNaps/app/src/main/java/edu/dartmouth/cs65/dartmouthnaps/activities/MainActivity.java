@@ -104,16 +104,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 headerEmail.setText(user.getEmail());
             }
 
-
 //        } else {
 ////            setContentView(R.layout.activity_main_no_user);
 //        }
 
-
-
-//        getSupportFragmentManager().beginTransaction().replace(R.id.content_main, mCampusMapFragment).commit();
-//        if (!permissionsGranted) requestPermissions();
-
+        if (!permissionsGranted) requestPermissions();
     }
 
 
@@ -181,11 +176,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getApplicationContext().unbindService(serviceConnection);
     }
 
-    @Override
-    public void onDestroy() {
-        getApplicationContext().stopService(getLSIntent());
-        super.onDestroy();
-    }
+//    @Override
+//    public void onDestroy() {
+//        getApplicationContext().stopService(getLSIntent());
+//        super.onDestroy();
+//    }
 
     public void onClick(View v) {
         switch (v.getId()) {

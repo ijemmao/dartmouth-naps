@@ -37,7 +37,6 @@ import java.util.ArrayList;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
-import edu.dartmouth.cs65.dartmouthnaps.activities.MainForFragmentActivity;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 

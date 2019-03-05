@@ -114,7 +114,7 @@ public class NewReviewActivity extends AppCompatActivity {
                 Review.getTimestampFromCalendar(Calendar.getInstance()),
                 location);
 
-        MainForFragmentActivity.sFirebaseDataSource.createReview(newReview);
+        MainActivity.sFirebaseDataSource.createReview(newReview);
 //        String key = dbReference.child("users").child(user.getUid()).child("reviews").push().getKey();
 //        Map<String, Object> reviews = newReview.toMap();
 //
@@ -159,7 +159,7 @@ public class NewReviewActivity extends AppCompatActivity {
                     location);
 
             // Send review to Firebase database
-            MainForFragmentActivity.sFirebaseDataSource.createReview(newReview);
+            MainActivity.sFirebaseDataSource.createReview(newReview);
 
             uploadTask = storageReference.child("images/" + user.getUid() + "-" +  imageFileName + ".jpg").putBytes(imageBytes);
             uploadTask.addOnFailureListener(new OnFailureListener() {
