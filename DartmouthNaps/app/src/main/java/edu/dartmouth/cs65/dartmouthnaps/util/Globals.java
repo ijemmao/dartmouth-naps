@@ -4,8 +4,8 @@ public abstract class Globals {
     public static final String TAG_GLOBAL = "DartmouthNaps";
     public static final boolean DEBUG_GLOBAL = true;
 
-    public static final int NOTIFICATION_LOCATION_MONITOR = 1;
-    public static final int NOTIFICATION_REVIEW_PROMPT = 2;
+    public static final int NOTIFICATION_ID_LOCATION_MONITOR = 1;
+    public static final int NOTIFICATION_ID_REVIEW_PROMPT = 2;
     public static final String[] NOTIFICATION_CHANNEL_IDS = new String[]{
             "Location Monitor",
             "Review Prompt"};
