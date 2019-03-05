@@ -114,7 +114,7 @@ public class Review {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss.SSS");
             Date newDate = format.parse(timestamp);
 
-            format = new SimpleDateFormat("MMM dd,yyyy hh:mm a");
+            format = new SimpleDateFormat("MMM dd, yyyy hh:mm a");
             formattedDate = format.format(newDate);
         } catch (Exception e) {
             return timestamp;
