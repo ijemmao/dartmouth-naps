@@ -100,7 +100,7 @@ public class LocationService extends Service {
             notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                     .setContentTitle(LOCATION_SERVICE_NOTIFICATION_TITLE)
                     .setContentText(LOCATION_SERVICE_NOTIFICATION_TEXT)
-                    .setSmallIcon(R.drawable.ic_launcher_background)
+                    .setSmallIcon(R.drawable.ic_notification)
                     .setContentIntent(contentIntent)
                     .build();
             notification.flags = notification.flags | Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;
