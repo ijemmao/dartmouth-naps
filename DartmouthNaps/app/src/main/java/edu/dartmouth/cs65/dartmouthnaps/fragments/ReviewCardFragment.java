@@ -66,6 +66,7 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
 
         extras = getArguments();
 
+        // TODO: determine what's best to display when extras is null
         if (extras == null) {
             title = "[title]";
             timestamp = "[timestamp]";
