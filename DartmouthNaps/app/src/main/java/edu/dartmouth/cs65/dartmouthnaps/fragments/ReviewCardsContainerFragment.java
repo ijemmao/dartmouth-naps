@@ -43,6 +43,7 @@ import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.*;
 
 /**
@@ -193,17 +194,15 @@ public class ReviewCardsContainerFragment extends Fragment {
                 final Review review = snapshot.getValue(Review.class);
 
                 try {
-                    SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss.SSS");
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss.SSS", Locale.US);
                     Calendar reviewCalendar = Calendar.getInstance();
                     Calendar currentCalendar = Calendar.getInstance();
                     reviewCalendar.setTime(format.parse(review.getTimestamp()));
                     currentCalendar.setTime(new Date());
-                    int difference = currentCalendar.get(Calendar.HOUR_OF_DAY) - reviewCalendar.get(Calendar.HOUR);
-                System.out.println("THIS IS IT: " + reviewCalendar.getTime());
-                    System.out.println("THIS IS THE DIFFERENT: " + currentCalendar.get(Calendar.HOUR_OF_DAY));
-                    System.out.println("THIS IS THE FIRST: " + reviewCalendar.get(Calendar.HOUR_OF_DAY));
-//                    // Delete reviews that are older than six hours
-//                    if (difference >= 6) dbReference.child(snapshot.getKey()).removeValue();
+                    int difference = currentCalendar.get(Calendar.HOUR_OF_DAY) - reviewCalendar.get(Calendar.HOUR_OF_DAY);
+
+                    // Delete reviews that are older than six hours
+                    if (difference >= 6) dbReference.child(snapshot.getKey()).removeValue();
 
                 } catch (Exception e) {}
 
