@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -20,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -33,6 +33,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
+import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainForFragmentActivity;
 import edu.dartmouth.cs65.dartmouthnaps.activities.NewReviewActivity;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
@@ -63,6 +64,7 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     private ReviewCardsContainerFragment reviewCardsContainerFragment;
     private Messenger mRecvMessenger;
     private Messenger mLSSendMessenger;
+    private ImageButton imageButton;
     private boolean mBindLSCalled;
 
     public CampusMapFragment() {
@@ -123,7 +125,7 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         View layout;
         SupportMapFragment mapFragment;
 
@@ -147,6 +149,7 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         }
 
         reviewCardsContainerFragment = (ReviewCardsContainerFragment) getChildFragmentManager().findFragmentById(R.id.review_cards_container_fragment);
+        imageButton =layout.findViewById(R.id.open_drawer);
 
         return layout;
     }
@@ -191,7 +194,7 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         mGoogleMap.setMapStyle(new MapStyleOptions(CAMPUS_MAP_STYLE_JSON));
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LAT_LNG_DARTMOUTH.toGoogleLatLng(), ZOOM));
         new AddPlacesToMapAT().execute(mGoogleMap);
-        MainForFragmentActivity.sFirebaseDataSource.addReviewsChildEventListener(mGoogleMap);
+        MainActivity.sFirebaseDataSource.addReviewsChildEventListener(mGoogleMap);
     }
 
     @Override
@@ -241,27 +244,6 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
                 if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "calling bindLS() from onRequestPermissionsResult()");
                 mLSConnection = new LSConnection();
                 mCMFListener.bindLS(mLSConnection);
-            }
-        }
-    }
-
-    public void sendLooper(Looper looper) {
-        sendMessage(mLSSendMessenger, MSG_WHAT_SEND_LOOPER, looper);
-    }
-
-    public void sendContext(Context context) {
-        sendMessage(mLSSendMessenger, MSG_WHAT_SEND_CONTEXT, context);
-    }
-
-    private static void sendMessage(Messenger messenger, int what, Object obj) {
-        if (messenger != null) {
-            try {
-                Message msg = Message.obtain();
-                msg.what = what;
-                msg.obj = obj;
-                messenger.send(msg);
-            } catch (RemoteException e) {
-                e.printStackTrace();
             }
         }
     }

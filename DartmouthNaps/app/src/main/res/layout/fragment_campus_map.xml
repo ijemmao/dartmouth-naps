@@ -17,10 +17,19 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="end">
+            android:layout_height="80dp"
+            android:orientation="horizontal">
 
-            <!-- Insert Person Icon here for drawer -->
+            <ImageButton
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/open_drawer"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="start"
+                android:background="@drawable/ic_person_outline_blue_100dp"
+                android:paddingRight="50dp"
+                android:onClick="onClick"
+                android:contentDescription="@string/app_name"/>
 
             <Button
                 app:layout_constraintTop_toTopOf="parent"
