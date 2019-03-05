@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -42,15 +43,15 @@ import edu.dartmouth.cs65.dartmouthnaps.tasks.AddPlacesToMapAT;
 import edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil;
 
 import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
+import static edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil.*;
 
 public class CampusMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnPolygonClickListener, GoogleMap.OnMarkerClickListener {
     private static final String TAG = "DartmouthNaps: CampusMapFragment";
     private static final boolean DEBUG = true;
 
     private static final String TAG_CURRENT_LOCATION = "current location";
-    private static final LatLng LAT_LNG_DARTMOUTH = new LatLng(43.7044406,-72.2886935);
     private static final float ZOOM = 17;
-    private static final String PERMISSIONS_GRANTED = "permissions granted";
+    private static final String KEY_PERMISSIONS_GRANTED = "permissions granted";
 
     private static LSConnection mLSConnection;
 
@@ -58,23 +59,27 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     public static GoogleMap mGoogleMap;
 
     private CMFListener mCMFListener;
-    private boolean mPermissionsGranted;
     private Bitmap mCurrentLocationMarkerBitmap = null;
     private Marker mCurrentLocationMarker = null;
     private ReviewCardsContainerFragment reviewCardsContainerFragment;
     private Messenger mRecvMessenger;
     private Messenger mLSSendMessenger;
     private ImageButton imageButton;
+    private Button mAddReviewBtn;
+    private boolean mPermissionsGranted;
+    private boolean mReviewPrompted;
     private boolean mBindLSCalled;
 
     public CampusMapFragment() {
         // Required empty public constructor
     }
 
-    public static CampusMapFragment newInstance(boolean permissionsGranted) {
+    public static CampusMapFragment newInstance(
+            boolean permissionsGranted) {
         CampusMapFragment campusMapFragment = new CampusMapFragment();
         Bundle args = new Bundle();
-        args.putBoolean(PERMISSIONS_GRANTED, permissionsGranted);
+        args.putBoolean(KEY_PERMISSIONS_GRANTED, permissionsGranted);
+
         campusMapFragment.setArguments(args);
         return campusMapFragment;
     }
@@ -98,13 +103,15 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
 
         Context context = getContext();
         VectorDrawableCompat reviewMarkerVDC;
+        Bundle args;
         int reviewMarkerWidth;
         int reviewMarkerHeight;
 
         super.onCreate(savedInstanceState);
+        args = getArguments();
 
-        if (getArguments() != null) {
-            mPermissionsGranted = getArguments().getBoolean(PERMISSIONS_GRANTED, false);
+        if (args != null) {
+            mPermissionsGranted = args.getBoolean(KEY_PERMISSIONS_GRANTED, false);
         }
 
         try {
@@ -153,6 +160,11 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
                 mBindLSCalled = true;
             }
         }
+
+        mAddReviewBtn = layout.findViewById(R.id.add_review);
+//        if (mReviewPrompted) {
+//            onClick(layout.findViewById(R.id.add_review));
+//        }
 
         reviewCardsContainerFragment = (ReviewCardsContainerFragment) getChildFragmentManager().findFragmentById(R.id.review_cards_container_fragment);
         imageButton =layout.findViewById(R.id.open_drawer);
@@ -206,7 +218,8 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         mGoogleMap.setIndoorEnabled(false); // Indoor would be nice, but the only building in Hanover
         // with it that I can find is the Howe library, which isn't a Dartmouth building
         mGoogleMap.setMapStyle(new MapStyleOptions(CAMPUS_MAP_STYLE_JSON));
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LAT_LNG_DARTMOUTH.toGoogleLatLng(), ZOOM));
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(PLACE_COORDINATES_AVG[1]).toGoogleLatLng(), ZOOM));
         new AddPlacesToMapAT().execute(mGoogleMap);
         MainActivity.sFirebaseDataSource.addReviewsChildEventListener(mGoogleMap);
     }
@@ -262,6 +275,13 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
                 mLSConnection = new LSConnection();
                 mCMFListener.bindLS(mLSConnection);
             }
+        }
+    }
+
+    public void reviewPrompted(LatLng location) {
+        if (mAddReviewBtn != null) {
+            sCurrentLocation = location;
+            onClick(mAddReviewBtn);
         }
     }
 

@@ -134,7 +134,8 @@ public class ReviewCardsContainerFragment extends Fragment {
                 extras.putInt("convenience", review.getConvenience());
                 cardFragment.setArguments(extras);
             } catch (Exception e) {
-                System.out.println("REVIEW: " + review.getImage().length);
+                byte[] image = review.getImage();
+                System.out.println("REVIEW: " + (image == null ? "[null]" : review.getImage().length + " bytes"));
                 e.printStackTrace();
             }
 

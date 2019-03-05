@@ -21,6 +21,11 @@ public class LatLng {
         this.longitude = longitude;
     }
 
+    public LatLng(double[] latLng) {
+        latitude = latLng[LAT];
+        longitude = latLng[LNG];
+    }
+
     public LatLng(Location location) {
         latitude = location.getLatitude();
         longitude = location.getLongitude();
