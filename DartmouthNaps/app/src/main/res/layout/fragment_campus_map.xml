@@ -15,24 +15,28 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:orientation="horizontal">
 
             <ImageButton
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
                 android:id="@+id/open_drawer"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_gravity="start"
                 android:background="@drawable/ic_person_outline_blue_100dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="15dp"
                 android:paddingRight="50dp"
                 android:onClick="onClick"
                 android:contentDescription="@string/app_name"/>
 
             <Button
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
                 android:background="@drawable/yellow"
                 android:id="@+id/add_review"
                 android:layout_marginTop="20dp"
@@ -47,7 +51,7 @@
                 android:textColor="@color/colorButtonText"
                 android:textAllCaps="false" />
 
-        </LinearLayout>
+        </android.support.constraint.ConstraintLayout>
         <fragment
             app:layout_constraintBottom_toBottomOf="parent"
             android:id="@+id/review_cards_container_fragment"
