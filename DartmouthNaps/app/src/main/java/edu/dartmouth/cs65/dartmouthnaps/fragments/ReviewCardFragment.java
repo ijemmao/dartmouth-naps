@@ -66,13 +66,23 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
 
         extras = getArguments();
 
-        title = extras.getString("title");
-        timestamp = extras.getString("timestamp");
-        image = extras.getString("image");
-        noise = extras.getInt("noise", 1);
-        comfort = extras.getInt("comfort", 1);
-        light = extras.getInt("light", 1);
-        convenience = extras.getInt("convenience", 0);
+        if (extras == null) {
+            title = "[title]";
+            timestamp = "[timestamp]";
+            image = "[image]";
+            noise = 1;
+            comfort = 1;
+            light = 1;
+            convenience = 0;
+        } else {
+            title = extras.getString("title", "[title]");
+            timestamp = extras.getString("timestamp", "[timestamp]");
+            image = extras.getString("image");
+            noise = extras.getInt("noise", 1);
+            comfort = extras.getInt("comfort", 1);
+            light = extras.getInt("light", 1);
+            convenience = extras.getInt("convenience", 0);
+        }
 
         drawables = new Drawable[]{
                 view.getContext().getResources().getDrawable(R.drawable.red, null),
