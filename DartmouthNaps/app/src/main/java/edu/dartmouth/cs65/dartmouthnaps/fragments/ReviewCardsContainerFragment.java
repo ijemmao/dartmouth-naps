@@ -217,8 +217,7 @@ public class ReviewCardsContainerFragment extends Fragment {
 
             // Sorts the reviews when a new item is added to the database
             if (currentLocation != null) {
-                reviews = MainActivity.sFirebaseDataSource.getReviewsNear(reviews, new edu.dartmouth.cs65.dartmouthnaps.models.LatLng(
-                        currentLocation.getLatitude(), currentLocation.getLongitude()));
+                reviews = MainActivity.sFirebaseDataSource.getReviewsNear(reviews, currentLocation);
             }
 
             try {
