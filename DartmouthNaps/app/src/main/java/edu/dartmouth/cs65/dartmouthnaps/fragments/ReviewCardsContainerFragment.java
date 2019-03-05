@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -39,6 +38,7 @@ import java.util.ArrayList;
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainForFragmentActivity;
+import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
 import java.util.concurrent.*;
@@ -210,7 +210,7 @@ public class ReviewCardsContainerFragment extends Fragment {
                 pagerAdapter.notifyDataSetChanged();
             }
 
-            Location currentLocation = CampusMapFragment.sCurrentLocation.toLocation();
+            LatLng currentLocation = CampusMapFragment.sCurrentLocation;
 
             // Sorts the reviews when a new item is added to the database
             if (currentLocation != null) {
@@ -233,7 +233,7 @@ public class ReviewCardsContainerFragment extends Fragment {
                     @Override
                     public void onPageSelected(int i) {
                         Review review = reviews.get(i);
-                        CampusMapFragment.mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(review.getLocation().latitude, review.getLocation().longitude)));
+                        CampusMapFragment.mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(review.getLocation().toGoogleLatLng()));
                     }
 
                     @Override

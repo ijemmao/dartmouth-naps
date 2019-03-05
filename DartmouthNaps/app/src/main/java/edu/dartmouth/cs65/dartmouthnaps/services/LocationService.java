@@ -40,7 +40,7 @@ public class LocationService extends Service {
 
     private static final int UNIT_TO_MILLI = 1000;
     private static final int MIN_TO_SEC = 60;
-    private static final int THRESHOLD = 10;
+    private static final int THRESHOLD = 1;
     private static final int THRESHOLD_IN_MILLIS = THRESHOLD * MIN_TO_SEC * UNIT_TO_MILLI;
 
     private static boolean sNotificationRunning = false;
@@ -53,7 +53,6 @@ public class LocationService extends Service {
                                                         // notification when appropriate
     private FusedLocationProviderClient mFLCP;
     private LSLocationCallback mLSLC;
-    private Looper mLooper;
     private Messenger mRecvMessenger;
     private Messenger mSendMessenger;
     private int mPrevPlaceIndex;
@@ -263,14 +262,6 @@ public class LocationService extends Service {
                 case MSG_WHAT_SEND_MESSENGER:
                     if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "MSG_WHAT_SEND_MESSENGER received");
                     mSendMessenger = msg.replyTo;
-                    requestLocationUpdates(true);
-                    break;
-                case MSG_WHAT_SEND_LOOPER:
-                    if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "MSG_WHAT_SEND_LOOPER received");
-                    mLooper = (Looper)msg.obj;
-                    break;
-                case MSG_WHAT_SEND_CONTEXT:
-                    if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "MSG_WHAT_SEND_CONTEXT received");
                     requestLocationUpdates(true);
                     break;
             }
