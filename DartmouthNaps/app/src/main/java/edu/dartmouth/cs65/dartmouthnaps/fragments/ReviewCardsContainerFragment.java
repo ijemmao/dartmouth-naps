@@ -172,9 +172,12 @@ public class ReviewCardsContainerFragment extends Fragment {
             Review review = reviews.get(i);
             review.setConvenience(calculateConvenience(currentLocation.distanceTo(review.getLocation().toLocation())));
         }
-        mPager = getActivity().findViewById(R.id.pager);
-        pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
-        pagerAdapter.notifyDataSetChanged();
+        if (getActivity() != null) {
+            mPager = getActivity().findViewById(R.id.pager);
+            pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
+            pagerAdapter.notifyDataSetChanged();
+        }
+
     }
 
     // AsyncTask to load all the images together from Firebase
