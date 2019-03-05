@@ -29,11 +29,12 @@ import android.view.View;
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.fragments.CampusMapFragment;
 import edu.dartmouth.cs65.dartmouthnaps.fragments.MyReviewsFragment;
+import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.services.LocationService;
 import edu.dartmouth.cs65.dartmouthnaps.util.FirebaseDataSource;
 
 import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
-
+import static edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil.*;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, CampusMapFragment.CMFListener {
     private static final String TAG = TAG_GLOBAL + ": MainActivity";
@@ -57,17 +58,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
+        Intent intent;
+        boolean permissionsGranted;
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         dbReference = FirebaseDatabase.getInstance().getReference();
-        boolean permissionsGranted;
-
-
 
         if(savedInstanceState == null) {
             if (user == null) { //if noone is logged in, go to login activity
-                Intent intent = new Intent(this, SignupActivity.class);
+                intent = new Intent(this, SignupActivity.class);
                 startActivity(intent);
             } else { //fetch the data from firebase and load it onto local database, if right afterlogging in
                 uID = user.getUid();
@@ -91,7 +91,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             myReviewsFragment = new MyReviewsFragment();
             sFirebaseDataSource = new FirebaseDataSource(getApplicationContext());
             permissionsGranted = checkPermissions();
-            mCampusMapFragment = CampusMapFragment.newInstance(permissionsGranted);
+            mCampusMapFragment = CampusMapFragment.newInstance(
+                    permissionsGranted);
             navigationView.setCheckedItem(R.id.nav_reviews);
             getSupportFragmentManager().beginTransaction().replace(R.id.content_main, mCampusMapFragment).commit();
 
@@ -104,18 +105,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 headerEmail.setText(user.getEmail());
             }
 
-
 //        } else {
 ////            setContentView(R.layout.activity_main_no_user);
 //        }
 
-
-
-//        getSupportFragmentManager().beginTransaction().replace(R.id.content_main, mCampusMapFragment).commit();
-//        if (!permissionsGranted) requestPermissions();
-
+        if (!permissionsGranted) requestPermissions();
     }
 
+    @Override
+    protected void onNewIntent (Intent intent) {
+        if (intent.getBooleanExtra(KEY_REVIEW_PROMPTED, false)
+                && mCampusMapFragment != null) {
+            mCampusMapFragment.reviewPrompted(new LatLng(
+                    intent.getDoubleExtra(KEY_LATITUDE, PLACE_COORDINATES_AVG[1][LAT]),
+                    intent.getDoubleExtra(KEY_LONGITUDE, PLACE_COORDINATES_AVG[1][LNG])));
+        }
+    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -181,11 +186,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getApplicationContext().unbindService(serviceConnection);
     }
 
-    @Override
-    public void onDestroy() {
-        getApplicationContext().stopService(getLSIntent());
-        super.onDestroy();
-    }
+//    @Override
+//    public void onDestroy() {
+//        getApplicationContext().stopService(getLSIntent());
+//        super.onDestroy();
+//    }
 
     public void onClick(View v) {
         switch (v.getId()) {

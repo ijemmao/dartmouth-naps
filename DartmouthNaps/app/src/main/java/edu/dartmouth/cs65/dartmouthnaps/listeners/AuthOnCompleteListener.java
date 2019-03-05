@@ -11,7 +11,6 @@ import com.google.android.gms.tasks.Task;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
-import edu.dartmouth.cs65.dartmouthnaps.activities.MainForFragmentActivity;
 
 public class AuthOnCompleteListener implements OnCompleteListener {
     private final static String TAG = "DartmouthNaps: AuthOnCompleteListener";
