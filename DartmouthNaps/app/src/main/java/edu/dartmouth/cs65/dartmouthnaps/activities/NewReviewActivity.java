@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -103,41 +104,6 @@ public class NewReviewActivity extends AppCompatActivity {
     }
 
     public void submitReview(View view) {
-        // Send review to Firebase database
-        Review newReview = new Review(
-                user.getUid(),
-                noiseFragment.getRating(),
-                comfortFragment.getRating(),
-                lightFragment.getRating(),
-                reviewHeader.getText().toString(),
-                imageFileName,
-                Review.getTimestampFromCalendar(Calendar.getInstance()),
-                location);
-
-        MainForFragmentActivity.sFirebaseDataSource.createReview(newReview);
-//        String key = dbReference.child("users").child(user.getUid()).child("reviews").push().getKey();
-//        Map<String, Object> reviews = newReview.toMap();
-//
-//        Map<String, Object> childUpdates = new HashMap<>();
-//        childUpdates.put("users/" + user.getUid() + "/reviews/" + key, reviews);
-//        childUpdates.put("/reviews/" + key, reviews);
-//        dbReference.updateChildren(childUpdates);
-        Toast.makeText(this, "Review sent", Toast.LENGTH_SHORT).show();
-
-        UploadTask uploadTask = storageReference.child("images/" + user.getUid() + "-" +  imageFileName + ".jpg").putBytes(imageBytes);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                finish();
-            }
-        });
-
         // Notifies user if there are empty fields
         // Review cannot be sent with empty fields
         if (user.getUid() == null
@@ -148,7 +114,7 @@ public class NewReviewActivity extends AppCompatActivity {
                         || imageFileName == null) {
             Toast.makeText(this, "Must complete all fields", Toast.LENGTH_SHORT).show();
         } else {
-            newReview = new Review(
+            Review newReview = new Review(
                     user.getUid(),
                     noiseFragment.getRating(),
                     comfortFragment.getRating(),
@@ -161,7 +127,7 @@ public class NewReviewActivity extends AppCompatActivity {
             // Send review to Firebase database
             MainForFragmentActivity.sFirebaseDataSource.createReview(newReview);
 
-            uploadTask = storageReference.child("images/" + user.getUid() + "-" +  imageFileName + ".jpg").putBytes(imageBytes);
+            UploadTask uploadTask = storageReference.child("images/" + user.getUid() + "-" +  imageFileName + ".jpg").putBytes(imageBytes);
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
@@ -242,6 +208,7 @@ public class NewReviewActivity extends AppCompatActivity {
             }
             case Crop.REQUEST_CROP: {
                 Bitmap takenImage = BitmapFactory.decodeFile(mCurrentPhotoPath);
+
                 locationImage.setImageBitmap(takenImage);
                 try {
                     FileOutputStream fos = new FileOutputStream(mCurrentPhotoPath);
