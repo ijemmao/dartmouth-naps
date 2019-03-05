@@ -98,27 +98,6 @@ public class Review {
 
     public byte[] getImage() { return image; }
 
-
-    public void setConvenience(int convenience) { this.convenience = convenience; }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getImageName() {
-        return imageName;
-    }
-
-    public void setImageName(String imageName) {
-        this.imageName = imageName;
-    }
-
-    public byte[] getImage() { return image; }
-
     public void setImage(byte[] image) { this.image = image; }
 
     public String getTimestamp() {

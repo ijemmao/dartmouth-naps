@@ -210,12 +210,11 @@ public class ReviewCardsContainerFragment extends Fragment {
                 pagerAdapter.notifyDataSetChanged();
             }
 
-            Location currentLocation = CampusMapFragment.sCurrentLocation;
+            Location currentLocation = CampusMapFragment.sCurrentLocation.toLocation();
 
             // Sorts the reviews when a new item is added to the database
             if (currentLocation != null) {
                 reviews = MainActivity.sFirebaseDataSource.getReviewsNear(reviews, new edu.dartmouth.cs65.dartmouthnaps.models.LatLng(
-                reviews = MainForFragmentActivity.sFirebaseDataSource.getReviewsNear(reviews, new edu.dartmouth.cs65.dartmouthnaps.models.LatLng(
                         currentLocation.getLatitude(), currentLocation.getLongitude()));
             }
 

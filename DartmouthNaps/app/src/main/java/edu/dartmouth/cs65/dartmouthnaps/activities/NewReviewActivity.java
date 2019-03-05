@@ -148,7 +148,7 @@ public class NewReviewActivity extends AppCompatActivity {
                         || imageFileName == null) {
             Toast.makeText(this, "Must complete all fields", Toast.LENGTH_SHORT).show();
         } else {
-            Review newReview = new Review(
+            newReview = new Review(
                     user.getUid(),
                     noiseFragment.getRating(),
                     comfortFragment.getRating(),
@@ -161,7 +161,7 @@ public class NewReviewActivity extends AppCompatActivity {
             // Send review to Firebase database
             MainForFragmentActivity.sFirebaseDataSource.createReview(newReview);
 
-            UploadTask uploadTask = storageReference.child("images/" + user.getUid() + "-" +  imageFileName + ".jpg").putBytes(imageBytes);
+            uploadTask = storageReference.child("images/" + user.getUid() + "-" +  imageFileName + ".jpg").putBytes(imageBytes);
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {

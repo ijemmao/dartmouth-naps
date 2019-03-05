@@ -2,6 +2,7 @@ package edu.dartmouth.cs65.dartmouthnaps.activities;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -28,10 +29,16 @@ import android.view.View;
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.fragments.CampusMapFragment;
 import edu.dartmouth.cs65.dartmouthnaps.fragments.MyReviewsFragment;
+import edu.dartmouth.cs65.dartmouthnaps.services.LocationService;
 import edu.dartmouth.cs65.dartmouthnaps.util.FirebaseDataSource;
+
+import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, CampusMapFragment.CMFListener {
+    private static final String TAG = TAG_GLOBAL + ": MainActivity";
+    private static final boolean DEBUG = true;
+
     private static final int REQ_ACCESS_FINE_LOCATION = 0;
     public static FirebaseDataSource sFirebaseDataSource;
     public static DrawerLayout drawer;
@@ -156,8 +163,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void callInitializeFusedLocationProviderClient() {
-        mCampusMapFragment.initializeFusedLocationProviderClient(this, getMainLooper());
+    public void startAndBindLS(ServiceConnection serviceConnection) {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "startAndBindLS() called");
+        getApplicationContext().startService(getLSIntent());
+        bindLS(serviceConnection);
+    }
+
+    @Override
+    public void bindLS(ServiceConnection serviceConnection) {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "bindLS() called");
+        getApplicationContext().bindService(getLSIntent(), serviceConnection, 0);
+    }
+
+    @Override
+    public void unbindLS(ServiceConnection serviceConnection) {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "unbindLS() called");
+        getApplicationContext().unbindService(serviceConnection);
+    }
+
+    @Override
+    public void onDestroy() {
+        getApplicationContext().stopService(getLSIntent());
+        super.onDestroy();
     }
 
     public void onClick(View v) {
@@ -169,5 +196,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mCampusMapFragment.onClick(v);
                 break;
         }
+    }
+
+    private Intent getLSIntent() {
+        return new Intent(getApplicationContext(), LocationService.class);
     }
 }

@@ -46,6 +46,10 @@ public class LatLng {
         return new com.google.android.gms.maps.model.LatLng(latitude, longitude);
     }
 
+    public double[] toDoubleArr() {
+        return new double[]{latitude, longitude};
+    }
+
     public Location toLocation() {
         Location location = new Location("");
         location.setLatitude(this.latitude);

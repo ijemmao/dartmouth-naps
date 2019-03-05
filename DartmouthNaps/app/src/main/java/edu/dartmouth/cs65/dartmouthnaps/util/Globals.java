@@ -4,8 +4,24 @@ public abstract class Globals {
     public static final String TAG_GLOBAL = "DartmouthNaps";
     public static final boolean DEBUG_GLOBAL = true;
 
+    public static final String CHANNEL_ID = "DartmouthNaps Notification Channel";
+    public static final String LOCATION_SERVICE_NOTIFICATION_TITLE =
+            "Just so you know, we're monitoring your location";
+    public static final String LOCATION_SERVICE_NOTIFICATION_TEXT =
+            "Tap to return to the app!";
+
     public static final String KEY_LATITUDE = "latitude";
     public static final String KEY_LONGITUDE = "longitude";
+
+    // Constants for messages to LSHandler
+    private static final int OFFSET_LS_HANDLER = 0x10;
+    public static final int MSG_WHAT_SEND_MESSENGER = 1 | OFFSET_LS_HANDLER;
+    public static final int MSG_WHAT_SEND_LOOPER    = 2 | OFFSET_LS_HANDLER;
+    public static final int MSG_WHAT_SEND_CONTEXT   = 3 | OFFSET_LS_HANDLER;
+
+    // Constants for messages to CMFHandler
+    private static final int OFFSET_CMF_HANDLER = 0x20;
+    public static final int MSG_WHAT_SEND_LOCATION  = 1 | OFFSET_CMF_HANDLER;
 
     public static final String CAMPUS_MAP_STYLE_JSON =
             "   [" +
