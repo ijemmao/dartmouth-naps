@@ -15,8 +15,10 @@ import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -231,6 +233,9 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
                 }
 
                 startActivity(intent);
+                break;
+            case R.id.open_drawer:
+                MainActivity.drawer.openDrawer(GravityCompat.START);
                 break;
         }
     }
