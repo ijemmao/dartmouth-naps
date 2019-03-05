@@ -33,6 +33,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
@@ -40,6 +41,8 @@ import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.*;
 
 /**
@@ -126,7 +129,6 @@ public class ReviewCardsContainerFragment extends Fragment {
 
                 extras.putString("title", review.getTitle());
                 extras.putString("image", imageFileName);
-
                 extras.putString("timestamp", review.getFormattedTimestamp());
                 extras.putInt("noise", review.getNoise());
                 extras.putInt("comfort", review.getComfort());
@@ -134,8 +136,7 @@ public class ReviewCardsContainerFragment extends Fragment {
                 extras.putInt("convenience", review.getConvenience());
                 cardFragment.setArguments(extras);
             } catch (Exception e) {
-                byte[] image = review.getImage();
-                System.out.println("REVIEW: " + (image == null ? "[null]" : review.getImage().length + " bytes"));
+
                 e.printStackTrace();
             }
 
@@ -190,6 +191,21 @@ public class ReviewCardsContainerFragment extends Fragment {
             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                 final Review review = snapshot.getValue(Review.class);
+
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss.SSS");
+                    Calendar reviewCalendar = Calendar.getInstance();
+                    Calendar currentCalendar = Calendar.getInstance();
+                    reviewCalendar.setTime(format.parse(review.getTimestamp()));
+                    currentCalendar.setTime(new Date());
+                    int difference = currentCalendar.get(Calendar.HOUR_OF_DAY) - reviewCalendar.get(Calendar.HOUR);
+                System.out.println("THIS IS IT: " + reviewCalendar.getTime());
+                    System.out.println("THIS IS THE DIFFERENT: " + currentCalendar.get(Calendar.HOUR_OF_DAY));
+                    System.out.println("THIS IS THE FIRST: " + reviewCalendar.get(Calendar.HOUR_OF_DAY));
+//                    // Delete reviews that are older than six hours
+//                    if (difference >= 6) dbReference.child(snapshot.getKey()).removeValue();
+
+                } catch (Exception e) {}
 
                 try {
                     Future reviewFuture = runFuture(review);
