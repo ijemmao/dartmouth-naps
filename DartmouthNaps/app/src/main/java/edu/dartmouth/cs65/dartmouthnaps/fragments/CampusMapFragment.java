@@ -312,7 +312,8 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
 
             mCurrentLocationMarker = mGoogleMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.fromBitmap(mCurrentLocationMarkerBitmap))
-                    .position(sCurrentLocation.toGoogleLatLng()));
+                    .position(sCurrentLocation.toGoogleLatLng())
+                    .zIndex(1.0f));
             mCurrentLocationMarker.setTag(TAG_CURRENT_LOCATION);
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                     sCurrentLocation.toGoogleLatLng(), ZOOM));

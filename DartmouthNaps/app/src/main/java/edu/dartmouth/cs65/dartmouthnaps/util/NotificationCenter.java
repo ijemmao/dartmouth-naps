@@ -52,7 +52,7 @@ public class NotificationCenter {
                 NotificationManager.IMPORTANCE_HIGH);
         mNotificationManager.createNotificationChannel(notificationChannel);
 
-        // Create the NotificationChannel for the review prompt notification
+        // Create the NotificationChannel for the starred review notification
         notificationChannel = new NotificationChannel(
                 NOTIFICATION_CHANNEL_IDS[NOTIFICATION_ID_STARRED_REVIEW - 1],
                 NOTIFICATION_CHANNEL_NAMES[NOTIFICATION_ID_STARRED_REVIEW - 1],
@@ -154,12 +154,25 @@ public class NotificationCenter {
         }
     }
 
+    /**************** postLocationMonitorNotification() ****************
+     * Posts a location monitor Notification through the given Service
+     * @param service   Service to post the Notification with (to keep the app from being killed by
+     *                  Android, this Notification is posted using startForeground() called from
+     *                  service)
+     */
     public void postLocationMonitorNotification(Service service) {
         mService = service;
         mID = NOTIFICATION_ID_LOCATION_MONITOR;
         mNCCallback.sendContext();
     }
 
+    /**************** postReviewPromptNotification() ****************
+     * Posts a review prompt Notification that will take the user to a NewReviewActivity for the
+     * given location, which has been evaluated to be at the given placeIndex
+     * @param location      LatLng for location to be associated with the new Review
+     * @param placeIndex    int for the place index of the new Review (it is assumed that this index
+     *                      was generated through calling PlaceUtil.getPlaceIndex(location))
+     */
     public void postReviewPromptNotification(LatLng location, int placeIndex) {
         mLocation = location;
         mPlaceIndex = placeIndex;
@@ -167,6 +180,12 @@ public class NotificationCenter {
         mNCCallback.sendContext();
     }
 
+    /**************** postStarredReviewNotification() ****************
+     * Posts a Notification for a review being made on a starred location
+     * @param reviewKey     String for the key (the timestamp) used to access the Review from the
+     *                      Map in FirebaseDataSource
+     * @param placeIndex    int for the index of the place of the review
+     */
     public void postStarredReviewNotification(String reviewKey, int placeIndex) {
         mReviewKey = reviewKey;
         mPlaceIndex = placeIndex;
@@ -174,15 +193,29 @@ public class NotificationCenter {
         mNCCallback.sendContext();
     }
 
+    /**************** cancelAll() ****************
+     * Calls cancelAll() on the private NotificationManager
+     */
     public void cancelAll() {
         mNotificationManager.cancelAll();
     }
 
+    /**************** receiveContext() ****************
+     * Receives the Context requested by calling sendContext(), and immediately posts the awaiting
+     * Notification with this Context
+     * @param context   Context to receive
+     */
     public void receiveContext(Context context) {
         postNotification(context);
     }
 
+    /**************** NCCallback ****************
+     * Callback interface for NotificationCenter
+     */
     public interface NCCallback {
+        /**************** sendContext() ****************
+         * A request for a Context to post a Notification
+         */
         void sendContext();
     }
 }

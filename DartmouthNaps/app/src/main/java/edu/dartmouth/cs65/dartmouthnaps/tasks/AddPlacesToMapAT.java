@@ -25,14 +25,17 @@ public class AddPlacesToMapAT extends AsyncTask<GoogleMap, Void, Void> {
         double[][] coordinates;
         LatLng[] latLngs;
 
+        // For each place in the PLACE_COORDINATES array, create a Polygon
         for (int p = 0; p < mPlaceCount; p++) {
             coordinates = PLACE_COORDINATES[p];
             latLngs = new LatLng[coordinates.length];
 
+            // For each coordinate in the Polygon, create the corresponding (Google) LatLng
             for (int c = 0; c < coordinates.length; c++) {
                 latLngs[c] = new LatLng(coordinates[c][0], coordinates[c][1]);
             }
 
+            // Set each cell in the PolygonOptionsArray to add to the GoogleMap on post execute
             mPolygonOptionsArray[p] = new PolygonOptions()
                     .add(latLngs)
                     .clickable(true)
@@ -48,6 +51,7 @@ public class AddPlacesToMapAT extends AsyncTask<GoogleMap, Void, Void> {
     protected void onPostExecute(Void result) {
         Polygon polygon;
 
+        // Add all the polygons to the map through the PolygonOptions array
         for (int p = 0; p < mPlaceCount; p++) {
             polygon = mGoogleMap.addPolygon(mPolygonOptionsArray[p]);
             polygon.setTag(PLACE_NAMES[p]);

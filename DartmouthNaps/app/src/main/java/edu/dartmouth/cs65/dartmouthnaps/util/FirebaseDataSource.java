@@ -32,7 +32,6 @@ import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.fragments.MyReviewsFragment;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
-import edu.dartmouth.cs65.dartmouthnaps.models.User;
 import edu.dartmouth.cs65.dartmouthnaps.services.LocationService;
 
 import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;

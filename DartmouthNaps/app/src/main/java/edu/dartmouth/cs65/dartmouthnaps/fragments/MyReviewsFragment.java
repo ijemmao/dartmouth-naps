@@ -140,7 +140,7 @@ class MyReviewsAdapter extends ArrayAdapter<Review> {
         TextView timestamp = view.findViewById(R.id.timestamp);
 
         title.setText(review.getTitle());
-        timestamp.setText(review.getTimestamp());
+        timestamp.setText(review.getFormattedTimestamp());
 
 
         ImageButton deleteButton = view.findViewById(R.id.delete_review_button);
