@@ -164,24 +164,16 @@ public class FirebaseDataSource {
             @Override
             public int compare(Review o1, Review o2) {
                 double microDistance1 = microDistanceBetween(
-                        latLngToDoubleArr(o1.getLocation()),
-                        latLngToDoubleArr(location));
+                        o1.getLocation().toDoubleArr(),
+                        location.toDoubleArr());
                 double microDistance2 = microDistanceBetween(
-                        latLngToDoubleArr(o2.getLocation()),
-                        latLngToDoubleArr(location));
+                        o2.getLocation().toDoubleArr(),
+                        location.toDoubleArr());
                 if (microDistance1 == microDistance2) return 0;
                 return microDistance1 < microDistance2 ? -1 : 1;
             }
         });
 
         return reviews;
-    }
-
-    public void centerOnLatLng(LatLng latlng) {
-
-    }
-
-    private static double[] latLngToDoubleArr(LatLng location) {
-        return new double[]{location.latitude, location.longitude};
     }
 }

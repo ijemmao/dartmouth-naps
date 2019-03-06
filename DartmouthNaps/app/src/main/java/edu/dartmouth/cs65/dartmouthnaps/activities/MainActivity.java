@@ -30,11 +30,12 @@ import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.fragments.CampusMapFragment;
 import edu.dartmouth.cs65.dartmouthnaps.fragments.MyReviewsFragment;
 import edu.dartmouth.cs65.dartmouthnaps.fragments.StarredLocationsFragment;
+import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.services.LocationService;
 import edu.dartmouth.cs65.dartmouthnaps.util.FirebaseDataSource;
 
 import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
-
+import static edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil.*;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, CampusMapFragment.CMFListener {
     private static final String TAG = TAG_GLOBAL + ": MainActivity";
@@ -57,17 +58,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent;
+        boolean permissionsGranted;
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         dbReference = FirebaseDatabase.getInstance().getReference();
-        boolean permissionsGranted;
-
-
 
         if(savedInstanceState == null) {
             if (user == null) { //if noone is logged in, go to login activity
-                Intent intent = new Intent(this, SignupActivity.class);
+                intent = new Intent(this, SignupActivity.class);
                 startActivity(intent);
             } else { //fetch the data from firebase and load it onto local database, if right afterlogging in
                 uID = user.getUid();
@@ -75,38 +75,52 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
 
-//        if(!uID.equals("")) {
-            setContentView(R.layout.activity_main);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.text_open, R.string.text_close); //to toggle open and close the navigation drawer
-            drawer.addDrawerListener(actionBarDrawerToggle);
-            actionBarDrawerToggle.setDrawerIndicatorEnabled(false);
-            actionBarDrawerToggle.syncState();
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-            navigationView.setNavigationItemSelectedListener(this); //sets up the listener for navigation item changes
-            getSupportActionBar().hide();
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.text_open, R.string.text_close); //to toggle open and close the navigation drawer
+        drawer.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.setDrawerIndicatorEnabled(false);
+        actionBarDrawerToggle.syncState();
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this); //sets up the listener for navigation item changes
+        getSupportActionBar().hide();
 
-            myReviewsFragment = new MyReviewsFragment();
-            starredLocationsFragment = new StarredLocationsFragment();
-            sFirebaseDataSource = new FirebaseDataSource(getApplicationContext());
-            permissionsGranted = checkPermissions();
-            mCampusMapFragment = CampusMapFragment.newInstance(permissionsGranted);
-            navigationView.setCheckedItem(R.id.nav_reviews);
+        myReviewsFragment = new MyReviewsFragment();
+        starredLocationsFragment = new StarredLocationsFragment();
+        sFirebaseDataSource = new FirebaseDataSource(getApplicationContext());
+        permissionsGranted = checkPermissions();
+        mCampusMapFragment = CampusMapFragment.newInstance(
+                permissionsGranted);
+        navigationView.setCheckedItem(R.id.nav_reviews);
 
-            if(savedInstanceState == null) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.content_main, mCampusMapFragment).commit();
-            }
+        if(savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_main, mCampusMapFragment).commit();
+        }
 
-            if(uID.equals("")) {
-                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-                mCampusMapFragment.setHideButton(true);
-            } else {
-                View header = navigationView.getHeaderView(0);
-                TextView headerEmail = (TextView) header.findViewById(R.id.header_email);
-                headerEmail.setText(user.getEmail());
-            }
+        if(uID.equals("")) {
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            mCampusMapFragment.setHideButton(true);
+        } else {
+            View header = navigationView.getHeaderView(0);
+            TextView headerEmail = (TextView) header.findViewById(R.id.header_email);
+            headerEmail.setText(user.getEmail());
+        }
+
+        if (!permissionsGranted) requestPermissions();
+
+    }
+
+
+    @Override
+    protected void onNewIntent (Intent intent) {
+        if (intent.getBooleanExtra(KEY_REVIEW_PROMPTED, false)
+                && mCampusMapFragment != null) {
+            mCampusMapFragment.reviewPrompted(new LatLng(
+                    intent.getDoubleExtra(KEY_LATITUDE, PLACE_COORDINATES_AVG[1][LAT]),
+                    intent.getDoubleExtra(KEY_LONGITUDE, PLACE_COORDINATES_AVG[1][LNG])));
+        }
     }
 
     @Override
@@ -172,11 +186,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getApplicationContext().unbindService(serviceConnection);
     }
 
-    @Override
-    public void onDestroy() {
-        getApplicationContext().stopService(getLSIntent());
-        super.onDestroy();
-    }
+//    @Override
+//    public void onDestroy() {
+//        getApplicationContext().stopService(getLSIntent());
+//        super.onDestroy();
+//    }
 
     public void onClick(View v) {
         switch (v.getId()) {

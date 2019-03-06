@@ -110,17 +110,22 @@ public class Review {
 
     public String getFormattedTimestamp() {
         String formattedDate;
+        String ampm = " AM";
         try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss.SSS");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss.SSS", Locale.US);
             Date newDate = format.parse(timestamp);
 
-            format = new SimpleDateFormat("MMM dd, yyyy hh:mm a");
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(newDate);
+            if (calendar.get(Calendar.HOUR_OF_DAY) >= 12) ampm = " PM";
+
+            format = new SimpleDateFormat("h:mm", Locale.US);
             formattedDate = format.format(newDate);
         } catch (Exception e) {
             return timestamp;
         }
 
-        return formattedDate;
+        return formattedDate + ampm;
     }
 
     public LatLng getLocation() {
@@ -132,14 +137,24 @@ public class Review {
     }
 
     public static String getTimestampFromCalendar(Calendar timestampCal) {
-        return String.format(Locale.getDefault(), "%04d-%02d-%02d %02d:%02d:%02d.%03d",
+
+        System.out.println("TIMESTAMP: " + timestampCal.get(Calendar.AM_PM));
+        String ampm;
+        if (timestampCal.get(Calendar.AM_PM) == 0) {
+            ampm = "AM";
+        } else {
+            ampm = "PM";
+        }
+
+        return String.format(Locale.getDefault(), "%04d-%02d-%02d %02d:%02d:%02d.%03d ",
                 timestampCal.get(Calendar.YEAR),
                 timestampCal.get(Calendar.MONTH) + 1,
                 timestampCal.get(Calendar.DAY_OF_MONTH),
                 timestampCal.get(Calendar.HOUR_OF_DAY),
                 timestampCal.get(Calendar.MINUTE),
                 timestampCal.get(Calendar.SECOND),
-                timestampCal.get(Calendar.MILLISECOND));
+                timestampCal.get(Calendar.MILLISECOND)) + ampm;
+
     }
 
     public Map<String, Object> toMap() {

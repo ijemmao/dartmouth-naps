@@ -103,52 +103,17 @@ public class NewReviewActivity extends AppCompatActivity {
     }
 
     public void submitReview(View view) {
-        // Send review to Firebase database
-        Review newReview = new Review(
-                user.getUid(),
-                noiseFragment.getRating(),
-                comfortFragment.getRating(),
-                lightFragment.getRating(),
-                reviewHeader.getText().toString(),
-                imageFileName,
-                Review.getTimestampFromCalendar(Calendar.getInstance()),
-                location);
-
-        MainActivity.sFirebaseDataSource.createReview(newReview);
-//        String key = dbReference.child("users").child(user.getUid()).child("reviews").push().getKey();
-//        Map<String, Object> reviews = newReview.toMap();
-//
-//        Map<String, Object> childUpdates = new HashMap<>();
-//        childUpdates.put("users/" + user.getUid() + "/reviews/" + key, reviews);
-//        childUpdates.put("/reviews/" + key, reviews);
-//        dbReference.updateChildren(childUpdates);
-        Toast.makeText(this, "Review sent", Toast.LENGTH_SHORT).show();
-
-        UploadTask uploadTask = storageReference.child("images/" + user.getUid() + "-" +  imageFileName + ".jpg").putBytes(imageBytes);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                finish();
-            }
-        });
-
         // Notifies user if there are empty fields
         // Review cannot be sent with empty fields
         if (user.getUid() == null
-                        || noiseFragment.getRating() == 0
-                        || comfortFragment.getRating() == 0
-                        || lightFragment.getRating() == 0
-                        || reviewHeader.getText().toString().equals("")
-                        || imageFileName == null) {
+                || noiseFragment.getRating() == 0
+                || comfortFragment.getRating() == 0
+                || lightFragment.getRating() == 0
+                || reviewHeader.getText().toString().equals("")
+                || imageFileName == null) {
             Toast.makeText(this, "Must complete all fields", Toast.LENGTH_SHORT).show();
         } else {
-            newReview = new Review(
+            final Review newReview = new Review(
                     user.getUid(),
                     noiseFragment.getRating(),
                     comfortFragment.getRating(),
@@ -161,7 +126,8 @@ public class NewReviewActivity extends AppCompatActivity {
             // Send review to Firebase database
             MainActivity.sFirebaseDataSource.createReview(newReview);
 
-            uploadTask = storageReference.child("images/" + user.getUid() + "-" +  imageFileName + ".jpg").putBytes(imageBytes);
+            UploadTask uploadTask = storageReference.child("images/" + user.getUid() + "-" +  imageFileName + ".jpg").putBytes(imageBytes);
+
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
@@ -172,6 +138,8 @@ public class NewReviewActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                    // Send review to Firebase database
+                    MainActivity.sFirebaseDataSource.createReview(newReview);
                     Toast.makeText(getApplicationContext(), "Review successfully sent", Toast.LENGTH_SHORT).show();
                     finish();
                 }
