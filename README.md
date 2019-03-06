@@ -61,6 +61,9 @@ The Noise, Comfort, and Light ratings all implement the Rating fragment which ma
 
 ##### Starred Location Fragment
 
+##### My Reviews Fragment
+The user has the ability to see all of their active reviews. On this view, they only have the option to delete their reviews.
+
 #### Async Logic
 
 ##### Location Tracking Service
