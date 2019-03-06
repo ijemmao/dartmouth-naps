@@ -28,32 +28,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
+import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
 public class MyReviewsFragment extends Fragment {
 
-    private ListView listView; //The list view
-    private MyReviewsAdapter adapter; //The adapter for the list view, using a custom adapter defined below
+    public static ListView listView; //The list view
+    public static MyReviewsAdapter adapter; //The adapter for the list view, using a custom adapter defined below
     private FirebaseAuth auth;
     private FirebaseUser user;
     private String uID;
     private DatabaseReference dbReference;
-    private StorageReference storageReference;
     private ChildEventListener listener;
+    public static List<Review> reviews;
+    private static Context context;
 
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.my_reviews_fragment, container, false);
 
-        listView = (ListView) view.findViewById(R.id.my_reviews_list_view);
-        List<Review> reviews = new ArrayList<Review>();
+        listView = view.findViewById(R.id.my_reviews_list_view);
+        reviews = new ArrayList<>();
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         uID = user.getUid();
         dbReference = FirebaseDatabase.getInstance().getReference().child("users").child(uID).child("reviews");
-        storageReference = FirebaseStorage.getInstance().getReference();
 
         uID = user.getUid();
         listener = new ChildEventListener() {
@@ -69,9 +70,6 @@ public class MyReviewsFragment extends Fragment {
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 //check if something was removed, and delete it from database and refresh adapter
-//                ExerciseEntry entry = dataSnapshot.getValue(ExerciseEntry.class);
-//                exerciseEntryDataSource.deleteEntry(entry);
-//                adapter.notifyDataSetChanged();
             }
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -83,14 +81,23 @@ public class MyReviewsFragment extends Fragment {
             }
         };
 
-        dbReference.addChildEventListener(listener); //sets the listener in the correct leve
+        dbReference.addChildEventListener(listener); // sets the listener in the correct leve
 
+        context = getActivity();
         adapter = new MyReviewsAdapter(getActivity(), android.R.layout.simple_list_item_1, reviews);
+
+        MainActivity.sFirebaseDataSource.getUserReviews();
         listView.setAdapter(adapter);
 
         return view;
     }
 
+    public static void updateReviews(ArrayList<Review> userReviews) {
+        reviews = userReviews;
+        adapter.notifyDataSetChanged();
+        adapter = new MyReviewsAdapter(context, android.R.layout.simple_list_item_1, reviews);
+        listView.setAdapter(adapter);
+    }
 
 }
 
@@ -119,27 +126,20 @@ class MyReviewsAdapter extends ArrayAdapter<Review> {
 
         Review review = reviews.get(position);
 
-        TextView title = (TextView)view.findViewById(R.id.my_entry_title);
-        TextView timestamp = (TextView)view.findViewById(R.id.timestamp);
+        TextView title = view.findViewById(R.id.my_entry_title);
+        TextView timestamp = view.findViewById(R.id.timestamp);
 
         title.setText(review.getTitle());
         timestamp.setText(review.getTimestamp());
 
 
-        ImageButton editButton = (ImageButton)view.findViewById(R.id.edit_review_button);
-        ImageButton deleteButton = (ImageButton)view.findViewById(R.id.delete_review_button);
-
-        editButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                //GO TO EDIT ACTIVITY
-            }
-        });
+        ImageButton deleteButton = view.findViewById(R.id.delete_review_button);
 
 
         deleteButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                MainActivity.sFirebaseDataSource.removeReview(reviews.get(position));
                 reviews.remove(position); //or some other task
                 notifyDataSetChanged();
             }
