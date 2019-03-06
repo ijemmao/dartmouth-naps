@@ -38,12 +38,12 @@ public class LocationService extends Service implements NotificationCenter.NCCal
 
     private static final int UNIT_TO_MILLI = 1000;  // Conversion factor to go from unit to milli
     private static final int MIN_TO_SEC = 60;       // Conversion factor to go from min to s
-    private static final int THRESHOLD = 1;         // Threshold for the review prompt (in min)
+    private static final int THRESHOLD = 15;         // Threshold for the review prompt (in min)
     private static final int THRESHOLD_IN_MILLIS =  // Threshold for the review prompt (in ms)
             THRESHOLD * MIN_TO_SEC * UNIT_TO_MILLI;
-    private static final int PERIOD = 5;            // Period to check the location (in s)
+    private static final int PERIOD = 2;            // Period to check the location (in min)
     private static final int PERIOD_IN_MILLIS =     // Period to check the location (in ms)
-            PERIOD * UNIT_TO_MILLI;
+            PERIOD * MIN_TO_SEC * UNIT_TO_MILLI;
 
     private static Thread sCheckLocationPeriodicallyThread; // Thread for checking notifications
     private static boolean sLocationMonitorPosted = false;  // boolean for whether the location
