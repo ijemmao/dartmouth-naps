@@ -76,19 +76,60 @@ Completing multiple `Future` tasks is computationally heavy on the main UI threa
 
 #### LatLng
 
+##### Variables
+
+```Java
+double latitude
+double longitude
+```
+
+##### Functions
+
+```Java
+// There are typical getter and setter functions
+
+public Google.LatLng toGoogleLatLng() {
+  // Returns a Google LatLng from original LatLng
+}
+
+public Location toLocation() {
+  // Returns a Location from original LatLng
+}
+```
+
+
 #### Review
 This is class that includes all information related to review objects
 
-* **author** : String - Fireabse uid of the user
-* **noise** : int - Rating of the noise quality
-* **comfort** : int - Rating of the comfort quality
-* **light** : int - Rating of the light quality
-* **convenience** : int - Rating of the convenience of review
-* **title** : String - Title of the review
-* **imageName** : String - Name of the review's image
-* **image** : byte[] - Data of image
-* **timestamp** : String - time when review was created
+##### Variables
+```Java
+String author    // Fireabse uid of the user
+int noise        // Rating of the noise quality
+int comfort      // Rating of the comfort quality
+int light        // Rating of the light quality
+int convenience  // Rating of the convenience of review
+String title     // Title of the review
+String imageName // Name of the review's image
+byte[] image     // Data of image
+String timestamp // Time when review was created
+```
 
+##### Functions
+```Java
+// There are typical getter and setter functions
+
+public String getFormattedTimestamp() {
+  // Returns a formatted time stamp for users
+}
+
+public static String getTimeStampFromCalendar(Calendar timestampCal) {
+  // Returns the time when review was created
+}
+
+public Map<String, Object> toMap() {
+  // Returns a Map representation of Review
+}
+```
 
 ### Database Structure
 
