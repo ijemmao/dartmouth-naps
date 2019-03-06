@@ -12,6 +12,7 @@ import com.google.android.gms.tasks.Task;
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
 
+/*Written by the Dartmouth Naps Team*/
 public class AuthOnCompleteListener implements OnCompleteListener {
     private final static String TAG = "DartmouthNaps: AuthOnCompleteListener";
     private Context context; //keeps track of the context
@@ -31,6 +32,7 @@ public class AuthOnCompleteListener implements OnCompleteListener {
             context.startActivity(intent);
         }
         else {
+            //if not completed, creates the appropriate alert message
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             if(type.equals("login")) {
                 builder.setMessage(R.string.invalid_login_text);
@@ -38,10 +40,10 @@ public class AuthOnCompleteListener implements OnCompleteListener {
                 builder.setMessage(R.string.invalid_signup_text);
             }
 
+            //creates the dialog
             builder.setTitle(R.string.oops_title).setPositiveButton(android.R.string.ok, null);
             AlertDialog dialog = builder.create();
             dialog.show();
-            Log.d(TAG, task.toString());
         }
     }
 }

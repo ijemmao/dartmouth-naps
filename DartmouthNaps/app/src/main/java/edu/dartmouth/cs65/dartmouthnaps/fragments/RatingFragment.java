@@ -3,7 +3,6 @@ package edu.dartmouth.cs65.dartmouthnaps.fragments;
 
 import android.app.Activity;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -17,26 +16,22 @@ import android.widget.TextView;
 import edu.dartmouth.cs65.dartmouthnaps.R;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
+/*Written by the Dartmouth Naps Team*/
 public class RatingFragment extends Fragment implements View.OnClickListener {
 
-    TextView header;
+    TextView header; //the heading for the rating
     CharSequence headerTitle;
-    Button firstRating;
-    Button secondRating;
-    Button thirdRating;
-    Button fourthRating;
-    Button fifthRating;
+    Button firstRating; //one bar
+    Button secondRating; //two bars
+    Button thirdRating; //three bars
+    Button fourthRating; //four bars
+    Button fifthRating; //five bars
 
     boolean disabled;
-
-    Button[] ratingsList;
-
+    Button[] ratingsList; //list of all the ratings
     int rating;
 
-
+    //constructor
     public RatingFragment() {
         // Required empty public constructor
     }

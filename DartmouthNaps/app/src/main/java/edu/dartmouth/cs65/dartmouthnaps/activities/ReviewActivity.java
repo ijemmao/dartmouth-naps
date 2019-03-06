@@ -13,17 +13,18 @@ import java.io.FileInputStream;
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.fragments.RatingFragment;
 
+/*Written by the Dartmouth Naps Team*/
 public class ReviewActivity extends AppCompatActivity {
 
-    TextView reviewTitle;
-    ImageView reviewImage;
+    TextView reviewTitle; //title of the review
+    ImageView reviewImage; //image for the review
 
     String image;
 
-    RatingFragment noiseFragment;
-    RatingFragment comfortFragment;
-    RatingFragment lightFragment;
-    RatingFragment convenienceFragment;
+    RatingFragment noiseFragment; //noise level
+    RatingFragment comfortFragment; //comfort level
+    RatingFragment lightFragment; //light level
+    RatingFragment convenienceFragment; //convenience level
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,7 @@ public class ReviewActivity extends AppCompatActivity {
 
         reviewTitle.setText(extras.getString("title"));
 
+        //starts the fragments for each of the required ratings
         noiseFragment = (RatingFragment) getSupportFragmentManager().findFragmentById(R.id.noise_fragment);
         comfortFragment = (RatingFragment) getSupportFragmentManager().findFragmentById(R.id.comfort_fragment);
         lightFragment = (RatingFragment) getSupportFragmentManager().findFragmentById(R.id.light_fragment);
@@ -43,12 +45,14 @@ public class ReviewActivity extends AppCompatActivity {
 
         reviewImage = findViewById(R.id.review_image);
 
+        //sets the values for each of the fragments
         image = extras.getString("image");
         noiseFragment.setRating(extras.getInt("noise"));
         comfortFragment.setRating(extras.getInt("comfort"));
         lightFragment.setRating(extras.getInt("light"));
         convenienceFragment.setRating(extras.getInt("convenience"));
 
+        //gets the location image and sets the image view to that image
         try {
             FileInputStream is = new FileInputStream (new File(image));
 

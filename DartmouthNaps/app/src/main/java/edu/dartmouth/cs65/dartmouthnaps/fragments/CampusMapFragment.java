@@ -47,20 +47,21 @@ import edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil;
 import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
 import static edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil.*;
 
+/*Written by the Dartmouth Naps Team*/
 public class CampusMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnPolygonClickListener, GoogleMap.OnMarkerClickListener {
-    private static final String TAG = "DartmouthNaps: CampusMapFragment";
-    private static final boolean DEBUG = true;
+    private static final String TAG = "DartmouthNaps: CampusMapFragment"; //used for debugging
+    private static final boolean DEBUG = true; //indicates if debugging
 
-    private static final String TAG_CURRENT_LOCATION = "current location";
-    private static final float ZOOM = 17;
+    private static final String TAG_CURRENT_LOCATION = "current location"; //current location tag
+    private static final float ZOOM = 17; //map zoom level
     private static final String KEY_PERMISSIONS_GRANTED = "permissions granted";
 
-    private static LSConnection mLSConnection;
+    private static LSConnection mLSConnection; //LocationService connection
 
     public static LatLng sCurrentLocation = null;
     public static GoogleMap mGoogleMap;
 
-    private CMFListener mCMFListener;
+    private CMFListener mCMFListener; //listener for the CampusMapFragment
     private Bitmap mCurrentLocationMarkerBitmap = null;
     private Marker mCurrentLocationMarker = null;
     private ReviewCardsContainerFragment reviewCardsContainerFragment;
