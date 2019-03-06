@@ -20,7 +20,9 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/horizontal_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="130dp" />
+        android:layout_height="150dp"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"/>
 
 
     <TextView
@@ -38,9 +40,11 @@
     <ListView
         android:id="@+id/starred_all_list_view"
         android:layout_width="match_parent"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
         android:layout_height="wrap_content"
         android:divider="@android:color/transparent"
-        android:dividerHeight="20dp">
+        android:dividerHeight="10dp">
     </ListView>
 
 </LinearLayout>

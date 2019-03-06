@@ -183,14 +183,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void unbindLS(ServiceConnection serviceConnection) {
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "unbindLS() called");
-        getApplicationContext().unbindService(serviceConnection);
-    }
+        try {
+            getApplicationContext().unbindService(serviceConnection);
+        } catch (IllegalArgumentException e){
 
-//    @Override
-//    public void onDestroy() {
-//        getApplicationContext().stopService(getLSIntent());
-//        super.onDestroy();
-//    }
+        }
+    }
 
     public void onClick(View v) {
         switch (v.getId()) {
