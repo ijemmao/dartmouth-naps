@@ -33,7 +33,6 @@ import edu.dartmouth.cs65.dartmouthnaps.fragments.StarredLocationsFragment;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.services.LocationService;
 import edu.dartmouth.cs65.dartmouthnaps.util.FirebaseDataSource;
-import edu.dartmouth.cs65.dartmouthnaps.util.NotificationCenter;
 
 import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
 import static edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil.*;
@@ -118,11 +117,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onNewIntent (Intent intent) {
         if (intent.getBooleanExtra(KEY_REVIEW_PROMPT, false)
                 && mCampusMapFragment != null) {
-            mCampusMapFragment.reviewPrompted(new LatLng(
+            mCampusMapFragment.reviewPrompt(new LatLng(
                     intent.getDoubleExtra(KEY_LATITUDE, PLACE_COORDINATES_AVG[1][LAT]),
                     intent.getDoubleExtra(KEY_LONGITUDE, PLACE_COORDINATES_AVG[1][LNG])));
         } else if (intent.getBooleanExtra(KEY_STARRED_REVIEW, false)) {
             Log.d(TAG, "Received intent with review key \"" + intent.getStringExtra(KEY_REVIEW_KEY) +"\"");
+            mCampusMapFragment.showStarredReview(sFirebaseDataSource.getReview(intent.getStringExtra(KEY_REVIEW_KEY)));
         }
     }
 

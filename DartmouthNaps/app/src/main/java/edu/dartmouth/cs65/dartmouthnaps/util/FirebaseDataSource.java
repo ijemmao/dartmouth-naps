@@ -162,6 +162,12 @@ public class FirebaseDataSource {
         mUserReviewsFDBR.child(key).setValue("");
     }
 
+    public Review getReview(String reviewKey) {
+        if (mReviews == null) return null;
+
+        return mReviews.get(reviewKey);
+    }
+
     private class ReviewsChildEventListener implements ChildEventListener {
         private static final String TAG = TAG_GLOBAL + ": ReviewsChildEventListenerRename";
         private static final boolean DEBUG = true;

@@ -156,6 +156,7 @@ public class LocationService extends Service implements NotificationCenter.NCCal
         //  * interrupt (which stops) the Thread to check the location periodically
         //  * set sIsRunning to false
         sNotificationCenter.cancelAll();
+        sLocationMonitorPosted = false;
         mFLCP.removeLocationUpdates(mLSLC);
         mFLCP = null;
 
