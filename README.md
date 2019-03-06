@@ -75,7 +75,7 @@ The bottom 40% of the screen is occupied by the `ReviewCardContainerFragment`, w
 Each Review object is represented with a Review Card Fragment that is overlaid on the `CampusMapFragment`.
 
 ##### Review Card Container Fragment
-This fragment contains all the `ReviewCardFragment`s which allows for swiping functionality. On swiping, the `SupportMapFragment` centers on the associated `Review`.
+This fragment contains all the `ReviewCardFragment`s which allows for swiping functionality. On swiping, the `SupportMapFragment` centers on the associated `Review`. When the `ReviewCardFragment`s first load up, they are sorted in order of distance from the user's current location, so that the first one to show up is the closest to the user. 
 
 ##### Rating Fragment
 The Noise, Comfort, and Light ratings all implement the Rating fragment which makes for keeping track of the unique statuses for each Review fairly simple.
