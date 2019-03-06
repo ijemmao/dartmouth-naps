@@ -120,7 +120,7 @@ public class StarredLocationsFragment extends Fragment {
 
         adapter = new StarredLocationsAdapter(getActivity(), android.R.layout.simple_list_item_1, placeNames, dbReference, placesSelection);
         listView.setAdapter(adapter);
-        horizontalRecyclerView.addItemDecoration(new HorizontalSpaceItemDecoration(10));
+        horizontalRecyclerView.addItemDecoration(new HorizontalSpaceItemDecoration(30));
 
         horizontalAdapter=new HorizontalAdapter(starredPlaces, dbReference, placeNames);
         horizontalRecyclerView.setLayoutManager(layoutManager);
