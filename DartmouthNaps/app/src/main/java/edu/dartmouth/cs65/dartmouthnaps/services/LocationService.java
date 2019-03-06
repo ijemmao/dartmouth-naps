@@ -168,69 +168,6 @@ public class LocationService extends Service implements NotificationCenter.NCCal
         sIsRunning = false;
     }
 
-    /**************** postNotification() ****************
-     * Posts a Notification with the given id (which also defines its type)
-     * @param id    int for the id of the Notification to post (needs to be one of the values
-     *              "NOTIFICATION_ID_" in Globals
-     */
-    private void postNotification(int id) {
-        Intent          intent;         // Intent for the Notification
-        String          title;          // String for the title of the Notification
-        String          text;           // String for the text of the Notification
-        Notification    notification;   // Notification to post
-
-//        if (DEBUG_GLOBAL && DEBUG && mNotificationManager == null) {
-//            Log.d(TAG, "Warning: posting notification " +
-//                    " while mNotificationManager is null");
-//        }
-
-        // The Notification should take the user to the MainActivity, and title and text are
-        // probably just values from their respective array (the Notification id 0 can't be used,
-        // so they start at 1)
-        intent = new Intent(this, MainActivity.class);
-        title = NOTIFICATION_TITLES[id - 1];
-        text = NOTIFICATION_TEXTS[id - 1];
-
-        // If the intended Notification is a review prompt, add the location data and set the
-        // KEY_REVIEW_PROMPT boolean true to launch a NewReviewActivity when it's clicked
-        if (id == NOTIFICATION_ID_REVIEW_PROMPT) {
-            intent.putExtra(KEY_REVIEW_PROMPT, true);
-            intent.putExtra(KEY_LATITUDE, mCurrentLocation.latitude);
-            intent.putExtra(KEY_LATITUDE, mCurrentLocation.longitude);
-
-            // The title should also include the name of the place the user has been in
-            title = title.substring(0, 44) + PLACE_NAMES[mPrevPlaceIndex] + title.substring(44);
-        }
-
-        // Build the Notification
-        notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_IDS[id - 1])
-                .setContentTitle(title)
-                .setContentText(text)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setContentIntent(PendingIntent.getActivity(
-                        this,
-                        id,
-                        intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT))
-                .build();
-
-        // Adjust the Notification's flags as necessary and then post it (either through
-        // startForeground() or notify()
-        switch (id) {
-            case NOTIFICATION_ID_LOCATION_MONITOR:
-                notification.flags |=
-                        Notification.FLAG_NO_CLEAR |
-                        Notification.FLAG_ONGOING_EVENT;
-                startForeground(id, notification);
-                break;
-            case NOTIFICATION_ID_REVIEW_PROMPT:
-                notification.flags |=
-                        Notification.FLAG_AUTO_CANCEL;
-//                mNotificationManager.notify(id, notification);
-                break;
-        }
-    }
-
     /**************** requestLocationUpdates() ****************
      * Requests location updates through the FusedLocationProviderClient
      */

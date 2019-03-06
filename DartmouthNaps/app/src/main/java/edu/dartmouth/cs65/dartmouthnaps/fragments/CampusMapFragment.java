@@ -71,7 +71,6 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     private boolean hidden;
     private Button mAddReviewBtn;
     private boolean mPermissionsGranted;
-    private boolean mReviewPrompted;
     private boolean mBindLSCalled;
 
     public CampusMapFragment() {
@@ -166,9 +165,6 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         }
 
         mAddReviewBtn = layout.findViewById(R.id.add_review);
-//        if (mReviewPrompted) {
-//            onClick(layout.findViewById(R.id.add_review));
-//        }
 
         reviewCardsContainerFragment = (ReviewCardsContainerFragment) getChildFragmentManager().findFragmentById(R.id.review_cards_container_fragment);
         imageButton = layout.findViewById(R.id.open_drawer);

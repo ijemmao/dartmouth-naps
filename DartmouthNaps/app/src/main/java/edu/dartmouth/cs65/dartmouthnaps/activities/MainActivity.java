@@ -115,19 +115,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onNewIntent (Intent intent) {
+        MenuItem navMapMI = findViewById(R.id.nav_map);
+        if (navMapMI != null) onNavigationItemSelected(navMapMI);
+
         if (intent.getBooleanExtra(KEY_REVIEW_PROMPT, false)
                 && mCampusMapFragment != null) {
             mCampusMapFragment.reviewPrompt(new LatLng(
                     intent.getDoubleExtra(KEY_LATITUDE, PLACE_COORDINATES_AVG[1][LAT]),
                     intent.getDoubleExtra(KEY_LONGITUDE, PLACE_COORDINATES_AVG[1][LNG])));
         } else if (intent.getBooleanExtra(KEY_STARRED_REVIEW, false)) {
-            Log.d(TAG, "Received intent with review key \"" + intent.getStringExtra(KEY_REVIEW_KEY) +"\"");
             mCampusMapFragment.showStarredReview(sFirebaseDataSource.getReview(intent.getStringExtra(KEY_REVIEW_KEY)));
         }
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onNavigationItemSelected() called");
         int id = menuItem.getItemId();
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (id == R.id.nav_reviews) {
@@ -148,7 +151,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent intent = new Intent(this, MainActivity.class); //starts the login page
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        Toast.makeText(getApplicationContext(), "LOGOUT HERE", Toast.LENGTH_SHORT).show();
         finish();
     }
 
@@ -186,14 +188,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void unbindLS(ServiceConnection serviceConnection) {
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "unbindLS() called");
-        getApplicationContext().unbindService(serviceConnection);
-    }
+        try {
+            getApplicationContext().unbindService(serviceConnection);
+        } catch (IllegalArgumentException e){
 
-//    @Override
-//    public void onDestroy() {
-//        getApplicationContext().stopService(getLSIntent());
-//        super.onDestroy();
-//    }
+        }
+    }
 
     public void onClick(View v) {
         switch (v.getId()) {

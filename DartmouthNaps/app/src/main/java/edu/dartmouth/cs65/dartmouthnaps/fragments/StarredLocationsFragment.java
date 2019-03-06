@@ -1,9 +1,11 @@
 package edu.dartmouth.cs65.dartmouthnaps.fragments;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.content.Context;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -30,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
+import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
 import edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil;
 
 public class StarredLocationsFragment extends Fragment {
@@ -119,13 +123,19 @@ public class StarredLocationsFragment extends Fragment {
 
         adapter = new StarredLocationsAdapter(getActivity(), android.R.layout.simple_list_item_1, placeNames, dbReference, placesSelection);
         listView.setAdapter(adapter);
-        horizontalRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
-                DividerItemDecoration.VERTICAL));
+        horizontalRecyclerView.addItemDecoration(new HorizontalSpaceItemDecoration(30));
 
         horizontalAdapter=new HorizontalAdapter(starredPlaces, dbReference, placeNames);
         horizontalRecyclerView.setLayoutManager(layoutManager);
         horizontalRecyclerView.setAdapter(horizontalAdapter);
 
+        ImageButton imageButton = (ImageButton)view.findViewById(R.id.open_drawer_starred);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.drawer.openDrawer(GravityCompat.START);
+            }
+        });
 
 
         return view;
@@ -256,6 +266,21 @@ class HorizontalAdapter extends RecyclerView.Adapter<HorizontalAdapter.MyViewHol
     @Override
     public int getItemCount() {
         return horizontalList.size();
+    }
+}
+
+class HorizontalSpaceItemDecoration extends RecyclerView.ItemDecoration {
+
+    private final int horizontalSpace;
+
+    public HorizontalSpaceItemDecoration(int horizontalSpace) {
+        this.horizontalSpace = horizontalSpace;
+    }
+
+    @Override
+    public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
+                               RecyclerView.State state) {
+        outRect.right = horizontalSpace;
     }
 }
 

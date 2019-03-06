@@ -25,12 +25,11 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
-import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
+import edu.dartmouth.cs65.dartmouthnaps.fragments.MyReviewsFragment;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 import edu.dartmouth.cs65.dartmouthnaps.models.User;
@@ -44,7 +43,6 @@ public class FirebaseDataSource {
     private static final boolean DEBUG = true;
     private DatabaseReference mReviewsFDBR;
     private DatabaseReference mUserReviewsFDBR;
-    private DatabaseReference mUserStarredFDBR;
     private GoogleMap mGoogleMap;
     private Map<String, Review> mReviews;
     private Map<String, Marker> mReviewMarkers;
@@ -82,21 +80,8 @@ public class FirebaseDataSource {
                     .child(mUID);
             mUserReviewsFDBR = userFDBR
                     .child("reviews");
-            mUserStarredFDBR = userFDBR
-                    .child("starred");
-            userFDBR.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    User user = dataSnapshot.getValue(User.class);
-                    mStarred = user == null ? null : user.toBooleanArr();
-
-                    if (mStarred != null) mUserStarredFDBR.addChildEventListener(
-                            new StarredChildEventListener());
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {}
-            });
+            mStarred = new boolean[PLACE_COUNT];
+            userFDBR.child("starred").addChildEventListener(new StarredChildEventListener());
         } else {
             mUserReviewsFDBR = null;
         }
@@ -157,9 +142,20 @@ public class FirebaseDataSource {
     public void createReview(Review review) {
         String key;
 
-        key = mUID + "-" + review.getTimestamp().substring(0, 19);
+        key = mUID + "-" + review.getTimestamp().substring(0, review.getTimestamp().length() - 7);
         mReviewsFDBR.child(key).setValue(review);
         mUserReviewsFDBR.child(key).setValue("");
+    }
+
+    public void deleteReview(Review review) {
+        String key;
+
+        if (mReviewsFDBR == null || mUserReviewsFDBR == null) return;
+
+        key = mUID + "-" + review.getTimestamp().substring(0, review.getTimestamp().length() - 7);
+
+        mReviewsFDBR.child(key).removeValue();
+        mUserReviewsFDBR.child(key).removeValue();
     }
 
     public Review getReview(String reviewKey) {
@@ -168,8 +164,29 @@ public class FirebaseDataSource {
         return mReviews.get(reviewKey);
     }
 
+    public void getUserReviews() {
+        final ArrayList<Review> userReviews = new ArrayList<>();
+        mReviewsFDBR.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (final DataSnapshot child : dataSnapshot.getChildren()) {
+                    Review review = child.getValue(Review.class);
+                    if (review.getAuthor().equals(mUID)) {
+                        userReviews.add(review);
+                    }
+                }
+                MyReviewsFragment.updateReviews(userReviews);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private class ReviewsChildEventListener implements ChildEventListener {
-        private static final String TAG = TAG_GLOBAL + ": ReviewsChildEventListenerRename";
+        private static final String TAG = TAG_GLOBAL + ": ReviewsChildEventListener";
         private static final boolean DEBUG = true;
 
         @Override
@@ -230,23 +247,15 @@ public class FirebaseDataSource {
         private static final boolean DEBUG = true;
 
         @Override
-        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onChildAdded() called");
+            setSingleStarred(dataSnapshot);
+        }
 
         @Override
         public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
             if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onChildChanged() called");
-
-            String key;
-            Object value;
-            int index;
-            boolean starred;
-
-            key = dataSnapshot.getKey();
-            index = key == null ? -1 : Integer.parseInt(dataSnapshot.getKey());
-            value = dataSnapshot.getValue();
-            starred = (value != null && Boolean.parseBoolean(value.toString()));
-
-            if (index >= 0 && index < PLACE_COUNT) mStarred[index] = starred;
+            setSingleStarred(dataSnapshot);
         }
 
         @Override
@@ -262,6 +271,20 @@ public class FirebaseDataSource {
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
             if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onCancelled() called");
+        }
+
+        private void setSingleStarred(@NonNull DataSnapshot dataSnapshot) {
+            String key;
+            Object value;
+            int index;
+            boolean starred;
+
+            key = dataSnapshot.getKey();
+            index = key == null ? -1 : Integer.parseInt(dataSnapshot.getKey());
+            value = dataSnapshot.getValue();
+            starred = (value != null && Boolean.parseBoolean(value.toString()));
+
+            if (index >= 0 && index < PLACE_COUNT) mStarred[index] = starred;
         }
     }
 
@@ -282,5 +305,23 @@ public class FirebaseDataSource {
         });
 
         return reviews;
+    }
+
+    private void logStarred() {
+        if (!(DEBUG_GLOBAL && DEBUG)) return;
+
+        String logStr = "mStarred: ";
+
+        if (mStarred == null) logStr += "[null]";
+        else {
+            for (int i = 0; i < PLACE_COUNT; i++) {
+                logStr += String.format(Locale.getDefault(),
+                        "\n\t%02d\t%s",
+                        i,
+                        mStarred[i] ? "true" : "false");
+            }
+        }
+
+        Log.d(TAG, logStr);
     }
 }
