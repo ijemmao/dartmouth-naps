@@ -1,15 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
+    <ImageButton
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:id="@+id/open_drawer_review"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="start"
+        android:background="@drawable/ic_person_outline_blue_100dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="15dp"
+        android:paddingRight="50dp"
+        android:onClick="onClick"
+        android:contentDescription="@string/app_name"/>
 
     <TextView
         android:id="@+id/my_active_reviews_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="30dp"
+        android:paddingTop="10dp"
         android:paddingLeft="10dp"
         android:paddingBottom ="30dp"
         android:text="@string/text_my_reviews"
