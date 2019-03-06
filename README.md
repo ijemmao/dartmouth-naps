@@ -101,7 +101,7 @@ Completing multiple `Future` tasks is computationally heavy on the main UI threa
 
 ##### Add Places To Map AsyncTask
 
-Because the near 1,000+ coordinates that define the place `Polygon`s defined in `PlaceUtil` would likely weigh down the main UI thread more than it should, the process of looping through these coordinates and adding them to `PolygonOPtions` objects was offloaded to `AddPlacesToMapAT`, which then adds them to the `GoogleMap` in `onPostExecute()`.
+Because the near 1,000+ coordinates that define the place `Polygon`s defined in `PlaceUtil` would likely weigh down the main UI thread more than it should, the process of looping through these coordinates and adding them to `PolygonOptions` objects was offloaded to `AddPlacesToMapAT`, which then adds them to the `GoogleMap` in `onPostExecute()`.
 
 ### Controller
 
@@ -173,6 +173,8 @@ public Map<String, Object> toMap() {
 ```
 
 ### Database Structure
+
+![](./images/Database.PNG)
 
 ## Technology
 
