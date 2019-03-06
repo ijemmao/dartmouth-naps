@@ -36,6 +36,14 @@ We have two different versions of our APK available, the only difference being a
 
 ## System Design
 
+### Design Documents
+
+#### The Dream That Started It All, [Ijemmma's Original Pitch](https://docs.google.com/presentation/d/1U5dV4e1Yy2UXnjdFKumxm2BsX1pRqz_PSnM95fFhmMM/edit?usp=sharing)
+
+#### [Our Figma Boards](https://www.figma.com/file/QXj3MVCTs4YBLTcY7DXWIkBS/Dartmouth-Naps?node-id=0%3A1)
+
+#### [Our Demo or Die Day Presentation](https://docs.google.com/presentation/d/1g_pP2hewEOnoEQBFb5L0MENmGiFbGKjGDC3G1E6F3KY/edit?usp=sharing)
+
 ### Client Side
 
 #### Activities
