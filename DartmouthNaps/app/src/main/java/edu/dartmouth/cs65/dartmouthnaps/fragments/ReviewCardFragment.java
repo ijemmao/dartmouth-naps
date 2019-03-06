@@ -40,7 +40,6 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
     private int noise;
     private int comfort;
     private int light;
-    private int convenience;
 
     ImageView reviewImage;
     TextView headerTitle;
@@ -48,7 +47,6 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
     Button soundQuickStatus;
     Button comfortQuickStatus;
     Button lightQuickStatus;
-    Button convenienceQuickStatus;
 
     Bundle extras;
 
@@ -74,7 +72,6 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
             noise = 1;
             comfort = 1;
             light = 1;
-            convenience = 0;
         } else {
             title = extras.getString("title", "[title]");
             timestamp = extras.getString("timestamp", "[timestamp]");
@@ -82,7 +79,6 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
             noise = extras.getInt("noise", 1);
             comfort = extras.getInt("comfort", 1);
             light = extras.getInt("light", 1);
-            convenience = extras.getInt("convenience", 0);
         }
 
         drawables = new Drawable[]{
@@ -111,7 +107,6 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
         soundQuickStatus = view.findViewById(R.id.sound_quick_status);
         comfortQuickStatus = view.findViewById(R.id.comfort_quick_status);
         lightQuickStatus = view.findViewById(R.id.light_quick_status);
-        convenienceQuickStatus = view.findViewById(R.id.convenience_quick_status);
 
         headerTitle.setText(title);
         timestampLabel.setText(timestamp);
@@ -125,7 +120,6 @@ public class ReviewCardFragment extends Fragment implements View.OnClickListener
         soundQuickStatus.setBackground(drawables[noise]);
         comfortQuickStatus.setBackground(drawables[comfort]);
         lightQuickStatus.setBackground(drawables[light]);
-        convenienceQuickStatus.setBackground(drawables[convenience]);
     }
 
     @Override

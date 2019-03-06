@@ -70,14 +70,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <fragment
-                app:title="@string/convenience_label"
-                app:disabled="true"
-                android:name="edu.dartmouth.cs65.dartmouthnaps.fragments.RatingFragment"
-                android:id="@+id/convenience_fragment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
         </LinearLayout>
 
     </ScrollView>

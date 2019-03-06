@@ -24,7 +24,6 @@ public class ReviewActivity extends AppCompatActivity {
     RatingFragment noiseFragment; //noise level
     RatingFragment comfortFragment; //comfort level
     RatingFragment lightFragment; //light level
-    RatingFragment convenienceFragment; //convenience level
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +40,6 @@ public class ReviewActivity extends AppCompatActivity {
         noiseFragment = (RatingFragment) getSupportFragmentManager().findFragmentById(R.id.noise_fragment);
         comfortFragment = (RatingFragment) getSupportFragmentManager().findFragmentById(R.id.comfort_fragment);
         lightFragment = (RatingFragment) getSupportFragmentManager().findFragmentById(R.id.light_fragment);
-        convenienceFragment = (RatingFragment) getSupportFragmentManager().findFragmentById(R.id.convenience_fragment);
 
         reviewImage = findViewById(R.id.review_image);
 
@@ -50,7 +48,6 @@ public class ReviewActivity extends AppCompatActivity {
         noiseFragment.setRating(extras.getInt("noise"));
         comfortFragment.setRating(extras.getInt("comfort"));
         lightFragment.setRating(extras.getInt("light"));
-        convenienceFragment.setRating(extras.getInt("convenience"));
 
         //gets the location image and sets the image view to that image
         try {

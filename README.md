@@ -6,6 +6,9 @@ An Android application for Dartmouth students to review and discover good nappin
 ![](./images/Starred_Locations.png)
 ![](./images/Settings_Drawer.png)
 
+## Demo or Die Day Presentation
+<https://docs.google.com/presentation/d/1g_pP2hewEOnoEQBFb5L0MENmGiFbGKjGDC3G1E6F3KY/edit?usp=sharing>
+
 ## Setup
 There are few requirements that must be met:
 
