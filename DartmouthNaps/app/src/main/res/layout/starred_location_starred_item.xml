@@ -5,22 +5,27 @@
     android:layout_width="150dp"
     android:layout_height="match_parent"
     android:background="@drawable/list_item_shape">
-    <TextView
-        android:textColor="#000000"
-        android:textSize="20dp"
-        android:padding="10dp"
-        android:id="@+id/txtView"
-        android:fontFamily="@font/montserrat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"/>
-
     <CheckBox
         android:id="@+id/starred_location_checkbox"
         android:button="@drawable/ic_star_yellow_24dp"
         android:padding="@dimen/activity_horizontal_margin"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@android:color/transparent"
+        android:layout_gravity="top|end"/>
+    <TextView
+        android:textColor="#000000"
+        android:textSize="20dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/txtView"
+        android:fontFamily="@font/montserrat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center_horizontal|center_vertical" />
+
+
 </LinearLayout>

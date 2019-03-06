@@ -1,5 +1,6 @@
 package edu.dartmouth.cs65.dartmouthnaps.fragments;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -119,8 +120,7 @@ public class StarredLocationsFragment extends Fragment {
 
         adapter = new StarredLocationsAdapter(getActivity(), android.R.layout.simple_list_item_1, placeNames, dbReference, placesSelection);
         listView.setAdapter(adapter);
-        horizontalRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
-                DividerItemDecoration.VERTICAL));
+        horizontalRecyclerView.addItemDecoration(new HorizontalSpaceItemDecoration(10));
 
         horizontalAdapter=new HorizontalAdapter(starredPlaces, dbReference, placeNames);
         horizontalRecyclerView.setLayoutManager(layoutManager);
@@ -256,6 +256,21 @@ class HorizontalAdapter extends RecyclerView.Adapter<HorizontalAdapter.MyViewHol
     @Override
     public int getItemCount() {
         return horizontalList.size();
+    }
+}
+
+class HorizontalSpaceItemDecoration extends RecyclerView.ItemDecoration {
+
+    private final int horizontalSpace;
+
+    public HorizontalSpaceItemDecoration(int horizontalSpace) {
+        this.horizontalSpace = horizontalSpace;
+    }
+
+    @Override
+    public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
+                               RecyclerView.State state) {
+        outRect.right = horizontalSpace;
     }
 }
 
