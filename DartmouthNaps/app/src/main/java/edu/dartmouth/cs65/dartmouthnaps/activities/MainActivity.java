@@ -115,16 +115,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onNewIntent (Intent intent) {
-        if (intent.getBooleanExtra(KEY_REVIEW_PROMPTED, false)
+        MenuItem navMapMI = findViewById(R.id.nav_map);
+        if (navMapMI != null) onNavigationItemSelected(navMapMI);
+
+        if (intent.getBooleanExtra(KEY_REVIEW_PROMPT, false)
                 && mCampusMapFragment != null) {
-            mCampusMapFragment.reviewPrompted(new LatLng(
+            mCampusMapFragment.reviewPrompt(new LatLng(
                     intent.getDoubleExtra(KEY_LATITUDE, PLACE_COORDINATES_AVG[1][LAT]),
                     intent.getDoubleExtra(KEY_LONGITUDE, PLACE_COORDINATES_AVG[1][LNG])));
+        } else if (intent.getBooleanExtra(KEY_STARRED_REVIEW, false)) {
+            mCampusMapFragment.showStarredReview(sFirebaseDataSource.getReview(intent.getStringExtra(KEY_REVIEW_KEY)));
         }
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onNavigationItemSelected() called");
         int id = menuItem.getItemId();
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (id == R.id.nav_reviews) {

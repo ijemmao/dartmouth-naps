@@ -149,7 +149,7 @@ class MyReviewsAdapter extends ArrayAdapter<Review> {
         deleteButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                MainActivity.sFirebaseDataSource.removeReview(reviews.get(position));
+                MainActivity.sFirebaseDataSource.deleteReview(reviews.get(position));
                 reviews.remove(position); //or some other task
                 notifyDataSetChanged();
             }

@@ -25,13 +25,15 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
-import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
 import edu.dartmouth.cs65.dartmouthnaps.fragments.MyReviewsFragment;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
+import edu.dartmouth.cs65.dartmouthnaps.models.User;
+import edu.dartmouth.cs65.dartmouthnaps.services.LocationService;
 
 import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
 import static edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil.*;
@@ -44,24 +46,42 @@ public class FirebaseDataSource {
     private GoogleMap mGoogleMap;
     private Map<String, Review> mReviews;
     private Map<String, Marker> mReviewMarkers;
+    private boolean[] mStarred;
     private Bitmap mReviewMarkerBitmap = null;
     private String mUID;
+    private int mReviewsCount;
 
     public FirebaseDataSource(Context context) {
         VectorDrawableCompat reviewMarkerVDC;
+        DatabaseReference userFDBR;
         int reviewMarkerWidth;
         int reviewMarkerHeight;
 
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         mReviewsFDBR = dbRef.child("reviews");
+        mReviewsCount = -1;
+        mReviewsFDBR.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mReviewsCount = (int)dataSnapshot.getChildrenCount();
+
+                if (mGoogleMap != null)
+                    mReviewsFDBR.addChildEventListener(new ReviewsChildEventListener());
+            }
+
+            @Override public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
 
         if (firebaseUser != null) {
             mUID = firebaseUser.getUid();
-            mUserReviewsFDBR = dbRef
+            userFDBR = dbRef
                     .child("users")
-                    .child(mUID)
+                    .child(mUID);
+            mUserReviewsFDBR = userFDBR
                     .child("reviews");
+            mStarred = new boolean[PLACE_COUNT];
+            userFDBR.child("starred").addChildEventListener(new StarredChildEventListener());
         } else {
             mUserReviewsFDBR = null;
         }
@@ -81,15 +101,16 @@ public class FirebaseDataSource {
 
         mReviews = new HashMap<>();
         mReviewMarkers = new HashMap<>();
+        mGoogleMap = null;
     }
 
-    public void addReviewsChildEventListener(GoogleMap googleMap) {
+    public void setGoogleMap(GoogleMap googleMap) {
         mGoogleMap = googleMap;
 
-        if (mReviewsFDBR != null) {
+        if (mReviewsFDBR != null && mReviewsCount != -1) {
             mReviewsFDBR.addChildEventListener(new ReviewsChildEventListener());
         } else if (DEBUG_GLOBAL && DEBUG)
-            Log.d(TAG, "addReviewsChildEventListener() called while mReviewsFDBR is null");
+            Log.d(TAG, "setGoogleMap() called while mReviewsFDBR is null");
     }
 
     public void addReview(Review review) {
@@ -116,9 +137,6 @@ public class FirebaseDataSource {
             marker.remove();
             mReviewMarkers.remove(review.getTimestamp());
         }
-        String key = mUID + "-" + review.getTimestamp().substring(0, review.getTimestamp().length() - 7);
-        mReviewsFDBR.child(key).removeValue();
-        mUserReviewsFDBR.child(key).removeValue();
     }
 
     public void createReview(Review review) {
@@ -129,8 +147,24 @@ public class FirebaseDataSource {
         mUserReviewsFDBR.child(key).setValue("");
     }
 
-    public void getUserReviews() {
+    public void deleteReview(Review review) {
+        String key;
 
+        if (mReviewsFDBR == null || mUserReviewsFDBR == null) return;
+
+        key = mUID + "-" + review.getTimestamp().substring(0, review.getTimestamp().length() - 7);
+
+        mReviewsFDBR.child(key).removeValue();
+        mUserReviewsFDBR.child(key).removeValue();
+    }
+
+    public Review getReview(String reviewKey) {
+        if (mReviews == null) return null;
+
+        return mReviews.get(reviewKey);
+    }
+
+    public void getUserReviews() {
         final ArrayList<Review> userReviews = new ArrayList<>();
         mReviewsFDBR.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -152,21 +186,76 @@ public class FirebaseDataSource {
     }
 
     private class ReviewsChildEventListener implements ChildEventListener {
-        private static final String TAG = TAG_GLOBAL + ": ReviewsChildEventListenerRename";
-        private static final boolean DEBUG = false;
+        private static final String TAG = TAG_GLOBAL + ": ReviewsChildEventListener";
+        private static final boolean DEBUG = true;
 
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            int index;
+
             if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onChildAdded() called");
 
-            addReview(dataSnapshot.getValue(Review.class));
+            Review review = dataSnapshot.getValue(Review.class);
+            if (mReviewsCount > 0) mReviewsCount--;
+            else if (review != null && mStarred != null){
+                index = getPlaceIndex(review.getLocation().toDoubleArr());
+
+                if (DEBUG_GLOBAL && DEBUG) {
+                    if (index == -1) Log.d(TAG, "Location of review added isn't valid");
+                    else {
+                        Log.d(TAG, "Review happened in " +
+                                PLACE_NAMES[index] + ", which the user " +
+                                (mStarred[index] ? "has" : "hasn't") + " starred");
+                    }
+                }
+
+                if (index != -1) LocationService.sNotificationCenter.postStarredReviewNotification(
+                        review.getTimestamp(), index);
+            } else if (DEBUG_GLOBAL && DEBUG) {
+                if (review == null) Log.d(TAG, "review is null");
+                if (mStarred == null) Log.d(TAG, "mStarred is null");
+            }
+
+            addReview(review);
         }
 
         @Override
         public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
             if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onChildChanged() called");
+        }
+
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+            if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onChildRemoved() called");
 
             removeReview(dataSnapshot.getValue(Review.class));
+        }
+
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onChildMoved() called");
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+            if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onCancelled() called");
+        }
+    }
+
+    private class StarredChildEventListener implements ChildEventListener {
+        private static final String TAG = TAG_GLOBAL + ": StarredChildEventListener";
+        private static final boolean DEBUG = true;
+
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onChildAdded() called");
+            setSingleStarred(dataSnapshot);
+        }
+
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onChildChanged() called");
+            setSingleStarred(dataSnapshot);
         }
 
         @Override
@@ -182,6 +271,20 @@ public class FirebaseDataSource {
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
             if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onCancelled() called");
+        }
+
+        private void setSingleStarred(@NonNull DataSnapshot dataSnapshot) {
+            String key;
+            Object value;
+            int index;
+            boolean starred;
+
+            key = dataSnapshot.getKey();
+            index = key == null ? -1 : Integer.parseInt(dataSnapshot.getKey());
+            value = dataSnapshot.getValue();
+            starred = (value != null && Boolean.parseBoolean(value.toString()));
+
+            if (index >= 0 && index < PLACE_COUNT) mStarred[index] = starred;
         }
     }
 
@@ -202,5 +305,23 @@ public class FirebaseDataSource {
         });
 
         return reviews;
+    }
+
+    private void logStarred() {
+        if (!(DEBUG_GLOBAL && DEBUG)) return;
+
+        String logStr = "mStarred: ";
+
+        if (mStarred == null) logStr += "[null]";
+        else {
+            for (int i = 0; i < PLACE_COUNT; i++) {
+                logStr += String.format(Locale.getDefault(),
+                        "\n\t%02d\t%s",
+                        i,
+                        mStarred[i] ? "true" : "false");
+            }
+        }
+
+        Log.d(TAG, logStr);
     }
 }

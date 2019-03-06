@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,11 +41,14 @@ import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
+import edu.dartmouth.cs65.dartmouthnaps.util.Globals;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.*;
+
+import static android.support.v4.view.PagerAdapter.POSITION_NONE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -101,7 +105,12 @@ public class ReviewCardsContainerFragment extends Fragment {
             super(fm);
         }
 
-        public int getItemPosition(Object object) {
+        @Override
+        public int getItemPosition(@NonNull Object object) {
+            for (int i = 0; i < reviews.size(); i++) {
+                if (reviews.get(i).equals(object)) return i;
+            }
+
             return POSITION_NONE;
         }
 
@@ -260,6 +269,24 @@ public class ReviewCardsContainerFragment extends Fragment {
                 });
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    public void showStarredReview(Review review) {
+        int position;
+
+        if (mPager == null) {
+            if (Globals.DEBUG_GLOBAL) Log.d(Globals.TAG_GLOBAL, "mPager is null in showStarredReview");
+        } else if (review == null) {
+            if (Globals.DEBUG_GLOBAL) Log.d(Globals.TAG_GLOBAL, "review is null in showStarredReview");
+        } else {
+            position = pagerAdapter.getItemPosition(review);
+
+            if (position == POSITION_NONE) {
+                if (Globals.DEBUG_GLOBAL) Log.d(Globals.TAG_GLOBAL, "POSITION_NONE returned in showStarredReview");
+            } else {
+                mPager.setCurrentItem(position);
             }
         }
     }

@@ -170,4 +170,23 @@ public class Review {
 
         return result;
     }
+
+    @Override
+    public boolean equals (Object obj) {
+        Review objReview;
+
+
+        if (!(obj instanceof Review)) return false;
+
+        objReview = (Review)obj;
+
+        return (author.equals(objReview.author) &&
+                noise == objReview.noise &&
+                comfort == objReview.comfort &&
+                light == objReview.light &&
+                convenience == objReview.convenience &&
+                title.equals(objReview.title) &&
+                imageName.equals(objReview.imageName) &&
+                timestamp.equals(objReview.timestamp));
+    }
 }

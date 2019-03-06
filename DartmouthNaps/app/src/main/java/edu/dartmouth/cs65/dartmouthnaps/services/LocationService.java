@@ -26,12 +26,13 @@ import java.util.Calendar;
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
+import edu.dartmouth.cs65.dartmouthnaps.util.NotificationCenter;
 import edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil;
 
 import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
 import static edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil.*;
 
-public class LocationService extends Service {
+public class LocationService extends Service implements NotificationCenter.NCCallback{
     private static final String TAG = TAG_GLOBAL + ": LocationService";
     private static final boolean DEBUG = true;
 
@@ -50,12 +51,11 @@ public class LocationService extends Service {
     private static boolean sReviewPrompted = false;         // boolean for whether a review has been
                                                             // prompted
 
+    public static NotificationCenter sNotificationCenter;
     public static boolean sIsBound = false;             // boolean for whether this Service is bound
     public static boolean sIsRunning = false;           // boolean for whether this Service is
                                                         // running
 
-    private NotificationManager mNotificationManager;   // NotificationManager to call to cancel the
-                                                        // notification when appropriate
     private FusedLocationProviderClient mFLCP;          // FusedLocationProviderClient to request
                                                         // location updates from
     private LSLocationCallback mLSLC;                   // LSLocationCallback to be called upon a
@@ -78,6 +78,7 @@ public class LocationService extends Service {
         mSendMessenger = null;
         mPrevPlaceIndex = -1;
         sCheckLocationPeriodicallyThread = null;
+        sNotificationCenter = new NotificationCenter(this);
     }
 
     @Override
@@ -89,25 +90,7 @@ public class LocationService extends Service {
         sIsRunning = true;
 
         if (!sLocationMonitorPosted) {
-            // Initialize the NotificationManager
-            mNotificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-
-            // Create the NotificationChannel for the location monitor notification
-            notificationChannel = new NotificationChannel(
-                    NOTIFICATION_CHANNEL_IDS[NOTIFICATION_ID_LOCATION_MONITOR - 1],
-                    NOTIFICATION_CHANNEL_NAMES[NOTIFICATION_ID_LOCATION_MONITOR - 1],
-                    NotificationManager.IMPORTANCE_LOW);
-            mNotificationManager.createNotificationChannel(notificationChannel);
-
-            // Create the NotificationChannel for the review prompt notification
-            notificationChannel = new NotificationChannel(
-                    NOTIFICATION_CHANNEL_IDS[NOTIFICATION_ID_REVIEW_PROMPT - 1],
-                    NOTIFICATION_CHANNEL_NAMES[NOTIFICATION_ID_REVIEW_PROMPT - 1],
-                    NotificationManager.IMPORTANCE_HIGH);
-            mNotificationManager.createNotificationChannel(notificationChannel);
-
-            // Post the location monitor notification
-            postNotification(NOTIFICATION_ID_LOCATION_MONITOR);
+            sNotificationCenter.postLocationMonitorNotification(this);
             sLocationMonitorPosted = true;
         }
 
@@ -172,7 +155,8 @@ public class LocationService extends Service {
         //  * stop listening for location updates with the LocationServiceLocationCallback
         //  * interrupt (which stops) the Thread to check the location periodically
         //  * set sIsRunning to false
-        mNotificationManager.cancelAll();
+        sNotificationCenter.cancelAll();
+        sLocationMonitorPosted = false;
         mFLCP.removeLocationUpdates(mLSLC);
         mFLCP = null;
 
@@ -182,69 +166,6 @@ public class LocationService extends Service {
         }
 
         sIsRunning = false;
-    }
-
-    /**************** postNotification() ****************
-     * Posts a Notification with the given id (which also defines its type)
-     * @param id    int for the id of the Notification to post (needs to be one of the values
-     *              "NOTIFICATION_ID_" in Globals
-     */
-    private void postNotification(int id) {
-        Intent          intent;         // Intent for the Notification
-        String          title;          // String for the title of the Notification
-        String          text;           // String for the text of the Notification
-        Notification    notification;   // Notification to post
-
-        if (DEBUG_GLOBAL && DEBUG && mNotificationManager == null) {
-            Log.d(TAG, "Warning: posting notification " +
-                    " while mNotificationManager is null");
-        }
-
-        // The Notification should take the user to the MainActivity, and title and text are
-        // probably just values from their respective array (the Notification id 0 can't be used,
-        // so they start at 1)
-        intent = new Intent(this, MainActivity.class);
-        title = NOTIFICATION_TITLES[id - 1];
-        text = NOTIFICATION_TEXTS[id - 1];
-
-        // If the intended Notification is a review prompt, add the location data and set the
-        // KEY_REVIEW_PROMPTED boolean true to launch a NewReviewActivity when it's clicked
-        if (id == NOTIFICATION_ID_REVIEW_PROMPT) {
-            intent.putExtra(KEY_REVIEW_PROMPTED, true);
-            intent.putExtra(KEY_LATITUDE, mCurrentLocation.latitude);
-            intent.putExtra(KEY_LATITUDE, mCurrentLocation.longitude);
-
-            // The title should also include the name of the place the user has been in
-            title = title.substring(0, 44) + PLACE_NAMES[mPrevPlaceIndex] + title.substring(44);
-        }
-
-        // Build the Notification
-        notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_IDS[id - 1])
-                .setContentTitle(title)
-                .setContentText(text)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setContentIntent(PendingIntent.getActivity(
-                        this,
-                        id,
-                        intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT))
-                .build();
-
-        // Adjust the Notification's flags as necessary and then post it (either through
-        // startForeground() or notify()
-        switch (id) {
-            case NOTIFICATION_ID_LOCATION_MONITOR:
-                notification.flags |=
-                        Notification.FLAG_NO_CLEAR |
-                        Notification.FLAG_ONGOING_EVENT;
-                startForeground(id, notification);
-                break;
-            case NOTIFICATION_ID_REVIEW_PROMPT:
-                notification.flags |=
-                        Notification.FLAG_AUTO_CANCEL;
-                mNotificationManager.notify(id, notification);
-                break;
-        }
     }
 
     /**************** requestLocationUpdates() ****************
@@ -303,6 +224,12 @@ public class LocationService extends Service {
         sCheckLocationPeriodicallyThread = new CheckLocationPeriodicallyThread(
                 new CheckLocationPeriodicallyRunnable());
         sCheckLocationPeriodicallyThread.start();
+    }
+
+    @Override
+    public void sendContext() {
+        Log.d(TAG, "sendContext() called");
+        sNotificationCenter.receiveContext(this);
     }
 
     /**************** LSHandler ****************
@@ -413,7 +340,9 @@ public class LocationService extends Service {
                     if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "stayed in " +
                             PLACE_NAMES[mPrevPlaceIndex] + " for " + THRESHOLD + " min");
 
-                    postNotification(NOTIFICATION_ID_REVIEW_PROMPT);
+                    sNotificationCenter.postReviewPromptNotification(
+                            mCurrentLocation,
+                            mPrevPlaceIndex);
                     mPrevTime = currTime;
                     sReviewPrompted = true;
                 }

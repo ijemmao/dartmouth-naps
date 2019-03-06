@@ -39,6 +39,7 @@ import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
 import edu.dartmouth.cs65.dartmouthnaps.activities.NewReviewActivity;
 import edu.dartmouth.cs65.dartmouthnaps.activities.SignupActivity;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
+import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 import edu.dartmouth.cs65.dartmouthnaps.services.LocationService;
 import edu.dartmouth.cs65.dartmouthnaps.tasks.AddPlacesToMapAT;
 import edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil;
@@ -70,7 +71,6 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     private boolean hidden;
     private Button mAddReviewBtn;
     private boolean mPermissionsGranted;
-    private boolean mReviewPrompted;
     private boolean mBindLSCalled;
 
     public CampusMapFragment() {
@@ -165,9 +165,6 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         }
 
         mAddReviewBtn = layout.findViewById(R.id.add_review);
-//        if (mReviewPrompted) {
-//            onClick(layout.findViewById(R.id.add_review));
-//        }
 
         reviewCardsContainerFragment = (ReviewCardsContainerFragment) getChildFragmentManager().findFragmentById(R.id.review_cards_container_fragment);
         imageButton = layout.findViewById(R.id.open_drawer);
@@ -237,7 +234,7 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(PLACE_COORDINATES_AVG[1]).toGoogleLatLng(), ZOOM));
         new AddPlacesToMapAT().execute(mGoogleMap);
-        MainActivity.sFirebaseDataSource.addReviewsChildEventListener(mGoogleMap);
+        MainActivity.sFirebaseDataSource.setGoogleMap(mGoogleMap);
     }
 
     @Override
@@ -294,11 +291,15 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         }
     }
 
-    public void reviewPrompted(LatLng location) {
+    public void reviewPrompt(LatLng location) {
         if (mAddReviewBtn != null) {
             sCurrentLocation = location;
             onClick(mAddReviewBtn);
         }
+    }
+
+    public void showStarredReview(Review review) {
+        reviewCardsContainerFragment.showStarredReview(review);
     }
 
     private void handleLocation(LatLng location) {
