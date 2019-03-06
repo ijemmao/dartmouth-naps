@@ -40,7 +40,6 @@ public class MyReviewsFragment extends Fragment {
     private FirebaseUser user;
     private String uID;
     private DatabaseReference dbReference;
-    private StorageReference storageReference;
     private ChildEventListener listener;
     public static List<Review> reviews;
     private static Context context;
@@ -49,14 +48,13 @@ public class MyReviewsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.my_reviews_fragment, container, false);
 
-        listView = (ListView) view.findViewById(R.id.my_reviews_list_view);
-        reviews = new ArrayList<Review>();
+        listView = view.findViewById(R.id.my_reviews_list_view);
+        reviews = new ArrayList<>();
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         uID = user.getUid();
         dbReference = FirebaseDatabase.getInstance().getReference().child("users").child(uID).child("reviews");
-        storageReference = FirebaseStorage.getInstance().getReference();
 
         uID = user.getUid();
         listener = new ChildEventListener() {
@@ -72,9 +70,6 @@ public class MyReviewsFragment extends Fragment {
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 //check if something was removed, and delete it from database and refresh adapter
-//                ExerciseEntry entry = dataSnapshot.getValue(ExerciseEntry.class);
-//                exerciseEntryDataSource.deleteEntry(entry);
-//                adapter.notifyDataSetChanged();
             }
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -138,15 +133,7 @@ class MyReviewsAdapter extends ArrayAdapter<Review> {
         timestamp.setText(review.getTimestamp());
 
 
-        ImageButton editButton = view.findViewById(R.id.edit_review_button);
         ImageButton deleteButton = view.findViewById(R.id.delete_review_button);
-
-        editButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                //GO TO EDIT ACTIVITY
-            }
-        });
 
 
         deleteButton.setOnClickListener(new View.OnClickListener(){

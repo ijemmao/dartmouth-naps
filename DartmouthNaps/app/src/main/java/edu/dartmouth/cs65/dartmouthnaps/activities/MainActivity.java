@@ -145,7 +145,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent intent = new Intent(this, MainActivity.class); //starts the login page
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        Toast.makeText(getApplicationContext(), "LOGOUT HERE", Toast.LENGTH_SHORT).show();
         finish();
     }
 
