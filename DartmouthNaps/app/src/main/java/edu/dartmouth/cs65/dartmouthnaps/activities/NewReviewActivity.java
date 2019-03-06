@@ -123,8 +123,6 @@ public class NewReviewActivity extends AppCompatActivity {
                     Review.getTimestampFromCalendar(Calendar.getInstance()),
                     location);
 
-            // Send review to Firebase database
-            MainActivity.sFirebaseDataSource.createReview(newReview);
 
             UploadTask uploadTask = storageReference.child("images/" + user.getUid() + "-" +  imageFileName + ".jpg").putBytes(imageBytes);
 
