@@ -106,11 +106,11 @@ public class NewReviewActivity extends AppCompatActivity {
         // Notifies user if there are empty fields
         // Review cannot be sent with empty fields
         if (user.getUid() == null
-                        || noiseFragment.getRating() == 0
-                        || comfortFragment.getRating() == 0
-                        || lightFragment.getRating() == 0
-                        || reviewHeader.getText().toString().equals("")
-                        || imageFileName == null) {
+                || noiseFragment.getRating() == 0
+                || comfortFragment.getRating() == 0
+                || lightFragment.getRating() == 0
+                || reviewHeader.getText().toString().equals("")
+                || imageFileName == null) {
             Toast.makeText(this, "Must complete all fields", Toast.LENGTH_SHORT).show();
         } else {
             final Review newReview = new Review(

@@ -5,12 +5,14 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_temp"
+            android:id="@+id/nav_map"
             android:title="@string/nav_text_map" />
         <item
-        android:id="@+id/nav_reviews"
-        android:title="@string/nav_text_reviews" />
-
+            android:id="@+id/nav_reviews"
+            android:title="@string/nav_text_reviews" />
+        <item
+            android:id="@+id/nav_starred_locations"
+            android:title="@string/nav_text_starred_locations"/>
 
     </group>
 </menu>

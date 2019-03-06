@@ -29,6 +29,7 @@ import android.view.View;
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.fragments.CampusMapFragment;
 import edu.dartmouth.cs65.dartmouthnaps.fragments.MyReviewsFragment;
+import edu.dartmouth.cs65.dartmouthnaps.fragments.StarredLocationsFragment;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.services.LocationService;
 import edu.dartmouth.cs65.dartmouthnaps.util.FirebaseDataSource;
@@ -51,13 +52,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private MyReviewsFragment myReviewsFragment;
     private CampusMapFragment mCampusMapFragment;
+    private StarredLocationsFragment starredLocationsFragment;
 
-//    private TempNavFragment tempNavFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
         Intent intent;
         boolean permissionsGranted;
 
@@ -74,43 +74,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
 
-        Log.d("tag2", "UID: " + uID);
 
-//        if(!uID.equals("")) {
-            setContentView(R.layout.activity_main);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.text_open, R.string.text_close); //to toggle open and close the navigation drawer
-            drawer.addDrawerListener(actionBarDrawerToggle);
-            actionBarDrawerToggle.setDrawerIndicatorEnabled(false);
-            actionBarDrawerToggle.syncState();
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-            navigationView.setNavigationItemSelectedListener(this); //sets up the listener for navigation item changes
-            getSupportActionBar().hide();
-            myReviewsFragment = new MyReviewsFragment();
-            sFirebaseDataSource = new FirebaseDataSource(getApplicationContext());
-            permissionsGranted = checkPermissions();
-            mCampusMapFragment = CampusMapFragment.newInstance(
-                    permissionsGranted);
-            navigationView.setCheckedItem(R.id.nav_reviews);
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.text_open, R.string.text_close); //to toggle open and close the navigation drawer
+        drawer.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.setDrawerIndicatorEnabled(false);
+        actionBarDrawerToggle.syncState();
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this); //sets up the listener for navigation item changes
+        getSupportActionBar().hide();
+
+        myReviewsFragment = new MyReviewsFragment();
+        starredLocationsFragment = new StarredLocationsFragment();
+        sFirebaseDataSource = new FirebaseDataSource(getApplicationContext());
+        permissionsGranted = checkPermissions();
+        mCampusMapFragment = CampusMapFragment.newInstance(
+                permissionsGranted);
+        navigationView.setCheckedItem(R.id.nav_reviews);
+
+        if(savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.content_main, mCampusMapFragment).commit();
+        }
 
-            if(uID.equals("")) {
-                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-//                mCampusMapFragment.hideButtons();
-            } else {
-                View header = navigationView.getHeaderView(0);
-                TextView headerEmail = (TextView) header.findViewById(R.id.header_email);
-                headerEmail.setText(user.getEmail());
-            }
-
-//        } else {
-////            setContentView(R.layout.activity_main_no_user);
-//        }
+        if(uID.equals("")) {
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            mCampusMapFragment.setHideButton(true);
+        } else {
+            View header = navigationView.getHeaderView(0);
+            TextView headerEmail = (TextView) header.findViewById(R.id.header_email);
+            headerEmail.setText(user.getEmail());
+        }
 
         if (!permissionsGranted) requestPermissions();
+
     }
+
 
     @Override
     protected void onNewIntent (Intent intent) {
@@ -127,14 +128,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = menuItem.getItemId();
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (id == R.id.nav_reviews) {
-            Log.d("tag2", "here");
             fragmentManager.beginTransaction().replace(R.id.content_main, myReviewsFragment).commit();
-        } else if(id == R.id.nav_temp) {
-            Log.d("tag2", "here2");
+        } else if(id == R.id.nav_map) {
             fragmentManager.beginTransaction().replace(R.id.content_main, mCampusMapFragment).commit();
+        } else if(id == R.id.nav_starred_locations) {
+            fragmentManager.beginTransaction().replace(R.id.content_main, starredLocationsFragment).commit();
         }
 
-//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
         return true;
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void onLogoutClicked(View view) {
         auth.signOut();
-        Intent intent = new Intent(this, SignupActivity.class); //starts the login page
+        Intent intent = new Intent(this, MainActivity.class); //starts the login page
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         Toast.makeText(getApplicationContext(), "LOGOUT HERE", Toast.LENGTH_SHORT).show();

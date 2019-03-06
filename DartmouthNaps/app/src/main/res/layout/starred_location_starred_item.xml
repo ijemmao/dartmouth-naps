@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="150dp"
+    android:layout_height="match_parent"
+    android:background="@drawable/list_item_shape">
+    <TextView
+        android:textColor="#000000"
+        android:textSize="20dp"
+        android:padding="10dp"
+        android:id="@+id/txtView"
+        android:fontFamily="@font/montserrat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"/>
+
+    <CheckBox
+        android:id="@+id/starred_location_checkbox"
+        android:button="@drawable/ic_star_yellow_24dp"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:layout_gravity="center"/>
+</LinearLayout>
