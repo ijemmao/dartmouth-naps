@@ -12,6 +12,8 @@ There are few requirements that must be met:
 * Android device runs on Android 8.1 (Oreo) or later
 * Internet Access
 
+### GitHub
+
 Clone the repository
 ```
 git clone https://github.com/ijemmao/dartmouth-naps.git
@@ -24,6 +26,13 @@ Build > Rebuild Project
 ```
 
 Then Press the Play button to run the app!🎉
+
+### APK Links
+
+We have two different versions of our APK available, the only difference being a timer setting for one of the notifications. The 15 minute version reflects a slightly more realistic use version, but the time scope is a bit large for a presentation. The 1 minute version, on the other hand, is much less realistic (the notification sometimes fires at weird moments that wouldn't happen on the 15 minute version), but it allows the user to experience the notification without waiting for too long.
+
+* [15-min APK](https://github.com/ijemmao/dartmouth-naps/raw/master/DartmouthNaps_15m_2m.apk)
+* [1-min APK](https://github.com/ijemmao/dartmouth-naps/raw/master/DartmouthNaps_1m_5s.apk)
 
 ## System Design
 
