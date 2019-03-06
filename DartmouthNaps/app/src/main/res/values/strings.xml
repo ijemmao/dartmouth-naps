@@ -62,5 +62,4 @@
     <string name="noise_label">Noise</string>
     <string name="comfort_label">Comfort</string>
     <string name="light_label">Light</string>
-    <string name="convenience_label">Convenience</string>
 </resources>

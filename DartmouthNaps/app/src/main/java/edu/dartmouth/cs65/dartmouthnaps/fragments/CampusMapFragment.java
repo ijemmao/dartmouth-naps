@@ -306,8 +306,6 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     private void handleLocation(LatLng location) {
         sCurrentLocation = location;
 
-        reviewCardsContainerFragment.calculateConveniences(sCurrentLocation.toLocation());
-
         if (mGoogleMap != null && mCurrentLocationMarkerBitmap != null) {
             if (mCurrentLocationMarker != null) mCurrentLocationMarker.remove();
 

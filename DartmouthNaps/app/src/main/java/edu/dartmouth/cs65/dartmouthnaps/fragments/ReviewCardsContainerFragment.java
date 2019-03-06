@@ -143,7 +143,6 @@ public class ReviewCardsContainerFragment extends Fragment {
                 extras.putInt("noise", review.getNoise());
                 extras.putInt("comfort", review.getComfort());
                 extras.putInt("light", review.getLight());
-                extras.putInt("convenience", review.getConvenience());
                 cardFragment.setArguments(extras);
             } catch (Exception e) {
 
@@ -157,38 +156,6 @@ public class ReviewCardsContainerFragment extends Fragment {
         public int getCount() {
             return reviews.size();
         }
-    }
-
-    // Calculates the convenience of each review card
-    private int calculateConvenience(float distance) {
-        if (distance <= 80) {
-            // Five bars
-            return 5;
-        } else if (distance <= 160) {
-            // Four bars
-            return 4;
-        } else if (distance <= 320) {
-            // Three bars
-            return 3;
-        } else if (distance <= 440) {
-            // Two bars
-            return 2;
-        }
-        // One bar
-        return 1;
-    }
-
-    public void calculateConveniences(Location currentLocation) {
-        for (int i = 0; i < reviews.size(); i++) {
-            Review review = reviews.get(i);
-            review.setConvenience(calculateConvenience(currentLocation.distanceTo(review.getLocation().toLocation())));
-        }
-        if (getActivity() != null) {
-            mPager = getActivity().findViewById(R.id.pager);
-            pagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
-            pagerAdapter.notifyDataSetChanged();
-        }
-
     }
 
     // AsyncTask to load all the images together from Firebase
@@ -209,11 +176,12 @@ public class ReviewCardsContainerFragment extends Fragment {
                     reviewCalendar.setTime(format.parse(review.getTimestamp()));
                     currentCalendar.setTime(new Date());
                     int difference = currentCalendar.get(Calendar.HOUR_OF_DAY) - reviewCalendar.get(Calendar.HOUR_OF_DAY);
-
                     // Delete reviews that are older than six hours
                     if (difference >= 6) dbReference.child(snapshot.getKey()).removeValue();
 
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 try {
                     Future reviewFuture = runFuture(review);
