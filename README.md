@@ -2,7 +2,7 @@
 An Android application for Dartmouth students to review and discover good napping locations
 
 ![](./images/Sign_Up.png)
-![](./images/Map View-Pin.png)
+![](./images/Map_View.png)
 ![](./images/Starred_Locations.png)
 ![](./images/Settings_Drawer.png)
 
