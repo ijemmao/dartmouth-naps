@@ -237,7 +237,7 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(PLACE_COORDINATES_AVG[1]).toGoogleLatLng(), ZOOM));
         new AddPlacesToMapAT().execute(mGoogleMap);
-        MainActivity.sFirebaseDataSource.addReviewsChildEventListener(mGoogleMap);
+        MainActivity.sFirebaseDataSource.setGoogleMap(mGoogleMap);
     }
 
     @Override

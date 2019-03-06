@@ -6,22 +6,28 @@ public abstract class Globals {
 
     public static final int NOTIFICATION_ID_LOCATION_MONITOR = 1;
     public static final int NOTIFICATION_ID_REVIEW_PROMPT = 2;
+    public static final int NOTIFICATION_ID_STARRED_REVIEW = 3;
     public static final String[] NOTIFICATION_CHANNEL_IDS = new String[]{
             "Location Monitor",
-            "Review Prompt"};
+            "Review Prompt",
+            "Starred Review"};
     public static final String[] NOTIFICATION_CHANNEL_NAMES = new String[]{
-            TAG_GLOBAL + ": " + NOTIFICATION_CHANNEL_IDS[0],
-            TAG_GLOBAL + ": " + NOTIFICATION_CHANNEL_IDS[1]};
+            TAG_GLOBAL + ": " + NOTIFICATION_CHANNEL_IDS[NOTIFICATION_ID_LOCATION_MONITOR - 1],
+            TAG_GLOBAL + ": " + NOTIFICATION_CHANNEL_IDS[NOTIFICATION_ID_REVIEW_PROMPT - 1],
+            TAG_GLOBAL + ": " + NOTIFICATION_CHANNEL_IDS[NOTIFICATION_ID_STARRED_REVIEW - 1]};
     public static final String[] NOTIFICATION_TITLES = new String[]{
             "Just so you know, we're monitoring your location", // Location Monitor
-            "Hey, sleepy head! We noticed you've been at  for a couple hours."}; // Review Prompt
+            "Hey, sleepy head! We noticed you've been at  for a couple hours.", // Review Prompt
+            "Someone just napped in !"}; // Starred Review
     public static final String[] NOTIFICATION_TEXTS = new String[]{
             "Tap here to return to the app.", // Location Monitor
-            "Tap here to review your nap."}; // Review Prompt
-
+            "Tap here to review your nap.", // Review Prompt
+            "Tap here to see their review."}; // Starred Review
     public static final String CHANNEL_ID = "DartmouthNaps Notifications";
 
-    public static final String KEY_REVIEW_PROMPTED = "review prompted";
+    public static final String KEY_REVIEW_PROMPT = "review prompt";
+    public static final String KEY_STARRED_REVIEW = "starred review";
+    public static final String KEY_REVIEW_KEY = "review key";
     public static final String KEY_LATITUDE = "latitude";
     public static final String KEY_LONGITUDE = "longitude";
 
