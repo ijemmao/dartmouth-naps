@@ -53,12 +53,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private CampusMapFragment mCampusMapFragment;
     private StarredLocationsFragment starredLocationsFragment;
 
-//    private TempNavFragment tempNavFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -109,9 +107,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 TextView headerEmail = (TextView) header.findViewById(R.id.header_email);
                 headerEmail.setText(user.getEmail());
             }
-
     }
-    
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         int id = menuItem.getItemId();
