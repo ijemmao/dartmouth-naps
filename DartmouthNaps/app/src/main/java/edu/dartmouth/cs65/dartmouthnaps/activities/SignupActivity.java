@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 import edu.dartmouth.cs65.dartmouthnaps.R;
 
 import com.google.android.gms.tasks.Task;
@@ -17,8 +16,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import edu.dartmouth.cs65.dartmouthnaps.listeners.AuthOnCompleteListener;
-import edu.dartmouth.cs65.dartmouthnaps.R;
 
+/*Written by the Dartmouth Naps Team*/
 public class SignupActivity extends AppCompatActivity {
 
     private EditText signupID; //email field
@@ -31,6 +30,7 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signup_activity);
 
+        //formats the action bar
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_white_x_24dp);
@@ -39,22 +39,20 @@ public class SignupActivity extends AppCompatActivity {
         signupID = (EditText)findViewById(R.id.signup_id);
         signupPassword = (EditText)findViewById(R.id.signup_password);
         auth = FirebaseAuth.getInstance();
-
-
     }
 
+    //adds the menu which contains the login button at the top right
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.signup_activity_menu, menu);
         return true;
     }
 
+    //if the login menu button is selected, starts LoginActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.login_menu_button) {
-
             Intent intent = new Intent(this, LoginActivity.class); //starts the login page
-
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
@@ -71,6 +69,7 @@ public class SignupActivity extends AppCompatActivity {
             AuthOnCompleteListener listener = new AuthOnCompleteListener(this, "signup"); //listen for completion
             task.addOnCompleteListener(listener);
         } else {
+            //handles the case when nothing is input. prompts user to input something.
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(R.string.empty_fields_text).setTitle(R.string.oops_title).setPositiveButton(android.R.string.ok, null);
             AlertDialog dialog = builder.create();

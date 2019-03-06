@@ -18,7 +18,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,7 +28,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.soundcloud.android.crop.Crop;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,28 +35,25 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.fragments.RatingFragment;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
-
 import static edu.dartmouth.cs65.dartmouthnaps.util.Globals.*;
 import static edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil.*;
 
+/*Written by the Dartmouth Naps Team*/
 public class NewReviewActivity extends AppCompatActivity {
 
-    private FirebaseAuth auth;
-    private FirebaseUser user;
-    private DatabaseReference dbReference;
-    private StorageReference storageReference;
+    private FirebaseAuth auth; //firebase auth
+    private FirebaseUser user; //user that is logged in
+    private DatabaseReference dbReference; //reference to the firebase database
+    private StorageReference storageReference; //reference to the firebase storage
 
-    static final int CAMERA_REQUEST_CODE = 200;
+    static final int CAMERA_REQUEST_CODE = 200; //used to take image of location
 
-    ImageView uploadImage;
-    ImageView locationImage;
+    ImageView uploadImage; //image to upload
+    ImageView locationImage; //image of the location
 
     EditText reviewHeader;
 
