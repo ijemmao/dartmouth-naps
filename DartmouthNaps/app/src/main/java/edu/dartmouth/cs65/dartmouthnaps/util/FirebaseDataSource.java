@@ -20,14 +20,16 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import edu.dartmouth.cs65.dartmouthnaps.R;
+import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
+import edu.dartmouth.cs65.dartmouthnaps.fragments.MyReviewsFragment;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.models.Review;
 
@@ -114,14 +116,39 @@ public class FirebaseDataSource {
             marker.remove();
             mReviewMarkers.remove(review.getTimestamp());
         }
+        String key = mUID + "-" + review.getTimestamp().substring(0, review.getTimestamp().length() - 7);
+        mReviewsFDBR.child(key).removeValue();
+        mUserReviewsFDBR.child(key).removeValue();
     }
 
     public void createReview(Review review) {
         String key;
 
-        key = mUID + "-" + review.getTimestamp().substring(0, 19);
+        key = mUID + "-" + review.getTimestamp().substring(0, review.getTimestamp().length() - 7);
         mReviewsFDBR.child(key).setValue(review);
         mUserReviewsFDBR.child(key).setValue("");
+    }
+
+    public void getUserReviews() {
+
+        final ArrayList<Review> userReviews = new ArrayList<>();
+        mReviewsFDBR.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (final DataSnapshot child : dataSnapshot.getChildren()) {
+                    Review review = child.getValue(Review.class);
+                    if (review.getAuthor().equals(mUID)) {
+                        userReviews.add(review);
+                    }
+                }
+                MyReviewsFragment.updateReviews(userReviews);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private class ReviewsChildEventListener implements ChildEventListener {
