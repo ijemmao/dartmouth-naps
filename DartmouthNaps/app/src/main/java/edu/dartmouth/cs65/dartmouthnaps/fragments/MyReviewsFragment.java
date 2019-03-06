@@ -51,7 +51,8 @@ public class MyReviewsFragment extends Fragment {
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
-        dbReference = FirebaseDatabase.getInstance().getReference().child("reviews");
+        uID = user.getUid();
+        dbReference = FirebaseDatabase.getInstance().getReference().child("users").child(uID).child("reviews");
         storageReference = FirebaseStorage.getInstance().getReference();
 
         uID = user.getUid();
@@ -59,6 +60,7 @@ public class MyReviewsFragment extends Fragment {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Log.d("tag2", dataSnapshot.toString());
+
             }
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -81,8 +83,8 @@ public class MyReviewsFragment extends Fragment {
             }
         };
 
-        dbReference = dbReference.child("users").child(uID).child("reviews");
         dbReference.addChildEventListener(listener); //sets the listener in the correct leve
+
         adapter = new MyReviewsAdapter(getActivity(), android.R.layout.simple_list_item_1, reviews);
         listView.setAdapter(adapter);
 
@@ -146,8 +148,6 @@ class MyReviewsAdapter extends ArrayAdapter<Review> {
         return view;
     }
 
-    public void tempOnClick(View view) {
 
-    }
 
 }

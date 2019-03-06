@@ -36,7 +36,9 @@
     <string name="text_close">CLOSE</string>
     <string name="text_welcome_back">"Welcome Back, Sleepy Head!"</string>
     <string name="nav_text_map">Map</string>
+    <string name="nav_text_starred_locations">Starred Locations</string>
     <string name="text_sign_up_to_review">Sign Up to Review</string>
+    <string name="text_all_locations">All Locations</string>
 
 
 

@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,6 +37,7 @@ import com.google.android.gms.maps.model.Polygon;
 import edu.dartmouth.cs65.dartmouthnaps.R;
 import edu.dartmouth.cs65.dartmouthnaps.activities.MainActivity;
 import edu.dartmouth.cs65.dartmouthnaps.activities.NewReviewActivity;
+import edu.dartmouth.cs65.dartmouthnaps.activities.SignupActivity;
 import edu.dartmouth.cs65.dartmouthnaps.models.LatLng;
 import edu.dartmouth.cs65.dartmouthnaps.services.LocationService;
 import edu.dartmouth.cs65.dartmouthnaps.tasks.AddPlacesToMapAT;
@@ -65,6 +67,8 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
     private Messenger mRecvMessenger;
     private Messenger mLSSendMessenger;
     private ImageButton imageButton;
+    private Button addReviewButton;
+    private boolean hidden;
     private boolean mBindLSCalled;
 
     public CampusMapFragment() {
@@ -149,7 +153,20 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
         }
 
         reviewCardsContainerFragment = (ReviewCardsContainerFragment) getChildFragmentManager().findFragmentById(R.id.review_cards_container_fragment);
-        imageButton =layout.findViewById(R.id.open_drawer);
+        imageButton = layout.findViewById(R.id.open_drawer);
+        addReviewButton = layout.findViewById(R.id.add_review);
+
+        if(hidden) {
+            imageButton.setVisibility(View.GONE);
+            addReviewButton.setText("Sign Up to Review");
+            addReviewButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), SignupActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }
 
         return layout;
     }
@@ -325,4 +342,10 @@ public class CampusMapFragment extends Fragment implements OnMapReadyCallback, G
 
         }
     }
+
+    public void setHideButton(boolean bool) {
+        hidden = bool;
+    }
+
+
 }
