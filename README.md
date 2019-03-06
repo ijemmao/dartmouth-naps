@@ -68,8 +68,8 @@ This activity makes use of the `RatingFragment` but disabling the buttons that a
 
 #### Fragments
 
-##### Map Fragment
-The bottom 40% of the screen is occupied by the `ReviewCardContainerFragment`, with a `SupportMapFragment` in the background displaying campus. This `SupportMapFragment` has been stylized through adjustments made on a JSON string from the [Google Maps Platform Styling Wizard](https://mapstyle.withgoogle.com/). `Review`s are marked on the map with the [bed marker](https://github.com/ijemmao/dartmouth-naps/blob/master/DartmouthNaps/app/src/main/res/drawable/ic_marker_bed.xml), and the user's current `Location` is marked on the map with the [sheos marker](https://github.com/ijemmao/dartmouth-naps/blob/master/DartmouthNaps/app/src/main/res/drawable/ic_marker_shoes.xml). When the user taps on one of the pins, the map centers on that pin, and if it was a `Review` pin, the `ReviewCardContainerFragment` sets the corresponding `ReviewCardFragment` to be active.
+##### Campus Map Fragment
+The bottom 40% of the screen is occupied by the `ReviewCardContainerFragment`, with a `SupportMapFragment` in the background displaying campus. This `SupportMapFragment` has been stylized through adjustments made on a JSON string from the [Google Maps Platform Styling Wizard](https://mapstyle.withgoogle.com/). `Review`s are marked on the map with the [bed marker](https://github.com/ijemmao/dartmouth-naps/blob/master/DartmouthNaps/app/src/main/res/drawable/ic_marker_bed.xml), and the user's current location is marked on the map with the [sheos marker](https://github.com/ijemmao/dartmouth-naps/blob/master/DartmouthNaps/app/src/main/res/drawable/ic_marker_shoes.xml). When the user taps on one of the pins, the map centers on that pin, and if it was a `Review` pin, the `ReviewCardContainerFragment` sets the corresponding `ReviewCardFragment` to be active.
 
 ##### Review Card Fragment
 Each Review object is represented with a Review Card Fragment that is overlaid on the `CampusMapFragment`.
@@ -87,18 +87,31 @@ The user has the ability to see all of their active reviews. On this view, they 
 
 #### Async Logic
 
-##### Location Tracking Service
+##### Location Service
+
+The `LocationService` (started and bound to the `CampusMapFragment` by proxy of the `MainActivity` through use of a callback interface) keeps track of the user's location through use of a `FusedLocationProviderClient`. When the `CampusMapFragment` is in the foreground, the `Service` is bound, and the locations are handled through a `LocationRequest` and a custom `LocationCallback`, `LSLocationCallback`. However, the `Service`handles locations very differently depending on whether or not its bound. When not bound, the `LocationService` instead uses a `CheckLocationPeriodicallyThread`, which calls `sleep()` for `PERIOD_IN_MILLIS` ms in between calls to `run()` on a `CheckLocationPeriodicallyRunnable`. The `Thread` terminates by calling `interrupt()`, which is called in `onDestroy()` of the `LocationService`. The `CheckLocationPeriodicallyRunnable` uses a `CheckLocationPeriodicallyOnSuccessListener` to handle the location. If the difference in milliseconds between A) the first time the location was determined to be in the current Place and B) the current time when `onSuccess()` is called is greater `THRESHHOLD_IN_MILLIS`, a prompt review `Notification` is posted (with the most recent latitude and longitude stored in its intent), and a flag is set to prevent another prompt review `Notification` from being posted without first moving from that place zone.
+
+To keep the app running even when pushed to the background, the `LocationService` also posts a location monitor `Notification`, which just alerts the user that their location is being tracked. By posting this Notification through the the `Service` class's `startForeground()` function, the application isn't killed by Android as it tries to allocate space, only closing once the user closes the apps from the active applications screen, or force closes it in Settings.
 
 ##### Image Loading Thread
+
 Firebase for Android doesn't provide the capability to complete multiple async tasks at the same time (similar to Javascript's `Promise` class). Because of this limitation, Java's `Future` class was used to synchronously complete async tasks.
 
 Completing multiple `Future` tasks is computationally heavy on the main UI thread. Therefore, this logic was moved out to an AsyncTask named `ImageLoadTask`, which is called every time there is a change in the database so the user see the most up-to-date list of reviews.
+
+##### Add Places To Map AsyncTask
+
+Because the near 1,000+ coordinates that define the place `Polygon`s defined in `PlaceUtil` would likely weigh down the main UI thread more than it should, the process of looping through these coordinates and adding them to `PolygonOPtions` objects was offloaded to `AddPlacesToMapAT`, which then adds them to the `GoogleMap` in `onPostExecute()`.
 
 ### Controller
 
 #### Firebase Data Source
 
+`FirebaseDataSource` serves as a center for interacting with the Firebase DB. It uses a `ReviewsChildEventListener` to listen to `Review`s being added to or removed from the DB and call the appropriate functions to make sure that the local `List`s and `Map`s of these `Review`s reflect these remote changes. A second `ChildEventListener`, `StarredChildEventListener`, is similarly listening to the children of the `starred` item for the user in the DB. When these functions are called, it sets the appropriate `boolean` in a private array, `mStarred`, which represents whether or not the user has starred that place index. Using this array, the `FirebaseDataSource` checks in `ReviewsChildEventListener.onChildAdded()` to see if the user should receive a starred review `Notification`, and sends one accordingly if necessary.
+
 #### Notification Center
+
+Because there are a lot of similarities between the different `Notification`s and what they require before being posted, the utility `NotificationCenter` was created to manage this. A static member of `LocationService`, `NotificationCenter` handles all the `NotificationManager` and `NotificationChannel` intialization, and uses the private function `postNotification()` to create the actual `Notification` itself and add all the necessary extras to the `Intent`. External classes can use `NotificationCenter` by calling one of its three public post functions, `postLocationMonitorNotification()`, `postReviewPromptNotification()`, and `postStarredReviewNotification()`.
 
 ### Models
 
