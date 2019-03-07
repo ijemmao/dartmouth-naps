@@ -114,8 +114,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //if main activity is active on notification click, uses this instead of onCreate
     @Override
     protected void onNewIntent (Intent intent) {
-        MenuItem navMapMI = findViewById(R.id.nav_map);
-        if (navMapMI != null) onNavigationItemSelected(navMapMI);
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onNewIntent() called");
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_main, mCampusMapFragment).commit();
 
         if (intent.getBooleanExtra(KEY_REVIEW_PROMPT, false)
                 && mCampusMapFragment != null) {
@@ -131,11 +132,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onNavigationItemSelected() called");
+
         int id = menuItem.getItemId();
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (id == R.id.nav_reviews) {
             fragmentManager.beginTransaction().replace(R.id.content_main, myReviewsFragment).commit();
         } else if(id == R.id.nav_map) {
+            if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "nav_map selected");
             fragmentManager.beginTransaction().replace(R.id.content_main, mCampusMapFragment).commit();
         } else if(id == R.id.nav_starred_locations) {
             fragmentManager.beginTransaction().replace(R.id.content_main, starredLocationsFragment).commit();

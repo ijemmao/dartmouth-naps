@@ -2,7 +2,7 @@ package edu.dartmouth.cs65.dartmouthnaps.util;
 
 public abstract class Globals {
     public static final String TAG_GLOBAL = "DartmouthNaps";
-    public static final boolean DEBUG_GLOBAL = true;
+    public static final boolean DEBUG_GLOBAL = false;
 
     public static final int NOTIFICATION_ID_LOCATION_MONITOR = 1;
     public static final int NOTIFICATION_ID_REVIEW_PROMPT = 2;

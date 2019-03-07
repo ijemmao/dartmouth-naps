@@ -41,6 +41,8 @@ public class FirebaseDataSource {
     private static final String TAG = TAG_GLOBAL + ": FirebaseDataSource";
     private static final boolean DEBUG = true;
 
+    public static boolean sReviewChildEventListenerAdded = false;
+
     private DatabaseReference mReviewsFDBR;     // DatabaseReference to the reviews node
     private DatabaseReference mUserReviewsFDBR; // DatabaseReference to the reviews node under user
     private GoogleMap mGoogleMap;               // GoogleMap to add Markers to
@@ -56,6 +58,7 @@ public class FirebaseDataSource {
                                                 // onChildAdded() before a Review is new data
 
     public FirebaseDataSource(Context context) {
+        if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "FirebaseDataSource() called");
         VectorDrawableCompat reviewMarkerVDC;   // VectorDrawableCompat for the Review Marker
         DatabaseReference fdbr;                 // DatabaseReference for the firebase
         DatabaseReference userFDBR;             // DatabaseReference for the user node
@@ -77,8 +80,10 @@ public class FirebaseDataSource {
 
                 // Since the ReviewsChildEventListener will try to interact with mGoogleMap, we
                 // can't add it unless mGoogleMap has already been set by setGoogleMap()
-                if (mGoogleMap != null)
+                if (mGoogleMap != null && !sReviewChildEventListenerAdded) {
                     mReviewsFDBR.addChildEventListener(new ReviewsChildEventListener());
+                    sReviewChildEventListenerAdded = true;
+                }
             }
 
             @Override public void onCancelled(@NonNull DatabaseError databaseError) {}
@@ -126,8 +131,9 @@ public class FirebaseDataSource {
     public void setGoogleMap(GoogleMap googleMap) {
         mGoogleMap = googleMap;
 
-        if (mReviewsFDBR != null && mReviewsCount != -1) {
+        if (mReviewsFDBR != null && mReviewsCount != -1 && !sReviewChildEventListenerAdded) {
             mReviewsFDBR.addChildEventListener(new ReviewsChildEventListener());
+            sReviewChildEventListenerAdded = true;
         } else if (DEBUG_GLOBAL && DEBUG)
             Log.d(TAG, "setGoogleMap() called while mReviewsFDBR is null");
     }
@@ -243,7 +249,7 @@ public class FirebaseDataSource {
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
             int index;
 
-            if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onChildAdded() called");
+            if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onChildAdded() called; mReviewsCount: " + mReviewsCount);
 
             Review review = dataSnapshot.getValue(Review.class);
 
