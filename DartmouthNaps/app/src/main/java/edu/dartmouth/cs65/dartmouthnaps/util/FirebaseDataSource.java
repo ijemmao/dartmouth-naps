@@ -40,31 +40,43 @@ import static edu.dartmouth.cs65.dartmouthnaps.util.PlaceUtil.*;
 public class FirebaseDataSource {
     private static final String TAG = TAG_GLOBAL + ": FirebaseDataSource";
     private static final boolean DEBUG = true;
-    private DatabaseReference mReviewsFDBR;
-    private DatabaseReference mUserReviewsFDBR;
-    private GoogleMap mGoogleMap;
-    private Map<String, Review> mReviews;
-    private Map<String, Marker> mReviewMarkers;
-    private boolean[] mStarred;
-    private Bitmap mReviewMarkerBitmap = null;
-    private String mUID;
-    private int mReviewsCount;
+
+    private DatabaseReference mReviewsFDBR;     // DatabaseReference to the reviews node
+    private DatabaseReference mUserReviewsFDBR; // DatabaseReference to the reviews node under user
+    private GoogleMap mGoogleMap;               // GoogleMap to add Markers to
+    private Map<String, Review> mReviews;       // Map of Strings to Reviews to keep track of
+                                                // Reviews by their timestamp
+    private Map<String, Marker> mReviewMarkers; // Map of Strings to Markers to keep track of
+                                                // Markers by the timestamp of their Review
+    private boolean[] mStarred;                 // boolean array for whether the user has starred
+                                                // the place at that index
+    private Bitmap mReviewMarkerBitmap = null;  // Bitmap for the Review Marker
+    private String mUID;                        // String for the user ID
+    private int mReviewsCount;                  // int for the number of Reviews to expect in
+                                                // onChildAdded() before a Review is new data
 
     public FirebaseDataSource(Context context) {
-        VectorDrawableCompat reviewMarkerVDC;
-        DatabaseReference userFDBR;
-        int reviewMarkerWidth;
-        int reviewMarkerHeight;
+        VectorDrawableCompat reviewMarkerVDC;   // VectorDrawableCompat for the Review Marker
+        DatabaseReference fdbr;                 // DatabaseReference for the firebase
+        DatabaseReference userFDBR;             // DatabaseReference for the user node
+        int reviewMarkerWidth;                  // int for the width of the Review Marker
+        int reviewMarkerHeight;                 // int for the height of the Review Marker
 
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+        // Initialize the DatabaseReferences and set mReviewsCount to -1, using this value as an
+        // indicator that onDataChange() hasn't been called
+        fdbr = FirebaseDatabase.getInstance().getReference();
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        mReviewsFDBR = dbRef.child("reviews");
+        mReviewsFDBR = fdbr.child("reviews");
         mReviewsCount = -1;
+
+        // Add ValueEventListener to count the number of reviews
         mReviewsFDBR.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mReviewsCount = (int)dataSnapshot.getChildrenCount();
 
+                // Since the ReviewsChildEventListener will try to interact with mGoogleMap, we
+                // can't add it unless mGoogleMap has already been set by setGoogleMap()
                 if (mGoogleMap != null)
                     mReviewsFDBR.addChildEventListener(new ReviewsChildEventListener());
             }
@@ -72,9 +84,11 @@ public class FirebaseDataSource {
             @Override public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
 
+        // If the user reference isn't null, set the user ID, mUserReviewsFDBR, initialize mStarred,
+        // and add the StarredChildEventListener
         if (firebaseUser != null) {
             mUID = firebaseUser.getUid();
-            userFDBR = dbRef
+            userFDBR = fdbr
                     .child("users")
                     .child(mUID);
             mUserReviewsFDBR = userFDBR
@@ -85,6 +99,7 @@ public class FirebaseDataSource {
             mUserReviewsFDBR = null;
         }
 
+        // Try making the Marker Bitmap
         try {
             MapsInitializer.initialize(context);
             reviewMarkerVDC = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_marker_bed, context.getTheme());
@@ -98,11 +113,16 @@ public class FirebaseDataSource {
             e.printStackTrace();
         }
 
+        // Initialize mReviews, mReviewMarkers, and mGoogleMap
         mReviews = new HashMap<>();
         mReviewMarkers = new HashMap<>();
         mGoogleMap = null;
     }
 
+    /**************** setGoogleMap() ****************
+     * Sets mGoogleMap, and adds the ReviewsChildEventListener if possible
+     * @param googleMap GoogleMap to set mGoogleMap to
+     */
     public void setGoogleMap(GoogleMap googleMap) {
         mGoogleMap = googleMap;
 
@@ -112,6 +132,11 @@ public class FirebaseDataSource {
             Log.d(TAG, "setGoogleMap() called while mReviewsFDBR is null");
     }
 
+    /**************** addReview() ****************
+     * Adds the Review to mReviews, and adds its Marker to mGoogleMap (via MarkerOptions) and
+     * mReviewMarkers. This should only be called by ReviewsChildEventListener.onChildAdded()
+     * @param review    Review to add
+     */
     public void addReview(Review review) {
         Marker marker;
 
@@ -127,6 +152,11 @@ public class FirebaseDataSource {
             Log.d(TAG, "addReview() called while mReviewMarkerBitmap is null");
     }
 
+    /**************** removeReviews() ****************
+     * Removes the Review from mReviews, and removes its marker from mGoogleMap and mReviewMarkers.
+     * This should only be called by ReviewsChildEventListener.onChildRemoved()
+     * @param review    Review to remove
+     */
     public void removeReview(Review review) {
         Marker marker;
         mReviews.remove(review.getTimestamp());
@@ -138,6 +168,11 @@ public class FirebaseDataSource {
         }
     }
 
+    /**************** createReview() ****************
+     * Creates a Review in the Firebase DB (the full Review is put under mReviewsFDBR, and the key
+     * is put under mUserReviewsFDBR
+     * @param review    Review to create in the Firebase DB
+     */
     public void createReview(Review review) {
         String key;
 
@@ -146,6 +181,11 @@ public class FirebaseDataSource {
         mUserReviewsFDBR.child(key).setValue("");
     }
 
+    /**************** deleteReview() ****************
+     * Deletes a Review in the Firebase DB (both just the key and the full Review from
+     * mUserReviewsFDBR and mReviewsFDBR respectively
+     * @param review    Review to delete in the Firebase DB
+     */
     public void deleteReview(Review review) {
         String key;
 
@@ -157,12 +197,20 @@ public class FirebaseDataSource {
         mUserReviewsFDBR.child(key).removeValue();
     }
 
+    /**************** getReview() ****************
+     * Gets a Review from mReviews
+     * @param reviewKey String for the key to the Review in mReviews
+     * @return          Review associated with the given Review key (or null if not found)
+     */
     public Review getReview(String reviewKey) {
         if (mReviews == null) return null;
 
         return mReviews.get(reviewKey);
     }
 
+    /**************** getUserReviews() ****************
+     * Gets all of the user's Reviews from the DB and passes them to MyReviewsFragment
+     */
     public void getUserReviews() {
         final ArrayList<Review> userReviews = new ArrayList<>();
         mReviewsFDBR.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -184,6 +232,9 @@ public class FirebaseDataSource {
         });
     }
 
+    /**************** ReviewsChildEventListener ****************
+     * ChildEventListener for listening to the addition and deletion of Reviews
+     */
     private class ReviewsChildEventListener implements ChildEventListener {
         private static final String TAG = TAG_GLOBAL + ": ReviewsChildEventListener";
         private static final boolean DEBUG = true;
@@ -195,8 +246,13 @@ public class FirebaseDataSource {
             if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onChildAdded() called");
 
             Review review = dataSnapshot.getValue(Review.class);
+
+            // If mReviewsCount is greater than 0, this is a pre-existing Review and a starred
+            // Review Notification shouldn't be shown
             if (mReviewsCount > 0) mReviewsCount--;
             else if (review != null && mStarred != null){
+                // Otherwise, if review was fetched from the DataSnapshot properly and mStarred
+                // isn't null, check if the Review is from a starred place
                 index = getPlaceIndex(review.getLocation().toDoubleArr());
 
                 if (DEBUG_GLOBAL && DEBUG) {
@@ -241,6 +297,9 @@ public class FirebaseDataSource {
         }
     }
 
+    /**************** StarredChildEventListener ****************
+     * Responds to changes in the starred array in the DB
+     */
     private class StarredChildEventListener implements ChildEventListener {
         private static final String TAG = TAG_GLOBAL + ": StarredChildEventListener";
         private static final boolean DEBUG = true;
@@ -272,6 +331,10 @@ public class FirebaseDataSource {
             if (DEBUG_GLOBAL && DEBUG) Log.d(TAG, "onCancelled() called");
         }
 
+        /**************** setSingleStarred() ****************
+         * Sets a single element of mStarred using the index and value specified in dataSnapshot
+         * @param dataSnapshot  DataSnapshot to get the index and value from
+         */
         private void setSingleStarred(@NonNull DataSnapshot dataSnapshot) {
             String key;
             Object value;
@@ -287,6 +350,12 @@ public class FirebaseDataSource {
         }
     }
 
+    /**************** getReviewsNear() ****************
+     * Gets the Reviews near the given LatLng
+     * @param reviews   ArrayList of Reviews to sort by distance from the location
+     * @param location  LatLng to measure the distance from
+     * @return          The same ArrayList passed in, reviews
+     */
     public ArrayList<Review> getReviewsNear(ArrayList<Review> reviews, final LatLng location) {
 
         reviews.sort(new Comparator<Review>() {
@@ -306,6 +375,9 @@ public class FirebaseDataSource {
         return reviews;
     }
 
+    /**************** logStarred() ****************
+     * Logs the values of mStarred (for debugging)
+     */
     private void logStarred() {
         if (!(DEBUG_GLOBAL && DEBUG)) return;
 
