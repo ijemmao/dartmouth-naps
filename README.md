@@ -177,6 +177,8 @@ public Map<String, Object> toMap() {
 
 ### Database Structure
 
+We used a Firebase Realtime Database to store the all data except for photos, which were stored on a Firebase Storage DB. While this photo outlines the general structure of this database, feel free to view the database itself [here](https://dartmouth-naps.firebaseio.com/).
+
 ![](./images/Database.PNG)
 
 ## Technology
