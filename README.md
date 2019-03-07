@@ -52,8 +52,10 @@ Another way to use the app is to download one of these APKs. The only difference
 #### Activities
 
 ##### Main Activity
+This activity holds the navigation drawer, allowing the user to navigate to the CampusMapFragment, ReviewsFragment, and StarredLocationsFragment.
 
 ##### Login and Sign up Activities
+These activities handle the login and signup of the user, so that the user can add comments, star locations, and view his/her own comments.
 
 ##### New Review and Review Activities
 These `Activity`s are fairly similar in visual appearance; however, they have different functionality and purpose for the overall user experience.
@@ -81,6 +83,7 @@ This fragment contains all the `ReviewCardFragment`s which allows for swiping fu
 The Noise, Comfort, and Light ratings all implement the Rating fragment which makes for keeping track of the unique statuses for each Review fairly simple.
 
 ##### Starred Location Fragment
+This fragment allows a user to star specific locations so that he/she will get updates if a new review is added to that location.
 
 ##### My Reviews Fragment
 The user has the ability to see all of their active reviews. On this view, they only have the option to delete their reviews.
