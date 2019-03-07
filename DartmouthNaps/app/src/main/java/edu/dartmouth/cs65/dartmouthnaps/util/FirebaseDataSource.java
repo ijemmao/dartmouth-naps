@@ -264,7 +264,7 @@ public class FirebaseDataSource {
                     }
                 }
 
-                if (index != -1) LocationService.sNotificationCenter.postStarredReviewNotification(
+                if (index != -1 && mStarred[index] && !review.getAuthor().equals(mUID)) LocationService.sNotificationCenter.postStarredReviewNotification(
                         review.getTimestamp(), index);
             } else if (DEBUG_GLOBAL && DEBUG) {
                 if (review == null) Log.d(TAG, "review is null");

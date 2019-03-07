@@ -228,7 +228,6 @@ public class LocationService extends Service implements NotificationCenter.NCCal
 
     @Override
     public void sendContext() {
-        Log.d(TAG, "sendContext() called");
         sNotificationCenter.receiveContext(this);
     }
 

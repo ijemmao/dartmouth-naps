@@ -65,18 +65,10 @@ public class NotificationCenter {
      * sendContext())
      */
     private void postNotification(Context context) {
-        Log.d(TAG, "postNotification() called");
         Intent          intent;         // Intent for the Notification
         String          title;          // String for the title of the Notification
         String          text;           // String for the text of the Notification
         Notification    notification;   // Notification to post
-
-        if (DEBUG_GLOBAL && DEBUG) {
-            Log.d(TAG, "postNotification() called for " + NOTIFICATION_CHANNEL_IDS[mID - 1] + " notification");
-
-            if (mNotificationManager == null) Log.d(TAG, "Warning: posting notification " +
-                    "while mNotificationManager is null");
-        }
 
         // The Notification should take the user to the MainActivity, and title and text are
         // probably just values from their respective array (the Notification mID 0 can't be used,
